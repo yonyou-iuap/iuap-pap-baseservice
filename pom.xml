@@ -1,0 +1,93 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.yonyou.iuap</groupId>
+	<artifactId>baseservice</artifactId>
+	<version>3.5.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<dependencyManagement>
+	      <dependencies>
+	    </dependencies>
+	</dependencyManagement>
+
+
+
+
+	<repositories>
+		<repository>
+			<id>nexus</id>
+			<name>Nexus</name>
+			<url>http://maven.yonyoucloud.com/nexus/content/groups/public</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+
+		<repository>
+			<id>iUAP-Snapshots</id>
+			<name>iUAP-Snapshots</name>
+			<url>http://maven.yonyoucloud.com/nexus/content/repositories/iUAP-Snapshots/</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>iUAP-Stagings</id>
+			<name>iUAP-Stagings</name>
+			<url>http://maven.yonyoucloud.com/nexus/content/repositories/iUAP-Stagings/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>iUAP</id>
+			<name>iWeb</name>
+			<url>http://maven.yonyoucloud.com/nexus/content/repositories/iUAP/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>central</id>
+			<name>central</name>
+			<url>http://maven.yonyoucloud.com/nexus/service/local/repositories/central</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>maven-net-cn</id>
+			<name>Maven China Mirror</name>
+			<url>http://maven.net.cn/content/groups/public/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
+
+	<modules>
+		<module>persistence</module>
+	</modules>
+</project>
