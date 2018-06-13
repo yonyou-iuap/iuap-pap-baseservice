@@ -27,7 +27,7 @@
 			
 		<dependency>
 			<groupId>com.yonyou.iuap.baseservice</groupId>
-			<artifactId>iuap-pap-baseservice-service</artifactId>
+			<artifactId>iuap-pap-baseservice-controller</artifactId>
 			<version>${pap.module.version}</version>
 		</dependency>
 

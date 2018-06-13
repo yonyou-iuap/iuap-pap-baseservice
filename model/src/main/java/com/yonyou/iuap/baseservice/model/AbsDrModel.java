@@ -9,7 +9,7 @@ import javax.persistence.Column;
  * @author houlf
  * 2018年6月12日
  */
-public abstract class AbsDrModel extends AbsModel implements LogicDelete {
+public abstract class AbsDrModel extends AbsModel implements LogicDel {
 
 	@Column(name="dr")
 	protected Integer dr;

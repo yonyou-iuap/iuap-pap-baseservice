@@ -12,7 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import com.alibaba.fastjson.JSON;
-import com.yonyou.iuap.baseservice.model.LogicDelete;
+import com.yonyou.iuap.baseservice.model.LogicDel;
 import com.yonyou.iuap.baseservice.model.Model;
 import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericMapper;
 import com.yonyou.iuap.context.InvocationInfoProxy;
@@ -132,9 +132,9 @@ public class GenericService<T extends Model>{
 			entity.setLastModified(new Date());
 			entity.setLastModifyUser(InvocationInfoProxy.getUserid());
 			
-			if(entity instanceof LogicDelete) {
-				((LogicDelete)entity).setDr(0);
-				((LogicDelete)entity).setTs(new Date());
+			if(entity instanceof LogicDel) {
+				((LogicDel)entity).setDr(0);
+				((LogicDel)entity).setTs(new Date());
 			}
 			
 			this.genericMapper.insert(entity);

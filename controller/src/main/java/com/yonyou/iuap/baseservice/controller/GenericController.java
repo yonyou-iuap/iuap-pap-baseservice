@@ -26,7 +26,7 @@ import cn.hutool.core.util.StrUtil;
 
 /**
  * 说明：基础Controller——提供数据增、删、改、查
- * @author Aton
+ * @author houlf
  * 2018年6月13日
  */
 public abstract class GenericController<T extends Model> extends BaseController{
