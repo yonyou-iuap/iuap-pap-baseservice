@@ -1,18 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.yonyou.iuap</groupId>
-	<artifactId>baseservice</artifactId>
+	<artifactId>iuap-pap-baseservice</artifactId>
 	<version>3.5.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
+	  <properties>
+	    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	    <iuap.module.version>3.1.0-RELEASE</iuap.module.version>
+	    <pap.module.version>3.5.1-SNAPSHOT</pap.module.version>
+	  </properties>
+
 	<dependencyManagement>
-	      <dependencies>
-	    </dependencies>
+		<dependencies>
+		</dependencies>
 	</dependencyManagement>
-
-
-
 
 	<repositories>
 		<repository>
@@ -89,5 +93,8 @@
 
 	<modules>
 		<module>persistence</module>
+		<module>service</module>
+		<module>controller</module>
+		<module>model</module>
 	</modules>
 </project>
