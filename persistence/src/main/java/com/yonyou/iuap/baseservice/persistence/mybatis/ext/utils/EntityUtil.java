@@ -8,7 +8,7 @@ import java.util.Set;
 
 import javax.persistence.Table;
 
-import com.yonyou.iuap.baseservice.model.Model;
+import com.yonyou.iuap.baseservice.entity.Model;
 
 /**
  * 说明：Model/Entity工具类

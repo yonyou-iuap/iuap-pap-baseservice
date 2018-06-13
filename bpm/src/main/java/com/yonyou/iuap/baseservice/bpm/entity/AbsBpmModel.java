@@ -1,8 +1,8 @@
-package com.yonyou.iuap.baseservice.bpm.model;
+package com.yonyou.iuap.baseservice.bpm.entity;
 
 import javax.persistence.Column;
 
-import com.yonyou.iuap.baseservice.model.AbsDrModel;
+import com.yonyou.iuap.baseservice.entity.AbsDrModel;
 
 
 /**

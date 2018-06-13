@@ -1,7 +1,7 @@
 package com.yonyou.iuap.baseservice.persistence.mybatis.mapper;
 
-import com.yonyou.iuap.baseservice.model.LogicDel;
-import com.yonyou.iuap.baseservice.model.Model;
+import com.yonyou.iuap.baseservice.entity.LogicDel;
+import com.yonyou.iuap.baseservice.entity.Model;
 
 /**
  * 说明：逻辑删除基础Mapper

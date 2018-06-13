@@ -1,7 +1,7 @@
 package com.yonyou.iuap.baseservice.bpm.dao.mapper;
 
 
-import com.yonyou.iuap.baseservice.bpm.model.BpmModel;
+import com.yonyou.iuap.baseservice.bpm.entity.BpmModel;
 import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericExMapper;
 
 /**

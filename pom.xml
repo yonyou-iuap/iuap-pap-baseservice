@@ -94,7 +94,7 @@
 		<module>persistence</module>
 		<module>service</module>
 		<module>controller</module>
-		<module>model</module>
+		<module>entity</module>
     	<module>bpm</module>
 	</modules>
 </project>

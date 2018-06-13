@@ -1,4 +1,4 @@
-package com.yonyou.iuap.baseservice.model;
+package com.yonyou.iuap.baseservice.entity;
 
 import java.util.Date;
 

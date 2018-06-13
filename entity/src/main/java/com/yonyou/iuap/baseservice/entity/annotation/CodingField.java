@@ -1,4 +1,4 @@
-package com.yonyou.iuap.baseservice.model.annotation;
+package com.yonyou.iuap.baseservice.entity.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

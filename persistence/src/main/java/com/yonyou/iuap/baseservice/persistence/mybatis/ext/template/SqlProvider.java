@@ -9,7 +9,7 @@ import javax.persistence.Table;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.yonyou.iuap.baseservice.model.Model;
+import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.EntityUtil;
 
 import cn.hutool.core.util.StrUtil;

@@ -12,8 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import com.alibaba.fastjson.JSON;
-import com.yonyou.iuap.baseservice.model.Model;
-import com.yonyou.iuap.baseservice.model.annotation.CodingEntity;
+import com.yonyou.iuap.baseservice.entity.Model;
+import com.yonyou.iuap.baseservice.entity.annotation.CodingEntity;
 import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericMapper;
 import com.yonyou.iuap.baseservice.service.util.CodingUtil;
 import com.yonyou.iuap.context.InvocationInfoProxy;

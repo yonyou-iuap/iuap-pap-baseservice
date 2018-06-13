@@ -1,4 +1,4 @@
-package com.yonyou.iuap.baseservice.model.annotation;
+package com.yonyou.iuap.baseservice.entity.annotation;
 
 /**
  * 说明：编码类型

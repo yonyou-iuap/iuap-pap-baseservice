@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.yonyou.iuap.base.web.BaseController;
-import com.yonyou.iuap.baseservice.model.Model;
+import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.service.GenericService;
 import com.yonyou.iuap.mvc.constants.RequestStatusEnum;
 import com.yonyou.iuap.mvc.type.JsonResponse;

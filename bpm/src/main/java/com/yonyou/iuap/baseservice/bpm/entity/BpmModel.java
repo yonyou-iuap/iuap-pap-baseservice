@@ -1,7 +1,7 @@
-package com.yonyou.iuap.baseservice.bpm.model;
+package com.yonyou.iuap.baseservice.bpm.entity;
 
-import com.yonyou.iuap.baseservice.model.LogicDel;
-import com.yonyou.iuap.baseservice.model.Model;
+import com.yonyou.iuap.baseservice.entity.LogicDel;
+import com.yonyou.iuap.baseservice.entity.Model;
 
 /**
  * 说明：工作流Model接口

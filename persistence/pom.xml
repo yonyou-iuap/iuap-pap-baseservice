@@ -20,7 +20,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.yonyou.iuap.baseservice</groupId>
-			<artifactId>iuap-pap-baseservice-model</artifactId>
+			<artifactId>iuap-pap-baseservice-entity</artifactId>
 			<version>${pap.module.version}</version>
 		</dependency>
 		

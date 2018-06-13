@@ -3,8 +3,8 @@ package com.yonyou.iuap.baseservice.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.yonyou.iuap.baseservice.model.LogicDel;
-import com.yonyou.iuap.baseservice.model.Model;
+import com.yonyou.iuap.baseservice.entity.LogicDel;
+import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.service.GenericService;
 
 /**
