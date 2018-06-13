@@ -10,7 +10,7 @@
 	</parent>
 	
 	<groupId>com.yonyou.iuap.baseservice</groupId>
-	<artifactId>persistence</artifactId>
+	<artifactId>iuap-pap-baseservice-persistence</artifactId>
 	<name>persistence</name>
 	<url>http://maven.apache.org</url>
 	<properties>
@@ -19,7 +19,7 @@
 	
 	<dependencies>
 		<dependency>
-			<groupId>com.yonyou.iuap</groupId>
+			<groupId>com.yonyou.iuap.baseservice</groupId>
 			<artifactId>iuap-pap-baseservice-model</artifactId>
 			<version>${pap.module.version}</version>
 		</dependency>

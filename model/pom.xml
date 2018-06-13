@@ -9,6 +9,7 @@
 		<version>3.5.1-SNAPSHOT</version>
 	</parent>
 
+	<groupId>com.yonyou.iuap.baseservice</groupId>
 	<artifactId>iuap-pap-baseservice-model</artifactId>
 	<name>model</name>
 	<url>http://maven.apache.org</url>
