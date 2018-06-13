@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.yonyou.iuap.base.web.BaseController;
 import com.yonyou.iuap.baseservice.bpm.model.BpmModel;
-import com.yonyou.iuap.baseservice.service.GenericService;
+import com.yonyou.iuap.baseservice.bpm.service.GenericBpmService;
 import com.yonyou.iuap.bpm.web.IBPMBusinessProcessController;
 import com.yonyou.iuap.mvc.constants.RequestStatusEnum;
 import com.yonyou.iuap.mvc.type.JsonResponse;
@@ -112,10 +112,10 @@ public abstract class GenericBpmController<T extends BpmModel> extends BaseContr
 	}
 
 	/************************************************************/
-	private GenericService<T> service;
+	private GenericBpmService<T> service;
 
-	public void setGenericService(GenericService<T> genericService) {
-		this.service = genericService;
+	public void setService(GenericBpmService<T> service) {
+		this.service = service;
 	}
-	
+
 }
