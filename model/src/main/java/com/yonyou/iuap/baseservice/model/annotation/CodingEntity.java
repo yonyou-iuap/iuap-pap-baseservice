@@ -1,0 +1,21 @@
+package com.yonyou.iuap.baseservice.model.annotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/**
+ * 说明：编码规则实体Annotation
+ * @author houlf
+ * 2018年6月13日
+ */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+public @interface CodingEntity {
+
+	public String codingField() default "";
+
+}

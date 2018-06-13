@@ -15,6 +15,7 @@ import com.yonyou.iuap.baseservice.model.Model;
  * @author houlf
  * 2018年6月12日
  */
+@SuppressWarnings("all")
 public class EntityUtil {
 
     public static Table getTable(Class<?> clazz) {  
@@ -55,6 +56,5 @@ public class EntityUtil {
             recursiveFields(superClazz, allFields);
     	}
     }
-	
 
 }

@@ -12,9 +12,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import com.alibaba.fastjson.JSON;
-import com.yonyou.iuap.baseservice.model.LogicDel;
 import com.yonyou.iuap.baseservice.model.Model;
+import com.yonyou.iuap.baseservice.model.annotation.CodingEntity;
 import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericMapper;
+import com.yonyou.iuap.baseservice.service.util.CodingUtil;
 import com.yonyou.iuap.context.InvocationInfoProxy;
 import com.yonyou.iuap.mvc.type.SearchParams;
 
@@ -132,9 +133,8 @@ public class GenericService<T extends Model>{
 			entity.setLastModified(new Date());
 			entity.setLastModifyUser(InvocationInfoProxy.getUserid());
 			
-			if(entity instanceof LogicDel) {
-				((LogicDel)entity).setDr(0);
-				((LogicDel)entity).setTs(new Date());
+			if(entity.getClass().getAnnotation(CodingEntity.class)!=null) {
+				CodingUtil.inst().buildCoding(entity);		//按编码规则设置编码
 			}
 			
 			this.genericMapper.insert(entity);
