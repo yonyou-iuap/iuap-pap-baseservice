@@ -7,7 +7,7 @@ import java.util.Date;
  * @author houlf
  * 2018年6月12日
  */
-public interface DeleteModel extends Model{
+public interface LogicDelete {
 
 	public Integer getDr();
 
