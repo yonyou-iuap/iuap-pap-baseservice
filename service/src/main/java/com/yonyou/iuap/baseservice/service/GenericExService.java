@@ -50,6 +50,11 @@ public class GenericExService<T extends Model & LogicDel> extends GenericService
 		}
 	}
 	
+	/**
+	 * 逻辑删除
+	 * @param entity
+	 * @return
+	 */
 	public int update4LogicDel(T entity) {
 		if(entity != null) {
 			entity.setDr(1);
@@ -67,13 +72,23 @@ public class GenericExService<T extends Model & LogicDel> extends GenericService
 	}
 
 	/**
-	 * 删除数据
+	 * 覆盖父方法，调整为逻辑删除
 	 * @param entity
 	 * @return
 	 */
 	@Override
 	public int delete(T entity) {
 		return this.update4LogicDel(entity);
+	}
+
+	/**
+	 * 覆盖父方法，调整为逻辑删除
+	 * @param id
+	 */
+	@Override
+	public int delete(String id) {
+		T entity = this.findById(id);
+		return this.delete(entity);
 	}
 	
 	/***************************************************/
