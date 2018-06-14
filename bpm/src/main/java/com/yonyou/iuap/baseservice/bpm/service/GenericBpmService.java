@@ -81,7 +81,17 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 	 */
 	public void doReject(String id) {
 		T entity = this.findById(id);
-		entity.setBpmState(0);
+		entity.setBpmState(BpmExUtil.BPM_STATE_NOTSTART);
+		this.save(entity);
+	}
+	
+	/**
+	 * 终止：更新流程状态——人工终止
+	 * @param id
+	 */
+	public void doTermination(String id) {
+		T entity = this.findById(id);
+		entity.setBpmState(BpmExUtil.BPM_STATE_ABEND);
 		this.save(entity);
 	}
 	

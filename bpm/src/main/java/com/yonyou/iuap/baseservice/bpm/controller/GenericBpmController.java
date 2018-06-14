@@ -55,9 +55,9 @@ public abstract class GenericBpmController<T extends BpmModel> extends GenericEx
 				Object busiId = ((Map)bpmNode).get("businessKey");
 				Object endTime = ((Map)bpmNode).get("endTime");
 				if(endTime != null) {
-					this.service.doApprove(busiId.toString(), 3);			//已办结
+					this.service.doApprove(busiId.toString(), BpmExUtil.BPM_STATE_FINISH);	//已完成
 				}else {
-					this.service.doApprove(busiId.toString(), 2);			//审批中
+					this.service.doApprove(busiId.toString(), BpmExUtil.BPM_STATE_RUNNING);	//审批中
 				}
 			}
 		}else {
@@ -80,7 +80,6 @@ public abstract class GenericBpmController<T extends BpmModel> extends GenericEx
 
 	public JsonResponse doTerminationAction(@RequestBody Map<String, Object> params) 
 			throws Exception {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	
