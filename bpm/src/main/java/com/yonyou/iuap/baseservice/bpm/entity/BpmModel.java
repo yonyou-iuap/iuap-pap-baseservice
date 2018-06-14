@@ -10,8 +10,8 @@ import com.yonyou.iuap.baseservice.entity.Model;
  */
 public interface BpmModel extends Model, LogicDel{
 
-	public String getFlowState();
+	public Integer getBpmState();
 	
-	public void setFlowState(String flowState);
+	public void setBpmState(Integer bpmState);
 	
 }
