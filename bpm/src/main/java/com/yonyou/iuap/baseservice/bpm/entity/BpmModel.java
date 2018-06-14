@@ -14,4 +14,6 @@ public interface BpmModel extends Model, LogicDel{
 	
 	public void setBpmState(Integer bpmState);
 	
+	public String getBpmBillCode();
+	
 }

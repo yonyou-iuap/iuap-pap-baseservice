@@ -54,18 +54,18 @@ public class CodingUtil {
 		}
 		if(codingField != null) {
 			CodingField annatation = codingField.getAnnotation(CodingField.class);
-			String code = CodingUtil.inst().getCode(annatation.code(), entity);
+			String code = CodingUtil.inst().genCode(annatation.code(), entity);
 			ReflectUtil.setFieldValue(entity, codingField, code);
 		}
 	}
-
+	
 	/**
 	 * 生成编码
 	 * @param billObjCode
 	 * @param entity
 	 * @return
 	 */
-    public String getCode(String billObjCode, Object entity){
+    public String genCode(String billObjCode, Object entity){
     	String billVo = JSONObject.toJSONString(entity);
         Map<String,String> data = new HashMap<String,String>();
         data.put("billObjCode",billObjCode);

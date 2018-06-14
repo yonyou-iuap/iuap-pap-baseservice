@@ -10,10 +10,10 @@ import com.yonyou.iuap.baseservice.entity.AbsDrModel;
  * @author houlf
  * 2018年6月12日
  */
-public class AbsBpmModel extends AbsDrModel implements BpmModel{
+public abstract class AbsBpmModel extends AbsDrModel implements BpmModel{
 
 	@Column(name="bpm_state")
-	protected Integer bpmState;			//流程状态：0-未启动，1：流程中，2：已完结
+	protected Integer bpmState;			//流程状态：参考BpmExUtil
 
 	public Integer getBpmState() {
 		return bpmState;
@@ -22,5 +22,5 @@ public class AbsBpmModel extends AbsDrModel implements BpmModel{
 	public void setBpmState(Integer bpmState) {
 		this.bpmState = bpmState;
 	}
-
+	
 }

@@ -24,6 +24,7 @@ import com.yonyou.iuap.persistence.vo.pub.BusinessException;
 
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.util.ReflectUtil;
+import cn.hutool.core.util.StrUtil;
 import yonyou.bpm.rest.request.RestVariable;
 
 /**
@@ -107,10 +108,10 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 			BPMFormJSON bpmForm = new BPMFormJSON();
 			bpmForm.setProcessDefinitionKey(processDefineCode);						// 流程定义编码
 			bpmForm.setProcessInstanceName(this.getProcessInstance(entity));		// 流程实例名称
-			bpmForm.setTitle(this.getTitle(entity));								// 流程标题
 			bpmForm.setFormId(entity.getId());										// 单据id
-			bpmForm.setBillNo(entity.getId());										// 单据号
+			bpmForm.setBillNo(this.getBpmBillCode(entity));							// 单据号
 			bpmForm.setBillMarker(InvocationInfoProxy.getUserid());					// 制单人
+			bpmForm.setTitle(this.getTitle(entity));								// 流程标题
 			String orgId = "";														// usercxt.getSysUser().getOrgId() ;				
 			bpmForm.setOrgId(orgId);												// 组织
 			bpmForm.setFormUrl(this.getBpmFormUrl(entity));							// 单据url
@@ -123,7 +124,11 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 		}
 	}
 	
-	
+	/**
+	 * 构建其他变量，用于提交至流程系统
+	 * @param entity
+	 * @return
+	 */
 	protected List<RestVariable> buildOtherVariables(T entity) {
 		Field[] fields = ReflectUtil.getFields(entity.getClass());
 		List<RestVariable> variables = new ArrayList<RestVariable>();
@@ -148,20 +153,61 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 		return variables;
 	}
 	
+	/**
+	 * 获取单据编号
+	 * @param entity
+	 * @return
+	 */
+	public String getBpmBillCode(T entity) {
+		if(StrUtil.isBlank(entity.getBpmBillCode())) {
+			return entity.getId();
+		}else {
+			return entity.getBpmBillCode();
+		}
+	}
+	
+	/**
+	 * 获取流程说明Title
+	 * @param entity
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 */
 	public String getTitle(T entity) throws UnsupportedEncodingException {
 		String userName = InvocationInfoProxy.getUsername();
 		userName = URLDecoder.decode(userName,"utf-8");
-		return "流程["+entity.getClass().getSimpleName()+"]，提交人:"+userName;
+		return "流程[" + entity.getClass().getSimpleName() + "], 单据号：" + entity.getBpmBillCode()
+					+"，提交人:"+userName;
 	}
 	
+	/**
+	 * 获取流程实例
+	 * @param entity
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 */
 	public String getProcessInstance(T entity) throws UnsupportedEncodingException {
 		return this.getTitle(entity);
 	}
 	
+	/**
+	 * 获取流程NodeKey
+	 * @param entity
+	 * @return
+	 */
 	public abstract String getNodeKey(T entity);
 	
+	/**
+	 * 获取单据URL
+	 * @param entity
+	 * @return
+	 */
 	public abstract String getBpmFormUrl(T entity);
 	
+	/**
+	 * 获取流程回调URL：应用Controller RequestMapping
+	 * @param entity
+	 * @return
+	 */
 	public abstract String getBpmCallBackUrl(T entity);
 	
 	
