@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.http.client.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -127,10 +128,11 @@ public class GenericService<T extends Model>{
 	 */
 	public T insert(T entity) {
 		if(entity != null) {
+			String now = DateUtils.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss SSS");
 			entity.setId(UUID.randomUUID().toString());
-			entity.setCreateTime(new Date());
+			entity.setCreateTime(now);
 			entity.setCreateUser(InvocationInfoProxy.getUserid());
-			entity.setLastModified(new Date());
+			entity.setLastModified(now);
 			entity.setLastModifyUser(InvocationInfoProxy.getUserid());
 			
 			if(entity.getClass().getAnnotation(CodingEntity.class)!=null) {
@@ -152,7 +154,8 @@ public class GenericService<T extends Model>{
 	 */
 	public T update(T entity) {
 		if(entity!=null) {
-			entity.setLastModified(new Date());
+			String now = DateUtils.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss SSS");
+			entity.setLastModified(now);
 			entity.setLastModifyUser(InvocationInfoProxy.getUserid());
 
 			int count = genericMapper.update(entity);
@@ -196,8 +199,6 @@ public class GenericService<T extends Model>{
 	public int delete(String id) {
 		Map<String,Object> data = new HashMap<String,Object>();
 		data.put("id", id);
-		data.put("dr", 1);
-		
 		int count = this.genericMapper.delete(data);
 		if(count == 1) {
 			return count;

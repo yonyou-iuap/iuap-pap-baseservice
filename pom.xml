@@ -96,5 +96,6 @@
 		<module>controller</module>
 		<module>entity</module>
     	<module>bpm</module>
-	</modules>
+    <module>iuap-mybatis-maven-plugin</module>
+  </modules>
 </project>

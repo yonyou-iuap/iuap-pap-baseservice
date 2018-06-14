@@ -1,7 +1,5 @@
 package com.yonyou.iuap.baseservice.service;
 
-import java.util.Date;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,6 +7,7 @@ import com.alibaba.fastjson.JSON;
 import com.yonyou.iuap.baseservice.entity.LogicDel;
 import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericExMapper;
+import com.yonyou.iuap.persistence.vo.pub.BusinessException;
 
 /**
  * 说明：基础Service扩展——支持逻辑删除
@@ -26,11 +25,10 @@ public class GenericExService<T extends Model & LogicDel> extends GenericService
 	 */
 	public T insert(T entity) {
 		if(entity != null) {
-			entity.setDr(0);
-			entity.setTs(new Date());
+			entity.setDr(LogicDel.NORMAL);
 			return super.insert(entity);
 		}else {
-			throw new RuntimeException("新增保存数据出错，对象为空!");
+			throw new BusinessException("新增保存数据出错，对象为空!");
 		}
 	}
 
@@ -42,11 +40,10 @@ public class GenericExService<T extends Model & LogicDel> extends GenericService
 	@Override
 	public T update(T entity) {
 		if(entity != null) {
-			entity.setDr(0);
-			entity.setTs(new Date());
+			entity.setDr(LogicDel.NORMAL);
 			return super.update(entity);
 		}else {
-			throw new RuntimeException("更新保存数据出错，对象为空!");
+			throw new BusinessException("更新保存数据出错，对象为空!");
 		}
 	}
 	
@@ -57,17 +54,16 @@ public class GenericExService<T extends Model & LogicDel> extends GenericService
 	 */
 	public int update4LogicDel(T entity) {
 		if(entity != null) {
-			entity.setDr(1);
-			entity.setTs(new Date());
+			entity.setDr(LogicDel.DELETED);
 			int count = this.genericMapperEx.update(entity);
 			if(count == 1) {
 				return count;
 			}else {
 				log.error("删除数据出错,记录数="+count+"\r\n"+JSON.toJSONString(entity));
-				throw new RuntimeException();
+				throw new BusinessException();
 			}
 		}else {
-			throw new RuntimeException();
+			throw new BusinessException();
 		}
 	}
 

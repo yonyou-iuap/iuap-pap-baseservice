@@ -1,7 +1,5 @@
 package com.yonyou.iuap.baseservice.entity;
 
-import java.util.Date;
-
 /**
  * 说明：基础Model接口
  * @author houlf
@@ -13,24 +11,24 @@ public interface Model {
 	
 	public void setId(String id);
 	
-	public Integer getVersion();
+	public String getCreateTime();
 	
-	public void setVersion(Integer version);
-	
-	public Date getCreateTime();
-	
-	public void setCreateTime(Date createTime);
+	public void setCreateTime(String createTime);
 	
 	public String getCreateUser();
 	
 	public void setCreateUser(String createUser);
 	
-	public Date getLastModified();
+	public String getLastModified();
 	
-	public void setLastModified(Date lastModified);
+	public void setLastModified(String lastModified);
 	
 	public String getLastModifyUser();
 	
 	public void setLastModifyUser(String lastModifyUser);
+	
+	public String getTs();
+	
+	public void setTs(String ts);
 
 }
