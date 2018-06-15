@@ -1,6 +1,22 @@
 package com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter;
 
-public class AutoMapperFactory {
+import java.lang.reflect.Method;
 
+import org.apache.ibatis.mapping.SqlCommandType;
+import com.yonyou.iuap.baseservice.persistence.mybatis.ext.support.Dialect;
+
+public interface AutoMapperFactory {
+
+	public Dialect getDialect();
+	
+	public SqlTemplate getSqlTempalte(SqlCommandType sqlType);
+	
+	public String parseSQL4Insert(Method method);
+
+	public String parseSQL4Update(Method method);
+
+	public String parseSQL4Delete(Method method);
+
+	public String parseSQL4Select(Method method);
 
 }

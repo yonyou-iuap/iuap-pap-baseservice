@@ -2,14 +2,15 @@ package com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.mysql;
 
 import java.lang.reflect.Method;
 
+import org.apache.ibatis.mapping.SqlCommandType;
+
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.SqlTemplate;
-import com.yonyou.iuap.baseservice.persistence.mybatis.ext.support.SQLType;
 
 public class MysqlQueryTemplate implements SqlTemplate{
 
 	@Override
-	public SQLType getSQLType() {
-		return SQLType.QUERY;
+	public SqlCommandType getSQLType() {
+		return SqlCommandType.SELECT;
 	}
 
 	@Override

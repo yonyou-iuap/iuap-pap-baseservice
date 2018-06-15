@@ -2,11 +2,11 @@ package com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter;
 
 import java.lang.reflect.Method;
 
-import com.yonyou.iuap.baseservice.persistence.mybatis.ext.support.SQLType;
+import org.apache.ibatis.mapping.SqlCommandType;
 
 public interface SqlTemplate {
 	
-	public SQLType getSQLType();
+	public SqlCommandType getSQLType();
 
 	public String parseSQL(Method method);
 

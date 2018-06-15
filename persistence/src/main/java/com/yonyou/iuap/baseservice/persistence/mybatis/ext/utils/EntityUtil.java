@@ -17,7 +17,11 @@ import com.yonyou.iuap.baseservice.entity.Model;
  */
 @SuppressWarnings("all")
 public class EntityUtil {
-
+	
+	public static String getTableName(Class<?> clazz) {
+		return getTable(clazz).name();
+	}
+	
     public static Table getTable(Class<?> clazz) {  
         Table table = clazz.getAnnotation(Table.class);  
         if (table != null) {
