@@ -5,10 +5,10 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.DeleteProvider;
 import org.apache.ibatis.annotations.InsertProvider;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.UpdateProvider;
 import org.apache.ibatis.mapping.SqlCommandType;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.repository.query.Param;
 
 import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.annotation.MethodMapper;
@@ -31,15 +31,15 @@ public interface GenericMapper<T extends Model> {
 	public List<Map<String,Object>> queryListByMap(@Param("condition")Map<String,Object> params);
 
 	@MethodMapper(type=SqlCommandType.INSERT)
-    @InsertProvider(type=SqlProvider.class, method="insert")  
+    //@InsertProvider(type=SqlProvider.class, method="insert")  
     public int insert(T entity);
 	
 	@MethodMapper(type=SqlCommandType.UPDATE)
-	@UpdateProvider(type=SqlProvider.class, method="update")  
+	//@UpdateProvider(type=SqlProvider.class, method="update")  
 	public int update(T entity);
 
 	@MethodMapper(type=SqlCommandType.DELETE)
-    @DeleteProvider(type=SqlProvider.class, method="delete")  
+	//@DeleteProvider(type=SqlProvider.class, method="delete")  
 	public int delete(@Param("condition")Map<String,Object> params);
 
 }
