@@ -1,4 +1,4 @@
-package com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.mysql;
+package com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.oracle;
 
 import java.lang.reflect.Method;
 
@@ -10,9 +10,9 @@ import com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.SqlTemplate;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.support.Dialect;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.EntityUtil;
 
-public class MysqlDeleteTemplate implements SqlTemplate{
+public class OracleDeleteTemplate implements SqlTemplate{
 	
-	private Logger log = LoggerFactory.getLogger(MysqlDeleteTemplate.class);
+	private Logger log = LoggerFactory.getLogger(OracleDeleteTemplate.class);
 
 	@Override
 	public Dialect getDialect() {

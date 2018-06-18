@@ -1,13 +1,13 @@
-package com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.mysql;
+package com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.oracle;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import javax.persistence.Column;
-
 import org.apache.ibatis.mapping.SqlCommandType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.SqlTemplate;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.exception.MapperException;
@@ -18,56 +18,57 @@ import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.FieldUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 
-public class MysqlUpdateTemplate implements SqlTemplate{
+/**
+ * 说明：
+ * @author Aton
+ * 2018年6月19日
+ */
+public class OracleInsertTemplate implements SqlTemplate{
 	
-	private Logger log = LoggerFactory.getLogger(MysqlUpdateTemplate.class);
+	private Logger log = LoggerFactory.getLogger(OracleInsertTemplate.class);
 
 	@Override
 	public Dialect getDialect() {
 		return Dialect.mysql;
 	}
 	
-	@Override
 	public SqlCommandType getSQLType() {
-		return SqlCommandType.UPDATE;
+		return SqlCommandType.INSERT;
 	}
-
+	
 	@Override
 	public String parseSQL(Method method, Class<?> entityClazz) {
+		StringBuilder columnSql = new StringBuilder();
+		StringBuilder valuesSql = new StringBuilder();
 		boolean isFirst = true;
-		StringBuilder updateSql = new StringBuilder("UPDATE ").append(EntityUtil.getTableName(entityClazz))
-											.append("\r\n SET ");
 		for(Field field : ReflectUtil.getFields(entityClazz)) {
-			if(FieldUtil.updateable(field)) {
+			if(FieldUtil.insertable(field)) {
             	if(!isFirst) {
-            		updateSql.append(",\r\n");
+            		columnSql.append(", ");
+            		valuesSql.append(", ");
             	}
-            	this.build(field, updateSql);
+            	this.build(field, columnSql, valuesSql);
                	isFirst = false;
 			}
 		}
 		if(!isFirst) {
-			return updateSql.append(this.buildWhere()).toString();
+			return new StringBuilder("INSERT INTO ").append(EntityUtil.getTableName(entityClazz))
+								.append(" (").append(columnSql).append(") VALUES (")
+								.append(valuesSql).append(")").toString();
 		}else {
 			throw new MapperException();
 		}
 	}
 	
-	private void build(Field field, StringBuilder updateSql) {
+	private void build(Field field, StringBuilder columnSql, StringBuilder valuesSql) {
         Column column = field.getAnnotation(Column.class);
         if (column==null || StrUtil.isEmpty(column.name())) {			//补充内容,比如驼峰规则
-            updateSql.append(FieldUtil.getColumnName(field));
-            updateSql.append("=#{").append(field.getName()).append("}");
+            columnSql.append(FieldUtil.getColumnName(field));
+            valuesSql.append("#{").append(field.getName()).append("}");
         }else {
-            updateSql.append(column.name());
-            updateSql.append("=#{").append(field.getName()).append("}");
+            columnSql.append(column.name());
+            valuesSql.append("#{").append(field.getName()).append("}");
         }
-	}
-	
-	private String buildWhere(){
-		StringBuffer where = new StringBuffer();
-		where.append("\r\n WHERE id=#{id} and ts=#{ts}");
-		return where.toString();
 	}
 
 }

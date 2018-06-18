@@ -9,9 +9,8 @@ import org.apache.ibatis.session.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.DefaultStatementBuilder;
+import com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.DefaultMapperBuilder;
 import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericMapper;
-import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.ClassUtil;
 
 public class AutoMapperScanner {
@@ -31,7 +30,7 @@ public class AutoMapperScanner {
 			Set<Class<?>> clazzSet = ClassUtil.scanPackageBySuper(basePackage, GenericMapper.class);
 			Iterator<Class<?>> itor = clazzSet.iterator();
 			while(itor.hasNext()) {
-				this.parseStatement(itor.next(), configuration);
+				this.parseMapper(itor.next(), configuration);
 			}
 		}
 		//parsePendingMethods();
@@ -42,7 +41,7 @@ public class AutoMapperScanner {
 	 * @param clazz
 	 * @param configuration
 	 */
-	private void parseStatement(Class<?> clazz, Configuration configuration) {
+	private void parseMapper(Class<?> clazz, Configuration configuration) {
 		if (!configuration.isResourceLoaded(clazz.getName())){
 			configuration.addLoadedResource(clazz.getName());
 			log.debug("开始解析Mapper:"+clazz.getName());
@@ -50,15 +49,8 @@ public class AutoMapperScanner {
 			log.warn("Mapper已存在，skipped...."+clazz.getName());
 		}
 		
-		DefaultStatementBuilder statementBuilder = new DefaultStatementBuilder(configuration);
-		
-		Method[] methods = ReflectUtil.getMethods(clazz);
-		for(Method curMethod : methods) {
-			MappedStatement statement = statementBuilder.parseStatement(curMethod);
-			if(statement != null) {
-				configuration.addMappedStatement(statement);
-			}
-		}
+		DefaultMapperBuilder statementBuilder = DefaultMapperBuilder.instance(configuration);
+		statementBuilder.parseMapper(clazz);
 	}
 	
 	/******************************************/

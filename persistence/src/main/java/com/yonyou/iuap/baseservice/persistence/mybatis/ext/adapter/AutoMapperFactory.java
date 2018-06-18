@@ -8,15 +8,15 @@ import com.yonyou.iuap.baseservice.persistence.mybatis.ext.support.Dialect;
 public interface AutoMapperFactory {
 
 	public Dialect getDialect();
-	
+
 	public SqlTemplate getSqlTempalte(SqlCommandType sqlType);
 	
-	public String parseSQL4Insert(Method method);
+	public String parseSQL4Insert(Method method, Class<?> entityClazz);
 
-	public String parseSQL4Update(Method method);
+	public String parseSQL4Update(Method method, Class<?> entityClazz);
 
-	public String parseSQL4Delete(Method method);
+	public String parseSQL4Delete(Method method, Class<?> entityClazz);
 
-	public String parseSQL4Select(Method method);
+	public String parseSQL4Select(Method method, Class<?> entityClazz);
 
 }

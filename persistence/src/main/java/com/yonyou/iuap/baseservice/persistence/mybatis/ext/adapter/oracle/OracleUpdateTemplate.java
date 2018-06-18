@@ -1,4 +1,4 @@
-package com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.mysql;
+package com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.oracle;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -18,9 +18,9 @@ import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.FieldUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 
-public class MysqlUpdateTemplate implements SqlTemplate{
+public class OracleUpdateTemplate implements SqlTemplate{
 	
-	private Logger log = LoggerFactory.getLogger(MysqlUpdateTemplate.class);
+	private Logger log = LoggerFactory.getLogger(OracleUpdateTemplate.class);
 
 	@Override
 	public Dialect getDialect() {

@@ -1,4 +1,4 @@
-package com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.mysql;
+package com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.oracle;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -14,22 +14,22 @@ import com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.AutoMapperFac
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.SqlTemplate;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.support.Dialect;
 
-public class MysqlMapperFactory implements AutoMapperFactory{
+public class OracleMapperFactory implements AutoMapperFactory{
 	
-	private Logger log = LoggerFactory.getLogger(MysqlMapperFactory.class);
+	private Logger log = LoggerFactory.getLogger(OracleMapperFactory.class);
 	
 	private Integer isInit = new Integer(0);
 	private ReadWriteLock LOCK = new ReentrantReadWriteLock();
 	
 	private Map<SqlCommandType, SqlTemplate> sqlTemplateMap = new HashMap<SqlCommandType, SqlTemplate>();
 	
-	public MysqlMapperFactory() {}
+	public OracleMapperFactory() {}
 	
 	public void initSqlTemplate() {
-		SqlTemplate deleteTemplate = new MysqlDeleteTemplate();
-		SqlTemplate updateTemplate = new MysqlUpdateTemplate();
-		SqlTemplate insertTemplate = new MysqlInsertTemplate();
-		SqlTemplate selectTemplate = new MysqlSelectTemplate();
+		SqlTemplate deleteTemplate = new OracleDeleteTemplate();
+		SqlTemplate updateTemplate = new OracleUpdateTemplate();
+		SqlTemplate insertTemplate = new OracleInsertTemplate();
+		SqlTemplate selectTemplate = new OracleSelectTemplate();
 		sqlTemplateMap.put(deleteTemplate.getSQLType(), deleteTemplate);
 		sqlTemplateMap.put(updateTemplate.getSQLType(), updateTemplate);
 		sqlTemplateMap.put(insertTemplate.getSQLType(), insertTemplate);
