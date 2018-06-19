@@ -1,6 +1,7 @@
 package com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter;
 
 import java.lang.reflect.Method;
+import java.util.ServiceLoader;
 
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.MappedStatement.Builder;
@@ -12,9 +13,9 @@ import org.apache.ibatis.session.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.mysql.MysqlMapperFactory;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.annotation.MethodMapper;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.MapperUtil;
+import com.yonyou.iuap.utils.PropertyUtil;
 
 import cn.hutool.core.util.StrUtil;
 
@@ -34,8 +35,8 @@ public class DefaultMapperBuilder implements MapperBuilder{
 			synchronized(isInit) {
 				if(isInit==0) {
 					mapperBuilder = new DefaultMapperBuilder();
-					mapperBuilder.configuration = configuration;
-					mapperBuilder.mapperFactory = new MysqlMapperFactory();
+					mapperBuilder.setConfiguration(configuration);
+					mapperBuilder.createMapperFactory();
 					isInit = 1;
 				}
 			}
@@ -98,6 +99,26 @@ public class DefaultMapperBuilder implements MapperBuilder{
 	private String getResource(Method method) {
 		Class<?> mapper = method.getDeclaringClass();
 		return mapper.getName().replaceAll(".", "/") + ".java";
+	}
+	
+	public void setConfiguration(Configuration configuration) {
+		this.configuration = configuration;
+	}
+
+	private AutoMapperFactory createMapperFactory() {
+		String jdbcType = PropertyUtil.getPropertyByKey("jdbc.type");
+		if(StrUtil.isBlankIfStr(jdbcType)) {
+			log.error("无效的jdbc.type:"+jdbcType);
+			throw new RuntimeException("无效的jdbc.type:"+jdbcType);
+		}
+		ServiceLoader<AutoMapperFactory> serviceloader = ServiceLoader.load(AutoMapperFactory.class);
+		for(AutoMapperFactory mapperFactory: serviceloader) {
+			if(mapperFactory.getDialect().getType().equalsIgnoreCase(jdbcType)) {
+				this.mapperFactory = mapperFactory;
+				return this.mapperFactory;
+			}
+		}
+		return null;
 	}
 	
 }

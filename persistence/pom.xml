@@ -37,6 +37,12 @@
 		</dependency>
 		
 		<dependency>
+			<groupId>com.yonyou.iuap</groupId>
+			<artifactId>iuap-utils</artifactId>
+			<version>${iuap.module.version}</version>
+		</dependency>
+		
+		<dependency>
 		    <groupId>org.springframework</groupId>
 		    <artifactId>spring-core</artifactId>
 		    <version>4.0.5.RELEASE</version>

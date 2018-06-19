@@ -1,13 +1,10 @@
 package com.yonyou.iuap.baseservice.persistence.mybatis.ext;
 
-import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Set;
-
-import org.apache.ibatis.mapping.MappedStatement;
-import org.apache.ibatis.session.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.ibatis.session.Configuration;
 
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.DefaultMapperBuilder;
 import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericMapper;
