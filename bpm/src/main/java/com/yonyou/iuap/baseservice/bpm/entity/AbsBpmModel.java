@@ -14,6 +14,41 @@ public abstract class AbsBpmModel extends AbsDrModel implements BpmModel{
 
 	@Column(name="bpm_state")
 	protected Integer bpmState;			//流程状态：参考BpmExUtil
+	@Column(name="bpm_task_key")
+	protected String taskKey;			//流程及节点定义：例如ApproveUserTask
+	@Column(name="bpm_taskid")
+	protected String taskId;			//流程当前环节任务id
+	@Column(name="bpm_process_instance")
+	protected String processInstanceId;	//流程实例id
+	@Column(name="bpm_process_define")
+	protected String processDefineCode;	//流程定义id
+
+
+	public String getTaskKey() {
+		return taskKey;
+	}
+
+	public void setTaskKey(String taskKey) {
+		this.taskKey = taskKey;
+	}
+
+	@Override
+	public String getTaskId() {
+		return taskId;
+	}
+
+	public void setTaskId(String taskId) {
+		this.taskId = taskId;
+	}
+
+	@Override
+	public String getProcessInstanceId() {
+		return processInstanceId;
+	}
+
+	public void setProcessInstanceId(String processInstanceId) {
+		this.processInstanceId = processInstanceId;
+	}
 
 	public Integer getBpmState() {
 		return bpmState;
@@ -22,5 +57,11 @@ public abstract class AbsBpmModel extends AbsDrModel implements BpmModel{
 	public void setBpmState(Integer bpmState) {
 		this.bpmState = bpmState;
 	}
-	
+
+	public String getProcessDefineCode() {
+		return processDefineCode;
+	}
+	public void setProcessDefineCode(String processDefineCode) {
+		this.processDefineCode = processDefineCode;
+	}
 }
