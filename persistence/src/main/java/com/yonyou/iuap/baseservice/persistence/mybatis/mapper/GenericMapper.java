@@ -24,10 +24,13 @@ import com.yonyou.iuap.mybatis.type.PageResult;
  */
 public interface GenericMapper<T extends Model> {
 
+	@MethodMapper(type=SqlCommandType.SELECT)
 	public PageResult<T> selectAllByPage(@Param("page") PageRequest pageRequest, @Param("condition") SearchParams searchParams);
 	
+	@MethodMapper(type=SqlCommandType.SELECT)
 	public List<T> queryList(@Param("condition")Map<String,Object> params);
 
+	@MethodMapper(type=SqlCommandType.SELECT)
 	public List<Map<String,Object>> queryListByMap(@Param("condition")Map<String,Object> params);
 
 	@MethodMapper(type=SqlCommandType.INSERT)

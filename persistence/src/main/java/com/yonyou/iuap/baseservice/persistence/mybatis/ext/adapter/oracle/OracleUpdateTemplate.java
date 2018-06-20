@@ -24,7 +24,7 @@ public class OracleUpdateTemplate implements SqlTemplate{
 
 	@Override
 	public Dialect getDialect() {
-		return Dialect.mysql;
+		return Dialect.oracle;
 	}
 	
 	@Override
@@ -49,7 +49,7 @@ public class OracleUpdateTemplate implements SqlTemplate{
 		if(!isFirst) {
 			return updateSql.append(this.buildWhere()).toString();
 		}else {
-			throw new MapperException();
+			throw new MapperException("");
 		}
 	}
 	

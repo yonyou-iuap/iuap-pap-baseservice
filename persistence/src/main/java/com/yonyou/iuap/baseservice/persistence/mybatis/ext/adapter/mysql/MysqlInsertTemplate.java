@@ -56,7 +56,7 @@ public class MysqlInsertTemplate implements SqlTemplate{
 								.append(" (").append(columnSql).append(") VALUES (")
 								.append(valuesSql).append(")").toString();
 		}else {
-			throw new MapperException();
+			throw new MapperException("");
 		}
 	}
 	

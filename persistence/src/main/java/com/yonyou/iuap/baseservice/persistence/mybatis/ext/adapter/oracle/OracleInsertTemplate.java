@@ -29,7 +29,7 @@ public class OracleInsertTemplate implements SqlTemplate{
 
 	@Override
 	public Dialect getDialect() {
-		return Dialect.mysql;
+		return Dialect.oracle;
 	}
 	
 	public SqlCommandType getSQLType() {
@@ -56,7 +56,7 @@ public class OracleInsertTemplate implements SqlTemplate{
 								.append(" (").append(columnSql).append(") VALUES (")
 								.append(valuesSql).append(")").toString();
 		}else {
-			throw new MapperException();
+			throw new MapperException("");
 		}
 	}
 	

@@ -49,7 +49,7 @@ public class MysqlUpdateTemplate implements SqlTemplate{
 		if(!isFirst) {
 			return updateSql.append(this.buildWhere()).toString();
 		}else {
-			throw new MapperException();
+			throw new MapperException("");
 		}
 	}
 	

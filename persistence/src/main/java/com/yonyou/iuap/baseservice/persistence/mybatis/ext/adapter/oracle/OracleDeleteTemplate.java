@@ -16,7 +16,7 @@ public class OracleDeleteTemplate implements SqlTemplate{
 
 	@Override
 	public Dialect getDialect() {
-		return Dialect.mysql;
+		return Dialect.oracle;
 	}
 
 	@Override

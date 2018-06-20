@@ -39,7 +39,7 @@ public class OracleMapperFactory implements AutoMapperFactory{
 	
 	@Override
 	public Dialect getDialect() {
-		return Dialect.mysql;
+		return Dialect.oracle;
 	}
 
 	@Override
