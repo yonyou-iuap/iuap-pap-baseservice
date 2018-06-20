@@ -1,1 +1,2 @@
 com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.matcher.EQMatcher
+com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.matcher.GTMatcher
