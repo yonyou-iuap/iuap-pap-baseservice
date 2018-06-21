@@ -1,13 +1,18 @@
 package com.yonyou.iuap.baseservice.persistence.mybatis.ext;
 
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.apache.ibatis.binding.MapperProxy;
 import org.apache.ibatis.session.Configuration;
 
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.DefaultMapperBuilder;
 import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericMapper;
+import com.yonyou.iuap.mybatis.anotation.MyBatisRepository;
+
 import cn.hutool.core.util.ClassUtil;
 
 public class AutoMapperScanner {
@@ -24,10 +29,36 @@ public class AutoMapperScanner {
 	 */
 	public void scan(String[] basePackages, Configuration configuration) {
 		for (String basePackage : basePackages) {
-			Set<Class<?>> clazzSet = ClassUtil.scanPackageBySuper(basePackage, GenericMapper.class);
+			int pos = basePackage.indexOf("*");
+			String curPackage = basePackage.substring(0, pos-1);
+			Set<Class<?>> clazzSet = ClassUtil.scanPackageBySuper(curPackage, GenericMapper.class);
 			Iterator<Class<?>> itor = clazzSet.iterator();
 			while(itor.hasNext()) {
 				this.parseMapper(itor.next(), configuration);
+			}
+			//Set<Class<?>> clazzSet = ClassUtil.scanPackageBySuper(basePackage, GenericMapper.class);
+			//Iterator<Class<?>> itor = clazzSet.iterator();
+			//while(itor.hasNext()) {
+			//	this.parseMapper(itor.next(), configuration);
+			//}
+		}
+		//parsePendingMethods();
+	}
+	
+	/**
+	 * 扫描、解析并注册MyBatis
+	 * @param basePackages
+	 */
+	public void scanByAnnotation(ApplicationContext ctx, Configuration configuration) {
+		Map<String, Object> beans = ctx.getBeansWithAnnotation(MyBatisRepository.class);
+		Set<String> keyset =beans.keySet();
+		Iterator<String> itor = keyset.iterator();
+		while(itor.hasNext()) {
+			Object mapperBean = beans.get(itor.next());
+			if(mapperBean instanceof MapperProxy) {
+				
+			}else {
+				this.parseMapper(mapperBean.getClass(), configuration);
 			}
 		}
 		//parsePendingMethods();
@@ -39,15 +70,17 @@ public class AutoMapperScanner {
 	 * @param configuration
 	 */
 	private void parseMapper(Class<?> clazz, Configuration configuration) {
-		if (!configuration.isResourceLoaded(clazz.getName())){
-			configuration.addLoadedResource(clazz.getName());
-			log.debug("开始解析Mapper:"+clazz.getName());
-		}else {
-			log.warn("Mapper已存在，skipped...."+clazz.getName());
+		if(clazz.getAnnotation(MyBatisRepository.class)!=null) {
+			if (!configuration.isResourceLoaded(clazz.getName())){
+				configuration.addLoadedResource(clazz.getName());
+				log.debug("开始解析Mapper:"+clazz.getName());
+			}else {
+				log.warn("Mapper已存在，skipped...."+clazz.getName());
+			}
+			
+			DefaultMapperBuilder statementBuilder = DefaultMapperBuilder.instance(configuration);
+			statementBuilder.parseMapper(clazz);
 		}
-		
-		DefaultMapperBuilder statementBuilder = DefaultMapperBuilder.instance(configuration);
-		statementBuilder.parseMapper(clazz);
 	}
 	
 	/******************************************/
