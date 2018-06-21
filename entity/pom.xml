@@ -27,6 +27,23 @@
 	</dependencies>
 	
 	<build>
+		<defaultGoal>compile</defaultGoal>
+		<resources>
+			<resource>
+				<targetPath>META-INF/plexus</targetPath>
+				<filtering>false</filtering>
+				<directory>${basedir}/src/main/resources</directory>
+				<includes>
+					<include>*</include>
+				</includes>
+				<excludes>
+					<exclude>**/*.properties</exclude>  
+				</excludes>
+			</resource>
+		</resources>
+		<!-- test过程中涉及的资源文件，默认位于${basedir}/src/test/resources/目录下。这里的资源文件不会被构建到目标构件中 -->
+		<testResources>
+		</testResources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -39,7 +56,6 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		<finalName>iuap-base-service-entity</finalName><!-- 项目名 -->
 	</build>
 
 </project>
