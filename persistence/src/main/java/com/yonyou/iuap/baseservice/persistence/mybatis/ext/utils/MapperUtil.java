@@ -30,5 +30,11 @@ public class MapperUtil {
 		}
 		return null;
 	}
+	
+	
+	public static Class<?> getMethodReturnType(Method method) {
+		method.getGenericReturnType();
+		return method.getReturnType();
+	}
 
 }

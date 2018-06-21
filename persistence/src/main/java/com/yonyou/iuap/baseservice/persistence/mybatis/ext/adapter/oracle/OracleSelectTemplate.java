@@ -76,7 +76,7 @@ public class OracleSelectTemplate implements SqlTemplate{
 				}
 			}
 		}
-		return selectSql.append(whereSql).toString();
+		return "<script>"+selectSql.append(whereSql).toString()+"</script>";
 	}
 	
 	private void build(Field field, StringBuilder selectSql) {

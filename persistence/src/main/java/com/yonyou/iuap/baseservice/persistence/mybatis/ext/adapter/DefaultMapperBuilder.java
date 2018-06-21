@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.annotation.MethodMapper;
+import com.yonyou.iuap.baseservice.persistence.mybatis.ext.support.MappedStatementHelper;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.MapperUtil;
 import com.yonyou.iuap.utils.PropertyUtil;
 
@@ -66,14 +67,18 @@ public class DefaultMapperBuilder implements MapperBuilder{
 		MethodMapper methodMapper = method.getAnnotation(MethodMapper.class);
 		if(methodMapper != null) {
 			String sql = this.buildSql(method, methodMapper, entityClazz);
-			System.out.println(sql);
+			log.debug("Auto generate SQL for Mapper:" + sql);
 			if(!StrUtil.isBlank(sql)) {
 				SqlSource sqlSource = driver.createSqlSource(configuration, sql, Object.class);
 				String statementId = mapperClazz.getName() + "." + method.getName();
 				Builder builder = new Builder(configuration, statementId, sqlSource, methodMapper.type());
-				String resource = this.getResource(method);
+				//添加Result
+				MappedStatementHelper.addResultMap(builder, method, entityClazz, statementId, configuration);
+				//设置资源信息
+				String resource = MappedStatementHelper.getResource(method);
 				builder.resource(resource).lang(driver).statementType(StatementType.PREPARED);
-				return builder.build();
+				MappedStatement mappedStatement = builder.build();
+				return mappedStatement;
 			}
 		}
 		return null;
@@ -94,11 +99,6 @@ public class DefaultMapperBuilder implements MapperBuilder{
 			}
 		}
 		return null;
-	}
-	
-	private String getResource(Method method) {
-		Class<?> mapper = method.getDeclaringClass();
-		return mapper.getName().replaceAll(".", "/") + ".java";
 	}
 	
 	public void setConfiguration(Configuration configuration) {
