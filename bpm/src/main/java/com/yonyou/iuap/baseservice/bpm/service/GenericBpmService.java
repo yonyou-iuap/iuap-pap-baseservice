@@ -30,6 +30,7 @@ import yonyou.bpm.rest.response.AttachmentResponse;
 import yonyou.bpm.rest.response.CommentResponse;
 import yonyou.bpm.rest.response.historic.HistoricProcessInstanceResponse;
 import yonyou.bpm.rest.response.historic.HistoricTaskInstanceResponse;
+import yonyou.bpm.rest.response.runtime.task.TaskActionResponse;
 import yonyou.bpm.rest.utils.BaseUtils;
 
 import java.io.ByteArrayInputStream;
@@ -46,8 +47,8 @@ import java.util.List;
  * @author houlf
  * 2018年6月12日
  * 之前版本主要依赖了eiap-plus-common中的BPMSubmitBasicService,可用的方法比较少
- * 后发现在ubpm-modules模块内的example_iuap_bpm、bpm_quickstart等模块中设计了
- * @Refer ProcessService，提供了全面的方法调用，本版本主要参考之
+ * 后改为参照在ubpm-modules内的example_iuap_bpm、bpm_quickstart等采用的
+ * @See ProcessService，该Service提供了全面的方法调用，本版本主要参考之
  * @modified by Leon  2018-6-19
 
  */
@@ -62,6 +63,11 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 	@Value("${bpmrest.token}")
 	private String token;
 
+	/**
+	 * 几套基本服务的实例化工厂
+	 * @param userId
+	 * @return
+	 */
 	protected BpmRest bpmRestServices(String userId) {
 		if(userId==null){
 			throw new IllegalArgumentException("获取BpmRest时传入的userId["+userId+"]是空");
@@ -183,7 +189,7 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 	 * @return 是否提交成功
 	 * @throws RestException
 	 */
-	protected boolean completeTask(String userId, String taskId, boolean agreed, String auditComment)
+	protected TaskActionResponse completeTask(String userId, String taskId, boolean agreed, String auditComment)
 			throws RestException {
 		List<RestVariable> taskVariables = new ArrayList<RestVariable>();
 		RestVariable agreeVariable = new RestVariable();
@@ -193,11 +199,12 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 		taskVariables.add(agreeVariable);
 		TaskService ts = bpmRestServices(userId).getTaskService();
 		JsonNode node = (JsonNode) ts.completeWithComment(taskId, taskVariables, null, null,
-				auditComment); //TODO 这里需要从结果里拿到流程是否结束的信息,以便更新model中的流程状态
+				auditComment);
 		if (node != null) {
-			return true;
+			TaskActionResponse resp = JSONObject.parseObject(node.toString(), TaskActionResponse.class);
+			return resp;
 		} else {
-			return false;
+			return null;
 		}
 	}
 	/**
@@ -408,17 +415,17 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 
 
 
-/** =========================================================================================================================== */
+/** =================================================================================================================== */
 
 	/**
 	 * 启动工作流
 	 */
-	public Object startProcess(T entity,String processName) throws RestException{
+	public Object doStartProcess(T entity,String processName) throws RestException{
 		List<RestVariable> var = buildOtherVariables(entity);
 		try {
 			Object result = this.startProcessByKey(InvocationInfoProxy.getUserid(),entity.getProcessDefineCode(),processName,var);
 			if ( result!=null) {
-				entity.setBpmState(BpmExUtil.BPM_STATE_RUNNING);				//流程状态调整为“运行中”;
+				entity.setBpmState(BpmExUtil.BPM_STATE_START);				//流程状态调整为“已启动”;
 				this.save(entity);
 				return result;
 			}
@@ -433,13 +440,18 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 	 *
 	 * 提交工作流节点
 	 */
-	public boolean submit(T entity)  {
+	public boolean doSubmit(T entity)  {
 		try {
-			boolean isSuccess = this.completeTask(InvocationInfoProxy.getUserid(), entity.getTaskId(), true, "");
-			if ( isSuccess) {
-				entity.setBpmState(BpmExUtil.BPM_STATE_RUNNING);				//流程状态调整为“运行中”;
+			TaskActionResponse resp = this.completeTask(InvocationInfoProxy.getUserid(), entity.getTaskId(), true, "");
+			if ( resp!=null) {
+				if (resp.getHistoricProcessInstance()!=null){
+					if (resp.getHistoricProcessInstance().getEndTime()==null)
+						entity.setBpmState(BpmExUtil.BPM_STATE_RUNNING) ;//流程状态调整为“运行中”;
+					else
+						entity.setBpmState(BpmExUtil.BPM_STATE_FINISH);//流程状态调整为“已完成”;
+				}
 				this.save(entity);
-				return isSuccess;
+				return true;
 			}
 		} catch (RestException e) {
 			throw new BusinessException("提交流程实例发生错误，请联系管理员！错误原因：" + e.getMessage());
@@ -450,7 +462,7 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 	/**
 	 * 撤回工作流,或称弃审
 	 */
-	public boolean revoke(T entity) {
+	public boolean doRevoke(T entity) {
 		try {
 			boolean isSuccess = this.withdrawTask(InvocationInfoProxy.getUserid(),entity.getTaskId());
 			if ( isSuccess) {
@@ -473,11 +485,16 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 				throw new RestException("流程实例未通过BizKey绑定业务实体!");
 			}
 			T entity = this.findById(entityId);
-			boolean isSuccess = this.completeTask(InvocationInfoProxy.getUserid(), entity.getTaskId(), agreed, comment);
-			if ( isSuccess) {
-				entity.setBpmState(BpmExUtil.BPM_STATE_RUNNING);				//流程状态调整为“运行中”;
+			TaskActionResponse resp  = this.completeTask(InvocationInfoProxy.getUserid(), entity.getTaskId(), agreed, comment);
+			if ( resp!=null) {
+				if (resp.getHistoricProcessInstance()!=null){
+					if (resp.getHistoricProcessInstance().getEndTime()==null)
+						entity.setBpmState(BpmExUtil.BPM_STATE_RUNNING) ;//流程状态调整为“运行中”;
+					else
+						entity.setBpmState(BpmExUtil.BPM_STATE_FINISH);//流程状态调整为“已完成”;
+				}
 				this.save(entity);
-				return isSuccess;
+				return true;
 			}
 		} catch (RestException e) {
 			throw new BusinessException("审批流程实例发生错误，请联系管理员！错误原因：" + e.getMessage());
@@ -507,13 +524,13 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 	 * 终止：更新流程状态——人工终止
 	 * @param id
 	 */
-	public Object doSuspendProcess(String id) {
-		T entity=   this.findById(id);
+	public Object doSuspendProcess(String entityId) {
+		T entity=   this.findById(entityId);
 
 		try {
 			Object result = this.suspendProcess(InvocationInfoProxy.getUserid(),entity.getProcessInstanceId());
 			if ( result!=null) {
-				entity.setBpmState(BpmExUtil.BPM_STATE_ABEND);				//流程状态调整为“运行中”;
+				entity.setBpmState(BpmExUtil.BPM_STATE_ABEND);				//流程状态调整为“已终止”;
 				this.save(entity);
 				return result;
 			}
