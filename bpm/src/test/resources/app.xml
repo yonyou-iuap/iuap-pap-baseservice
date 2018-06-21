@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+
+
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.3.xsd"
+       default-lazy-init="true">
+
+    <description>Spring公共配置</description>
+
+    <!-- 使用annotation 自动注册bean, 并保证@Required、@Autowired的属性被注入 -->
+    <context:component-scan base-package="com.yonyou.bpm">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+        <context:exclude-filter type="annotation"
+                                expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
+    </context:component-scan>
+
+    <!-- Jpa Entity Manager 配置 -->
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter"/>
+        <property name="packagesToScan" value="uap.web.example,uap.web.poc,com.yonyou.iuap.demo"/>
+        <property name="jpaProperties">
+            <props>
+                <!-- 命名规则 My_NAME->MyName -->
+                <prop key="hibernate.ejb.naming_strategy">org.hibernate.cfg.ImprovedNamingStrategy</prop>
+                <prop key="hibernate.show_sql">true</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="hibernateJpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+        <property name="databasePlatform">
+            <bean factory-method="getDialect" class="org.springside.modules.persistence.Hibernates">
+                <constructor-arg ref="dataSource"/>
+            </bean>
+        </property>
+    </bean>
+
+    <!-- Spring Data Jpa配置 -->
+    <jpa:repositories base-package="uap.web.example,uap.web.poc,com.yonyou.iuap.demo" transaction-manager-ref="transactionManager"
+                      factory-class="org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean"
+                      entity-manager-factory-ref="entityManagerFactory"/>
+
+    <!-- Jpa 事务配置 -->
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+    </bean>
+
+    <!-- 使用annotation定义事务 -->
+    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
+
+    <!-- JSR303 Validator定义 -->
+    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+
+    <context:property-placeholder ignore-unresolvable="true" location="classpath*:/application.properties"/>
+    <!-- 数据源配置, 使用Tomcat JDBC连接池 -->
+    <bean id="dataSource" class="org.apache.tomcat.jdbc.pool.DataSource" destroy-method="close">
+        <!-- Connection Info -->
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+
+        <!-- Connection Pooling Info -->
+        <property name="maxActive" value="${jdbc.pool.maxActive}"/>
+        <property name="maxIdle" value="${jdbc.pool.maxIdle}"/>
+        <property name="minIdle" value="0"/>
+        <property name="maxWait" value="${jdbc.pool.maxWait}"/>
+        <property name="defaultAutoCommit" value="true"/>
+
+        <property name="minEvictableIdleTimeMillis" value="${jdbc.pool.minEvictableIdleTimeMillis}"/>
+        <property name="removeAbandoned" value="${jdbc.pool.removeAbandoned}"/>
+        <property name="removeAbandonedTimeout" value="${jdbc.pool.removeAbandonedTimeout}"/>
+    </bean>
+
+    <!-- 数据源配置,使用应用服务器的数据库连接池 -->
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <bean id="redisPool" class="uap.web.cache.redis.RedisPoolFactory"
+          scope="prototype" factory-method="createJedisPool">
+        <constructor-arg value="${redis.url}"/>
+    </bean>
+    <bean id="jedisTemplate" class="org.springside.modules.nosql.redis.JedisTemplate">
+        <constructor-arg ref="redisPool"></constructor-arg>
+    </bean>
+
+    <!--使用httpclient的实现，带连接池-->
+    <bean id="pollingConnectionManager" class="org.apache.http.impl.conn.PoolingHttpClientConnectionManager">
+        <!--整个连接池的并发-->
+        <property name="maxTotal" value="1000" />
+        <!--每个主机的并发-->
+        <property name="defaultMaxPerRoute" value="1000" />
+    </bean>
+
+    <bean id="httpClientBuilder" class="org.apache.http.impl.client.HttpClientBuilder" factory-method="create">
+        <property name="connectionManager" ref="pollingConnectionManager" />
+        <!--开启重试-->
+        <property name="retryHandler">
+            <bean class="org.apache.http.impl.client.DefaultHttpRequestRetryHandler">
+                <constructor-arg value="2"/>
+                <constructor-arg value="true"/>
+            </bean>
+        </property>
+        <!--默认header待验证-->
+        <property name="defaultHeaders">
+            <list>
+                <bean class="org.apache.http.message.BasicHeader">
+                    <constructor-arg value="User-Agent"/>
+                    <constructor-arg value="Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.16 Safari/537.36"/>
+                </bean>
+                <bean class="org.apache.http.message.BasicHeader">
+                    <constructor-arg value="Accept-Encoding"/>
+                    <constructor-arg value="gzip,deflate"/>
+                </bean>
+                <bean class="org.apache.http.message.BasicHeader">
+                    <constructor-arg value="Accept-Language"/>
+                    <constructor-arg value="zh-CN"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="httpClient" factory-bean="httpClientBuilder" factory-method="build" />
+
+    <bean id="clientHttpRequestFactory" class="org.springframework.http.client.HttpComponentsClientHttpRequestFactory">
+        <constructor-arg ref="httpClient"/>
+        <!--连接超时时间，毫秒-->
+        <property name="connectTimeout" value="10000"/>
+        <!--读写超时时间，毫秒-->
+        <property name="readTimeout" value="60000"/>
+    </bean>
+
+    <bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
+        <constructor-arg ref="clientHttpRequestFactory"/>
+        <property name="errorHandler">
+            <bean class="org.springframework.web.client.DefaultResponseErrorHandler"/>
+        </property>
+        <property name="messageConverters">
+            <list>
+                <bean class="org.springframework.http.converter.FormHttpMessageConverter"/>
+                <bean id="jsonConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                    <property name="supportedMediaTypes" value="application/json;charset=UTF-8"/>
+                </bean>
+                <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                    <property name="supportedMediaTypes">
+                        <list>
+                            <value>text/plain;charset=UTF-8</value>
+                        </list>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+</beans>
