@@ -23,16 +23,31 @@ import iuap.uitemplate.base.util.PropertyUtil;
  * 说明：工作流基础Controller：提供单据增删改查，以及工作流提交、撤回、以及工作流流转回调方法
  * @author Aton
  * 2018年6月13日
+ *
+ * @Modified by Leon
  */
 public abstract class GenericBpmController<T extends BpmModel> extends GenericExController<T>
 		implements IBPMBusinessProcessController {
-	
+
+
+	@RequestMapping(value = "/doStart")
+	@ResponseBody
+	public Object doStart(@RequestBody T entity, HttpServletRequest request) throws Exception {
+		try {
+			this.checkSubmit(request);
+			String proInstName=request.getParameter("proInstName");
+			this.service.doStartProcess(entity, proInstName);
+			return this.buildSuccess("流程已启动！");
+		}catch(Exception exp) {
+			return this.buildGlobalError(exp.getMessage());
+		}
+	}
 	@RequestMapping(value = "/doSubmit")
 	@ResponseBody
 	public Object doSubmit(@RequestBody T entity, HttpServletRequest request) throws Exception {
 		try {
-			String processDefineCode = this.checkSubmit(request);
-			this.service.submit(entity, processDefineCode);
+			this.checkSubmit(request);
+			this.service.doSubmit(entity);
 			return this.buildSuccess("流程已提交！");
 		}catch(Exception exp) {
 			return this.buildGlobalError(exp.getMessage());
@@ -42,45 +57,51 @@ public abstract class GenericBpmController<T extends BpmModel> extends GenericEx
 	@RequestMapping(value = "/doRevoke")
 	@ResponseBody
 	public Object doRevoke(@RequestBody T entity, HttpServletRequest request) throws Exception {
-		this.service.revoke(entity);
+		this.service.doRevoke(entity);
 		return this.buildSuccess("流程已撤回！");
 	}
 
+    @RequestMapping(value = "/doApprove")
+    @ResponseBody
 	public Object doApproveAction(@RequestBody Map<String, Object> params, HttpServletRequest request) 
 			throws Exception {
 		Object approvetype = params.get("approvetype");
+        Object comment = params.get("comment");     if (comment==null){ comment="";}
+        Object bpmNode = params.get("historicProcessInstanceNode");
+        if (bpmNode==null){
+            throw new  BusinessException("入参historicProcessInstanceNode为空");
+        }
+        String busiId =
+            ((Map)bpmNode).get("businessKey")==null ?  null:((Map)bpmNode).get("businessKey").toString();
+        JsonResponse response ;
+        boolean isSuccess ;
 		if(approvetype!=null && approvetype.toString().equals("agree")) {
-			Object bpmNode = params.get("historicProcessInstanceNode");
-			if(bpmNode != null && bpmNode instanceof Map) {
-				Object busiId = ((Map)bpmNode).get("businessKey");
-				Object endTime = ((Map)bpmNode).get("endTime");
-				if(endTime != null) {
-					this.service.doApprove(busiId.toString(), BpmExUtil.BPM_STATE_FINISH);	//已完成
-				}else {
-					this.service.doApprove(busiId.toString(), BpmExUtil.BPM_STATE_RUNNING);	//审批中
-				}
-			}
+            isSuccess=this.service.doApprove(busiId  ,true,comment.toString() );	//审批通过
 		}else {
-			Object bpmNode = params.get("historicProcessInstanceNode");
-			if(bpmNode != null && bpmNode instanceof Map) {
-				Object busiId = ((Map)bpmNode).get("businessKey");
-				this.service.doReject(busiId.toString());
-			}
+            isSuccess=this.service.doApprove(busiId,false,comment.toString() );	//审批拒绝
 		}
-		JsonResponse response = new JsonResponse();
+		if (isSuccess){
+            response=this.buildSuccess();
+        }else{
+            response=this.buildGlobalError("流程审批失败");
+        }
 		return response;
 	}
-
-	public JsonResponse doRejectMarkerBillAction(@RequestBody Map<String, Object> params) 
-			throws Exception {
-		String busiId = params.get("billId").toString();
-		this.service.doReject(busiId);
-		return new JsonResponse();
+    @RequestMapping(value = "/doRejectBill")
+    @ResponseBody
+	public JsonResponse doRejectMarkerBillAction(@RequestBody T entity,HttpServletRequest request)
+			  {
+        String comment=request.getParameter("comment");
+        Object result = this.service.doReject(entity, comment);
+		return buildSuccess(result);
 	}
+    @RequestMapping(value = "/doSuspend")
+    @ResponseBody
+	public JsonResponse doSuspendAction(@RequestBody T entity)
+			  {
+			      Object result =         this.service.doSuspendProcess(entity.getId())    ;
 
-	public JsonResponse doTerminationAction(@RequestBody Map<String, Object> params) 
-			throws Exception {
-		return null;
+		return  buildSuccess(result);
 	}
 	
 	private String checkSubmit(HttpServletRequest request) {
