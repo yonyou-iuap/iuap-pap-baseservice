@@ -10,6 +10,7 @@ import org.apache.ibatis.mapping.SqlCommandType;
 import org.springframework.data.domain.PageRequest;
 
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.SqlTemplate;
+import com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.matcher.Matcher;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.matcher.MatcherFactory;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.annotation.Condition;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.support.Dialect;
@@ -80,7 +81,8 @@ public class OracleSelectTemplate implements SqlTemplate{
 	}
 	
 	private void build(Field field, StringBuilder selectSql) {
-		selectSql.append(FieldUtil.getColumnName(field));
+		selectSql.append(FieldUtil.getColumnName(field))
+					.append(" as ").append(field.getName());
 	}
 	
 	private void buildWhere4Page(String prefix, Class<PageRequest> clazz, StringBuilder whereSql) {
@@ -102,10 +104,12 @@ public class OracleSelectTemplate implements SqlTemplate{
 		if(!StrUtil.isBlank(prefix)) {
 			whereSql.append("\r\n<if test=\"" + prefix + "!= null\">");
 		}
+		Matcher matcher = null;
 		for(Field field : ReflectUtil.getFields(entityClazz)) {
 			if(FieldUtil.isCondition(field)) {					//构建select
 				Condition condition = field.getAnnotation(Condition.class);
-				whereSql.append(MatcherFactory.getMatcher(condition.match()).buildCondition(field, prefix));
+				matcher = MatcherFactory.getMatcher(condition.match());
+				whereSql.append(matcher.buildCondition(field, prefix));
 			}
 		}
 		if(!StrUtil.isBlank(prefix)) {

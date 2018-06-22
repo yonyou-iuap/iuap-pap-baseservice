@@ -73,7 +73,9 @@ public class DefaultMapperBuilder implements MapperBuilder{
 				String statementId = mapperClazz.getName() + "." + method.getName();
 				Builder builder = new Builder(configuration, statementId, sqlSource, methodMapper.type());
 				//添加Result
-				MappedStatementHelper.addResultMap(builder, method, entityClazz, statementId, configuration);
+				if(methodMapper.type() == SqlCommandType.SELECT) {
+					MappedStatementHelper.addResultMap(builder, method, entityClazz, statementId, configuration);
+				}
 				//设置资源信息
 				String resource = MappedStatementHelper.getResource(method);
 				builder.resource(resource).lang(driver).statementType(StatementType.PREPARED);

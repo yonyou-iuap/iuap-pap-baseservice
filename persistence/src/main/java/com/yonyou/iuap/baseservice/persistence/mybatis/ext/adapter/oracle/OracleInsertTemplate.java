@@ -56,7 +56,8 @@ public class OracleInsertTemplate implements SqlTemplate{
 								.append(" (").append(columnSql).append(") VALUES (")
 								.append(valuesSql).append(")").toString();
 		}else {
-			throw new MapperException("");
+			log.error("无可插入字段:" + method.getName()+";\t"+entityClazz.getName());
+			throw new MapperException("无可插入字段:" + method.getName()+";\t"+entityClazz.getName());
 		}
 	}
 	

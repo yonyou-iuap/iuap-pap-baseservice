@@ -28,20 +28,18 @@ public interface GenericMapper<T extends Model> {
 	public PageResult<T> selectAllByPage(@Param("page") PageRequest pageRequest, @Param("condition") SearchParams searchParams);
 	
 	@MethodMapper(type=SqlCommandType.SELECT)
-	//@SelectProvider(type=SqlProvider.class, method="selectT")
 	public List<T> queryList(@Param("condition")Map<String,Object> params);
 
 	@MethodMapper(type=SqlCommandType.SELECT)
-	//@SelectProvider(type=SqlProvider.class, method="selectM")
 	public List<Map<String,Object>> queryListByMap(@Param("condition")Map<String,Object> params);
 
-	//@InsertProvider(type=SqlProvider.class, method="insert")  
+	@MethodMapper(type=SqlCommandType.INSERT)
     public int insert(T entity);
 	
-    //@UpdateProvider(type=SqlProvider.class, method="update")  
+	@MethodMapper(type=SqlCommandType.UPDATE)
 	public int update(T entity);
 
-	//@DeleteProvider(type=SqlProvider.class, method="delete")  
+	@MethodMapper(type=SqlCommandType.DELETE)
 	public int delete(@Param("condition")Map<String,Object> params);
 
 }

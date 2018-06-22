@@ -9,7 +9,7 @@ public class GTMatcher implements Matcher{
 
 	@Override
 	public Match getMatch() {
-		return Match.EQ;
+		return Match.GT;
 	}
 
 	@Override
@@ -17,7 +17,7 @@ public class GTMatcher implements Matcher{
 		StringBuilder strb = new StringBuilder("\r\n\t<if test=\"");
 		String fieldName = ParamUtil.contactParam(prefix, field.getName());
 		strb.append(fieldName).append("!=null \">\r\n");
-		strb.append("\t\t and ").append(FieldUtil.getColumnName(field)).append(" = #{")
+		strb.append("\t\t and ").append(FieldUtil.getColumnName(field)).append(" > #{")
 			.append(fieldName).append("}\r\n");
 		strb.append("\t</if>\r\n");
 		return strb.toString();

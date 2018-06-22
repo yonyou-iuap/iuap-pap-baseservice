@@ -49,7 +49,8 @@ public class OracleUpdateTemplate implements SqlTemplate{
 		if(!isFirst) {
 			return updateSql.append(this.buildWhere()).toString();
 		}else {
-			throw new MapperException("");
+			log.error("无可更新字段:" + method.getName()+";\t"+entityClazz.getName());
+			throw new MapperException("无可更新字段:" + method.getName()+";\t"+entityClazz.getName());
 		}
 	}
 	
