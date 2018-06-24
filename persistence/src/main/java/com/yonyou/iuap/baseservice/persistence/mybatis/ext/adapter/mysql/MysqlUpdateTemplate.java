@@ -4,11 +4,14 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Version;
 
 import org.apache.ibatis.mapping.SqlCommandType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.SqlTemplate;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.exception.MapperException;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.support.Dialect;
@@ -47,9 +50,10 @@ public class MysqlUpdateTemplate implements SqlTemplate{
 			}
 		}
 		if(!isFirst) {
-			return updateSql.append(this.buildWhere()).toString();
+			return updateSql.append(this.buildWhere(entityClazz)).toString();
 		}else {
-			throw new MapperException("");
+			log.error("无可更新字段:" + method.getName()+";\t"+entityClazz.getName());
+			throw new MapperException("无可更新字段:" + method.getName()+";\t"+entityClazz.getName());
 		}
 	}
 	
@@ -57,17 +61,41 @@ public class MysqlUpdateTemplate implements SqlTemplate{
         Column column = field.getAnnotation(Column.class);
         if (column==null || StrUtil.isEmpty(column.name())) {			//补充内容,比如驼峰规则
             updateSql.append(FieldUtil.getColumnName(field));
-            updateSql.append("=#{").append(field.getName()).append("}");
+            updateSql.append("=").append(FieldUtil.build4Mybatis(field));
+            //updateSql.append("=#{").append(field.getName()).append("}");
         }else {
             updateSql.append(column.name());
-            updateSql.append("=#{").append(field.getName()).append("}");
+            updateSql.append("=").append(FieldUtil.build4Mybatis(field));
+            //updateSql.append("=#{").append(field.getName()).append("}");
         }
 	}
 	
-	private String buildWhere(){
-		StringBuffer where = new StringBuffer();
-		where.append("\r\n WHERE id=#{id} and ts=#{ts}");
-		return where.toString();
+	private String buildWhere(Class<?> entityClazz){
+		if(Model.class.isAssignableFrom(entityClazz)) {			
+			Field idField = null, tsField = null;
+			for (Field field : ReflectUtil.getFields(entityClazz)) {
+				if (field.getAnnotation(Id.class) != null) {
+					idField = field;
+				}
+				if (field.getAnnotation(Version.class) != null) {
+					tsField = field;
+				}
+			}
+			if (idField != null && tsField != null) {
+				StringBuffer where = new StringBuffer("\r\n WHERE ");
+				where.append(idField.getName()).append("=").append(FieldUtil.build4Mybatis(idField)).append(" and ")
+						.append(tsField.getName()).append("=").append(FieldUtil.build4Mybatis(tsField));
+				return where.toString();
+			} else {
+				log.error("无效的对象类型，class="+entityClazz.getName()+"\r\n未找到id、ts字段！");
+				throw new MapperException("无效的对象类型，class="+entityClazz.getName());
+			}
+		}else {
+			log.error("无效的对象类型，class="+entityClazz.getName());
+			throw new MapperException("无效的对象类型，class="+entityClazz.getName());
+		}
+		
+		
 	}
 
 }

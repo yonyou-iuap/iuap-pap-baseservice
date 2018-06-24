@@ -56,7 +56,8 @@ public class MysqlInsertTemplate implements SqlTemplate{
 								.append(" (").append(columnSql).append(") VALUES (")
 								.append(valuesSql).append(")").toString();
 		}else {
-			throw new MapperException("");
+			log.error("无可插入字段:" + method.getName()+";\t"+entityClazz.getName());
+			throw new MapperException("无可插入字段:" + method.getName()+";\t"+entityClazz.getName());
 		}
 	}
 	
@@ -64,10 +65,12 @@ public class MysqlInsertTemplate implements SqlTemplate{
         Column column = field.getAnnotation(Column.class);
         if (column==null || StrUtil.isEmpty(column.name())) {			//补充内容,比如驼峰规则
             columnSql.append(FieldUtil.getColumnName(field));
-            valuesSql.append("#{").append(field.getName()).append("}");
+            valuesSql.append(FieldUtil.build4Mybatis(field));
+            //valuesSql.append("#{").append(field.getName()).append("}");
         }else {
             columnSql.append(column.name());
-            valuesSql.append("#{").append(field.getName()).append("}");
+            valuesSql.append(FieldUtil.build4Mybatis(field));
+            //valuesSql.append("#{").append(field.getName()).append("}");
         }
 	}
 

@@ -14,6 +14,11 @@ import com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.AutoMapperFac
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.SqlTemplate;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.support.Dialect;
 
+/**
+ * 说明：
+ * @author Aton
+ * 2018年6月24日
+ */
 public class OracleMapperFactory implements AutoMapperFactory{
 	
 	private Logger log = LoggerFactory.getLogger(OracleMapperFactory.class);

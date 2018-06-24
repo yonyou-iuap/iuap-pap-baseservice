@@ -1,6 +1,8 @@
 package com.yonyou.iuap.baseservice.entity;
 
 import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Version;
 
 /**
  * 说明：基础Model
@@ -9,21 +11,23 @@ import javax.persistence.Column;
  */
 public class AbsModel implements Model {
 
+	@Id
 	@Column(name="id")
 	protected String id;
 
-	@Column(name="createTime")
+	@Column(name="create_time")
 	protected String createTime;
 	
-	@Column(name="createUser")
+	@Column(name="create_user")
 	protected String createUser;
 	
-	@Column(name="lastModified")
+	@Column(name="last_modified")
 	protected String lastModified;
 	
-	@Column(name="lastModifyUser")
+	@Column(name="last_modify_user")
 	protected String lastModifyUser;
 	
+	@Version
 	@Column(name="ts")
 	protected String ts;
 

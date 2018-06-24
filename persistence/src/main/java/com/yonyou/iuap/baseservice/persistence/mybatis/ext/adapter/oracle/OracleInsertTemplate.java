@@ -65,10 +65,12 @@ public class OracleInsertTemplate implements SqlTemplate{
         Column column = field.getAnnotation(Column.class);
         if (column==null || StrUtil.isEmpty(column.name())) {			//补充内容,比如驼峰规则
             columnSql.append(FieldUtil.getColumnName(field));
-            valuesSql.append("#{").append(field.getName()).append("}");
+            valuesSql.append(FieldUtil.build4Mybatis(field));
+            //valuesSql.append("#{").append(field.getName()).append("}");
         }else {
             columnSql.append(column.name());
-            valuesSql.append("#{").append(field.getName()).append("}");
+            valuesSql.append(FieldUtil.build4Mybatis(field));
+            //valuesSql.append("#{").append(field.getName()).append("}");
         }
 	}
 

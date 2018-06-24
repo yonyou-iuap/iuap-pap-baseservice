@@ -81,7 +81,7 @@ public class OracleSelectTemplate implements SqlTemplate{
 	}
 	
 	private void build(Field field, StringBuilder selectSql) {
-		selectSql.append(FieldUtil.getColumnName(field))
+		selectSql.append("\t").append(FieldUtil.getColumnName(field))
 					.append(" as ").append(field.getName());
 	}
 	

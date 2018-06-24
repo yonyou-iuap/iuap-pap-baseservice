@@ -15,6 +15,28 @@ public class FieldUtil {
 	public static String getColumnName(Field field) {
 		return ConvertorHolder.inst().getConvertor().field2Column(field);
 	}
+	
+	public static String build4Mybatis(Field field) {
+		return new StringBuilder().append("#{").append(field.getName())
+				.append(", jdbcType=").append(TypeMaping.getJdbcType(field.getType()))
+				.append("}").toString();
+	}
+	
+	public static String build4Mybatis(String prefix, Field field) {
+		if(StrUtil.isBlank(prefix)) {
+			return new StringBuilder().append("#{").append(field.getName())
+					.append(", jdbcType=").append(TypeMaping.getJdbcType(field.getType()))
+					.append("}").toString();
+		}else {
+			return new StringBuilder().append("#{").append(prefix).append(".").append(field.getName())
+					.append(", jdbcType=").append(TypeMaping.getJdbcType(field.getType()))
+					.append("}").toString();
+		}
+	}
+	
+	public static boolean isBaseVariable(Field field) {
+		return TypeMaping.getJdbcType(field.getType())!=null;
+	}
 
 	public static String getColumnName1(Field field) {
 		Column column = field.getAnnotation(Column.class);
@@ -53,7 +75,11 @@ public class FieldUtil {
 			return false;
 		}else {
 			Column column = field.getAnnotation(Column.class);
-			return column==null || column.insertable();
+	        if(column != null) {
+	        	return column.insertable();
+	        }else {
+	        	return FieldUtil.isBaseVariable(field);
+	        }
 		}
 	}
 	
@@ -67,7 +93,11 @@ public class FieldUtil {
 			return false;
 		}else {
 	        Column column = field.getAnnotation(Column.class);
-	        return column==null || column.updatable();
+	        if(column != null) {
+	        	return column.updatable();
+	        }else {
+	        	return FieldUtil.isBaseVariable(field);
+	        }
 		}
 	}
 

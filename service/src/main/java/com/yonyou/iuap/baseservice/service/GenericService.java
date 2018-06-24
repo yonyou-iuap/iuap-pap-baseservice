@@ -161,7 +161,7 @@ public class GenericService<T extends Model>{
 			int count = genericMapper.update(entity);
 			if(count != 1) {
 				log.error("更新保存数据出错，更新记录数="+count+"\r\n"+JSON.toJSONString(entity));
-				throw new RuntimeException();
+				throw new RuntimeException("更新保存数据出错，更新记录数="+count);
 			}
 			return entity;
 		}else {

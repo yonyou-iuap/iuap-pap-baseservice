@@ -7,5 +7,9 @@ public class MapperException extends RuntimeException{
 	public MapperException(String errMsg) {
 		super(errMsg);
 	}
+	
+    public MapperException(Throwable cause) {
+        super(cause);
+    }
 
 }
