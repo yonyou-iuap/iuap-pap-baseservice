@@ -4,6 +4,7 @@ import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.parser.Feature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.yonyou.iuap.baseservice.bpm.entity.BpmModel;
@@ -102,14 +103,10 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 	 * @return
 	 * @throws RestException
 	 */
-	protected Object startProcessByKey(String userId, String processKey, String procInstName, List<RestVariable> variables) throws RestException {
+	protected Object startProcessByKey(String userId, String processKey, String businessKey, List<RestVariable> variables) throws RestException {
 		if (log.isDebugEnabled()) log.debug("启动流程。流程变量数据=" + JSONObject.toJSONString(variables));
 		RuntimeService rt = bpmRestServices(userId).getRuntimeService();
-		ProcessInstanceStartParam parm = new ProcessInstanceStartParam();
-		parm.setProcessDefinitionKey(processKey);
-		parm.setVariables(variables);
-		parm.setProcessInstanceName(procInstName);
-		return rt.startProcess(parm);
+		return rt.startProcessInstanceByKeyAndTenantId(processKey,businessKey,variables,tenant);
 	}
 
 	/**
@@ -198,7 +195,7 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 		agreeVariable.setVariableScope(RestVariable.RestVariableScope.LOCAL);
 		taskVariables.add(agreeVariable);
 		TaskService ts = bpmRestServices(userId).getTaskService();
-		JsonNode node = (JsonNode) ts.completeWithComment(taskId, taskVariables, null, null,
+		JsonNode node = (JsonNode) ts.completeWithComment(taskId, taskVariables, null, "",
 				auditComment);
 		if (node != null) {
 			TaskActionResponse resp = JSONObject.parseObject(node.toString(), TaskActionResponse.class);
@@ -234,8 +231,8 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 	 *
 	 * @return
 	 */
-	protected Object rejectToTask(String userId, String processInstanceId,String taskCode ,String comment) throws RestException {
-		return   bpmRestServices(userId).getRuntimeService().rejectToActivity(processInstanceId,taskCode,comment);
+	protected Object rejectToTask(String userId, String processInstanceId,String taskKey ,String comment,String taskId) throws RestException {
+		return   bpmRestServices(userId).getRuntimeService().rejectToActivity(processInstanceId,taskKey,comment,taskId);
 	}
 
 	/**
@@ -378,7 +375,6 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 			throws RestException {
 		if (log.isDebugEnabled()) log.debug("根据实例id查询实例信息:" + instId);
 		HistoryService ht = bpmRestServices(userId).getHistoryService();// 历史服务
-
 		HistoricProcessInstancesQueryParam param = new HistoricProcessInstancesQueryParam();
 		param.setProcessInstanceId(instId);
 		if (includeProcessVariable)
@@ -402,12 +398,12 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 		HistoricTaskQueryParam htp = new HistoricTaskQueryParam();
 		htp.setProcessInstanceId(instanceId);
 		htp.setFinished(false);// 只查询下一个未完成的task
-		htp.setSize(1);
+//		htp.setSize(1);
 		JsonNode jsonNode = (JsonNode) ht.getHistoricTaskInstances(htp);
-		ArrayNode obj2 = BaseUtils.getData(jsonNode);
-		int size = obj2.size();
+		ArrayNode data = BaseUtils.getData(jsonNode);
+		int size = data.size();
 		if (size > 0) {
-			HistoricTaskInstanceResponse resp = JSONObject.parseObject (obj2.get(0).toString(), HistoricTaskInstanceResponse.class);
+			HistoricTaskInstanceResponse resp = JSONObject.parseObject (data.get(0).toString(), HistoricTaskInstanceResponse.class,Feature.UseBigDecimal);
 			return resp;
 		}
 		return null;
@@ -420,19 +416,20 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 	/**
 	 * 启动工作流
 	 */
-	public Object doStartProcess(T entity,String processName) throws RestException{
+	public Object doStartProcess(T entity) throws RestException{
 		List<RestVariable> var = buildOtherVariables(entity);
 		try {
-			Object result = this.startProcessByKey(InvocationInfoProxy.getUserid(),entity.getProcessDefineCode(),processName,var);
-			if ( result!=null) {
-				entity.setBpmState(BpmExUtil.BPM_STATE_START);				//流程状态调整为“已启动”;
-				this.save(entity);
+			entity.setBpmState(BpmExUtil.BPM_STATE_START);//流程状态调整为“已启动”;
+			entity=this.save(entity);
+			if ( entity.getProcessDefineCode()!=null) {
+				Object result = this.startProcessByKey(InvocationInfoProxy.getUserid(),entity.getProcessDefineCode(),entity.getId(),var);
 				return result;
+			}else{
+				throw new BusinessException("启动流程实例发生错误，请联系管理员！错误原因：未指定流程模板");
 			}
 		} catch (RestException e) {
-			throw new BusinessException("驳回流程实例发生错误，请联系管理员！错误原因：" + e.getMessage());
+			throw new BusinessException("启动流程实例发生错误，请联系管理员！错误原因：" + e.getMessage());
 		}
-		return null;
 	}
 
 
@@ -440,11 +437,11 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 	 *
 	 * 提交工作流节点
 	 */
-	public boolean doSubmit(T entity)  {
+	public boolean doSubmit(T entity,String comment)  {
 		try {
-			TaskActionResponse resp = this.completeTask(InvocationInfoProxy.getUserid(), entity.getTaskId(), true, "");
+			TaskActionResponse resp = this.completeTask(InvocationInfoProxy.getUserid(), entity.getTaskId(), true, comment);
 			if ( resp!=null) {
-				if (resp.getHistoricProcessInstance()!=null){
+				if (resp.getHistoricProcessInstance()!=null){//TODO 这里确实是空的
 					if (resp.getHistoricProcessInstance().getEndTime()==null)
 						entity.setBpmState(BpmExUtil.BPM_STATE_RUNNING) ;//流程状态调整为“运行中”;
 					else
@@ -508,7 +505,7 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 	 */
 	public Object doReject(T entity,String comment) {
 		try {
-			Object result = this.rejectToTask(InvocationInfoProxy.getUserid(),entity.getProcessInstanceId(),entity.getTaskKey(),comment);
+			Object result = this.rejectToTask(InvocationInfoProxy.getUserid(),entity.getProcessInstanceId(),entity.getTaskKey(),comment,entity.getTaskId());
 			if ( result!=null) {
 				entity.setBpmState(BpmExUtil.BPM_STATE_RUNNING);				//流程状态调整为“运行中”;
 				this.save(entity);

@@ -35,8 +35,7 @@ public abstract class GenericBpmController<T extends BpmModel> extends GenericEx
 	public Object doStart(@RequestBody T entity, HttpServletRequest request) throws Exception {
 		try {
 			this.checkSubmit(request);
-			String proInstName=request.getParameter("proInstName");
-			this.service.doStartProcess(entity, proInstName);
+			this.service.doStartProcess(entity);
 			return this.buildSuccess("流程已启动！");
 		}catch(Exception exp) {
 			return this.buildGlobalError(exp.getMessage());
@@ -47,7 +46,8 @@ public abstract class GenericBpmController<T extends BpmModel> extends GenericEx
 	public Object doSubmit(@RequestBody T entity, HttpServletRequest request) throws Exception {
 		try {
 			this.checkSubmit(request);
-			this.service.doSubmit(entity);
+			String comment=request.getParameter("comment");
+			this.service.doSubmit(entity,comment);
 			return this.buildSuccess("流程已提交！");
 		}catch(Exception exp) {
 			return this.buildGlobalError(exp.getMessage());

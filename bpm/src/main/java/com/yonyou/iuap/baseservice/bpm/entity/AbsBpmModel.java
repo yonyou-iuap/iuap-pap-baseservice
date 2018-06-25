@@ -23,29 +23,23 @@ public abstract class AbsBpmModel extends AbsDrModel implements BpmModel{
 	@Column(name="bpm_process_define")
 	protected String processDefineCode;	//流程定义id
 
-
 	public String getTaskKey() {
 		return taskKey;
 	}
-
 	public void setTaskKey(String taskKey) {
 		this.taskKey = taskKey;
 	}
 
-	@Override
 	public String getTaskId() {
 		return taskId;
 	}
-
 	public void setTaskId(String taskId) {
 		this.taskId = taskId;
 	}
 
-	@Override
 	public String getProcessInstanceId() {
 		return processInstanceId;
 	}
-
 	public void setProcessInstanceId(String processInstanceId) {
 		this.processInstanceId = processInstanceId;
 	}
@@ -53,14 +47,11 @@ public abstract class AbsBpmModel extends AbsDrModel implements BpmModel{
 	public Integer getBpmState() {
 		return bpmState;
 	}
-
 	public void setBpmState(Integer bpmState) {
 		this.bpmState = bpmState;
 	}
 
-	public String getProcessDefineCode() {
-		return processDefineCode;
-	}
+	public String getProcessDefineCode() {return processDefineCode;	}
 	public void setProcessDefineCode(String processDefineCode) {
 		this.processDefineCode = processDefineCode;
 	}
