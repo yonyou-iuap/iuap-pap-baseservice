@@ -58,7 +58,7 @@ public abstract class GenericController<T extends Model> extends BaseController{
 	
 	@RequestMapping(value = "/save")
 	@ResponseBody
-	public Object add(@RequestBody T entity) {
+	public Object save(@RequestBody T entity) {
 		JsonResponse jsonResp;
 		try {
 			this.service.save(entity);
@@ -67,6 +67,12 @@ public abstract class GenericController<T extends Model> extends BaseController{
 			jsonResp = this.buildError("msg", exp.getMessage(), RequestStatusEnum.FAIL_FIELD);
 		}
 		return jsonResp;
+	}
+	
+	@RequestMapping(value = "/saveBatch")
+	@ResponseBody
+	public Object saveBatch(@RequestBody List<T> listData) {
+		return this.buildSuccess(listData);
 	}
 	
 	
