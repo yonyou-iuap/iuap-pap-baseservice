@@ -165,7 +165,8 @@ public class GenericService<T extends Model>{
 			}
 			return entity;
 		}else {
-			throw new RuntimeException();
+			log.error("更新保存数据出错，输入参数对象为空!");
+			throw new RuntimeException("更新保存数据出错，输入参数对象为空!");
 		}
 	}
 
@@ -204,7 +205,7 @@ public class GenericService<T extends Model>{
 			return count;
 		}else {
 			log.error("删除数据出错,记录数="+count+"\r\n"+JSON.toJSONString(id));
-			throw new RuntimeException();
+			throw new RuntimeException("删除数据出错,记录数="+count+"\r\n"+JSON.toJSONString(id));
 		}
 	}
 

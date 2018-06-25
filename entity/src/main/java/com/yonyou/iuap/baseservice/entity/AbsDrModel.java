@@ -10,7 +10,7 @@ import javax.persistence.Column;
 public abstract class AbsDrModel extends AbsModel implements LogicDel {
 
 	@Column(name="dr")
-	protected Integer dr;
+	protected Integer dr = 0;
 
 	public Integer getDr() {
 		return dr;

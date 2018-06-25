@@ -1,6 +1,7 @@
 package com.yonyou.iuap.baseservice.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -78,8 +79,8 @@ public abstract class GenericController<T extends Model> extends BaseController{
 	
 	@RequestMapping(value = "/deleteBatch")
 	@ResponseBody
-	public Object deleteBatch(@RequestBody T entity, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		this.service.delete(entity);
+	public Object deleteBatch(@RequestBody List<T> listData, HttpServletRequest request, HttpServletResponse response) throws Exception {
+		this.service.deleteBatch(listData);
 		return super.buildSuccess();
 	}
 	
