@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.0.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd"
+	default-lazy-init="true">
+
+	<description>persistence</description>
+	
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+
+	<!-- 使用annotation定义事务 -->
+	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" />
+
+	<!-- JSR303 Validator定义 -->
+	<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
+
+	<!-- 数据源配置, 使用Tomcat JDBC连接池 -->
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close">
+	    <!-- Connection Info -->
+	    <property name="driverClassName" value="${jdbc.driver}" />
+	    <property name="url" value="${jdbc.url}" />
+	    <property name="username" value="${jdbc.username}" />
+	    <property name="password" value="${jdbc.password}" />
+	
+	    <!-- 配置监控统计拦截的filters，去掉后监控界面sql无法统计 -->
+	    <property name="filters" value="${filters}" />
+	    <property name="connectionProperties" value="${connectionProperties}" />
+	    <!-- Connection Pooling Info -->
+	    <!-- 配置初始化大小、最小、最大 -->
+	    <property name="initialSize" value="${initialSize}" />
+	    <property name="minIdle" value="${minIdle}" />
+	    <property name="maxActive" value="${maxActive}" />
+	
+	    <!-- 配置获取连接等待超时的时间 -->
+	    <property name="maxWait" value="${maxWait}" />
+	
+	    <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+	    <property name="timeBetweenEvictionRunsMillis" value="${timeBetweenEvictionRunsMillis}" />
+	
+	    <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+	    <property name="minEvictableIdleTimeMillis" value="${minEvictableIdleTimeMillis}" />
+	
+	    <property name="validationQuery" value="${validationQuery}" />
+	    <property name="testWhileIdle" value="${testWhileIdle}" />
+	    <property name="testOnBorrow" value="${testOnBorrow}" />
+	    <property name="testOnReturn" value="${testOnReturn}" />
+	
+	    <!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
+	    <property name="maxOpenPreparedStatements" value="${maxOpenPreparedStatements}" />
+	    <property name="removeAbandoned" value="${removeAbandoned}" />
+	    <property name="removeAbandonedTimeout" value="${removeAbandonedTimeout}" />
+	    <property name="logAbandoned" value="${logAbandoned}" />
+	</bean>
+	
+	<!-- MyBatis配置 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+		<!--自动扫描entity目录, 省掉Configuration.xml里的手工配置 -->
+        <property name="typeAliasesPackage" value="com.sany.**.entity, com.yonyou.iuap.**.entity"/>
+		<!--显式指定Mapper文件位置 -->
+        <property name="mapperLocations">
+		<!--切换数据库类型后，需要修改此处的配置文件，使用对应的数据库类型下的mapper文件 -->
+            <array>
+				<value>classpath*:/mybatis/oracle/*.xml</value>
+            </array>
+        </property>
+
+		<!--如果想用iuap的分页插件，可以放开下面注释， oracle或mysql，postgresql数据库则使用下面配置， -->
+        <property name="plugins">
+            <array>
+                <bean id="paginationInterceptor"
+                      class="com.yonyou.iuap.mybatis.plugins.PaginationInterceptor">
+                    <property name="properties">
+                        <props>
+							<!--修改数据库类型后，dbms的属性需要修改，如oracle、mybatis -->
+                            <prop key="dbms">${jdbc.type}</prop>
+                            <prop key="sqlRegex">.*selectAllByPage</prop>
+                        </props>
+                    </property>
+                </bean>
+            </array>
+        </property>
+    </bean>
+
+	
+    <!-- 扫描basePackage下所有以@MyBatisRepository标识的 接口-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.sany.**.dao, com.yonyou.iuap.**.dao"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+    </bean>
+
+	<bean id="crossdbDataSource"
+		class="com.yonyou.iuap.persistence.bs.framework.ds.CrossdbDataSource"
+		lazy-init="false">
+		<constructor-arg name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="crossdbJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="crossdbDataSource"></property>
+	</bean>
+
+	<bean id="baseDAO" class="com.yonyou.iuap.persistence.bs.dao.BaseDAO">
+		<property name="jdbcTemplate" ref="crossdbJdbcTemplate" />
+		<property name="dbMetaHelper" ref="dbMetaInfo" />
+	</bean>
+
+	<bean id="dbMetaInfo" class="com.yonyou.iuap.persistence.bs.util.DBMetaHelper">
+		<property name="jdbcTemplate" ref="crossdbJdbcTemplate" />
+	</bean>
+
+	<!-- 数据源配置,使用应用服务器的数据库连接池 -->
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+    
+	<bean class="com.yonyou.iuap.mvc.exceptionhandle.service.impl.DBSysPromptService">
+		<property name="jt" ref="jdbcTemplate" />
+	</bean>
+	
+    <bean id="autoMapperLoader" class="com.yonyou.iuap.baseservice.persistence.mybatis.ext.AutoMapperLoader" 
+			lazy-init="false">
+        <property name="basePackage" value="com.sany.**.dao"/>
+    </bean>
+
+</beans>
