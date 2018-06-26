@@ -1,0 +1,8 @@
+com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.matcher.EQMatcher
+com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.matcher.GTMatcher
+com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.matcher.LTMatcher
+com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.matcher.GTEQMatcher
+com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.matcher.LTEQMatcher
+com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.matcher.LikeMatcher
+com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.matcher.LLikeMatcher
+com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.matcher.RLikeMatcher

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sany.example.dao.SanyOrderMapper">
+
+	<select id="selectAllByPage" resultType="com.sany.example.entity.SanyOrder">
+		select 	t.id,
+		       	t.order_code as orderCode,
+		       	t.order_name as orderName,
+		       	t.SUPPLIER as supplier,
+			   	t.SUPPLIER_NAME as supplierName,
+				t.type,
+				t.purchasing,
+				t.purchasing_group as purchasingGroup,
+				t.VOUCHER_DATE as voucherDate,
+				t.APPROVAL_STATE as approvalState,
+				t.CONFIRM_STATE as confirmState,
+				t.CLOSE_STATE as closeState,
+				t.remark,
+				t.create_time as createTime,
+				t.create_user as createUser,
+				t.LAST_MODIFIED as lastModified,
+				t.LAST_MODIFY_USER as lastModifyUser,
+				t.ts,
+				t.dr
+		FROM example_sany_order t where 1=1
+			<if test="condition != null">
+				<if test="condition.searchMap.id!=null and condition.searchMap.id!='' ">
+					and id = #{id, jdbcType=VARCHAR}
+				</if>
+				<if test="condition.searchMap.orderCode!=null and condition.searchMap.orderCode!='' ">
+					and order_code like CONCAT(CONCAT('%', #{search.searchMap.orderCode}),'%')
+				</if>
+				<if test="condition.searchMap.orderName!=null and condition.searchMap.orderName!='' ">
+					and order_name like CONCAT(CONCAT('%', #{search.searchMap.orderName}),'%')
+				</if>
+			</if>		
+	</select>
+	
+</mapper>
