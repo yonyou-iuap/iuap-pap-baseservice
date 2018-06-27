@@ -23,12 +23,14 @@ public class AbsModel implements Model {
 	protected String createTime;
 	
 	@Column(name="create_user")
+	@Condition(match=Match.EQ)
 	protected String createUser;
 	
 	@Column(name="last_modified")
 	protected String lastModified;
 	
 	@Column(name="last_modify_user")
+	@Condition(match=Match.EQ)
 	protected String lastModifyUser;
 	
 	@Version
