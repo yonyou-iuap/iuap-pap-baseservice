@@ -14,7 +14,7 @@ import com.yonyou.iuap.persistence.vo.pub.BusinessException;
  * @author houlf
  * 2018年6月12日
  */
-public class GenericExService<T extends Model & LogicDel> extends GenericService<T>{
+public abstract class GenericExService<T extends Model & LogicDel> extends GenericService<T>{
 	
 	private Logger log = LoggerFactory.getLogger(GenericExService.class);
 

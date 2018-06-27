@@ -27,7 +27,7 @@ import cn.hutool.core.util.StrUtil;
  * @author houlf
  * 2018年6月12日
  */
-public class GenericService<T extends Model>{
+public abstract class GenericService<T extends Model>{
 	
 	private Logger log = LoggerFactory.getLogger(GenericService.class);
 
@@ -118,6 +118,16 @@ public class GenericService<T extends Model>{
 			return insert(entity);
 		}else {
 			return update(entity);
+		}
+	}
+	
+	/**
+	 * 批量保存
+	 * @param listEntity
+	 */
+	public void saveBatch(List<T> listEntity){
+		for(int i=0; i<listEntity.size(); i++) {
+			this.save(listEntity.get(i));
 		}
 	}
 	
