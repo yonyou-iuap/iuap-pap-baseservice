@@ -8,7 +8,7 @@ import com.yonyou.iuap.baseservice.persistence.mybatis.ext.annotation.Condition;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.support.Match;
 
 /**
- * 说明：基础Model
+ * 说明：基础Model-带版本号、乐观锁：ts
  * @author houlf
  * 2018年6月12日
  */
