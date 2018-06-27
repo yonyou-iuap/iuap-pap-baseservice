@@ -1,4 +1,5 @@
-package com.yonyou.iuap.baseservice.persistence.mybatis.ext.support;
+package com.yonyou.iuap.baseservice.support.condition;
+
 
 public enum Match {
 	

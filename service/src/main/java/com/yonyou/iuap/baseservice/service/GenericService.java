@@ -1,5 +1,6 @@
 package com.yonyou.iuap.baseservice.service;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +23,7 @@ import com.yonyou.iuap.mvc.type.SearchParams;
 
 import cn.hutool.core.util.StrUtil;
 
-/**
+/** 
  * 说明：基础Service基类
  * @author houlf
  * 2018年6月12日
@@ -85,7 +86,7 @@ public abstract class GenericService<T extends Model>{
      * @param id
      * @return
      */
-    public T findById(String id) {
+    public T findById(Serializable id) {
     	return this.findUnique("id", id);
     }
 
@@ -112,7 +113,11 @@ public abstract class GenericService<T extends Model>{
 	public T save(T entity) {
 		boolean isNew = false;					//是否新增数据
 		if(entity instanceof Model) {
-			isNew = StrUtil.isEmpty(((Model)entity).getId());
+			if(entity.getId()==null) {
+				isNew = true;
+			}else {
+				isNew = StrUtil.isEmptyIfStr(entity.getId());
+			}
 		}
 		if(isNew) {
 			return insert(entity);
@@ -138,8 +143,8 @@ public abstract class GenericService<T extends Model>{
 	 */
 	public T insert(T entity) {
 		if(entity != null) {
-			String now = DateUtils.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss SSS");
 			entity.setId(UUID.randomUUID().toString());
+			String now = DateUtils.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss SSS");
 			entity.setCreateTime(now);
 			entity.setCreateUser(InvocationInfoProxy.getUserid());
 			entity.setLastModified(now);
@@ -208,7 +213,7 @@ public abstract class GenericService<T extends Model>{
 	 * @param id
 	 * @return
 	 */
-	public int delete(String id) {
+	public int delete(Serializable id) {
 		Map<String,Object> data = new HashMap<String,Object>();
 		data.put("id", id);
 		int count = this.genericMapper.delete(data);

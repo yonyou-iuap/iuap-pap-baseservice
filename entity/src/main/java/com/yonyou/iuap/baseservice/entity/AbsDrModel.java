@@ -1,16 +1,15 @@
 package com.yonyou.iuap.baseservice.entity;
 
 import javax.persistence.Column;
-
-import com.yonyou.iuap.baseservice.persistence.mybatis.ext.annotation.Condition;
-import com.yonyou.iuap.baseservice.persistence.mybatis.ext.support.Match;
+import com.yonyou.iuap.baseservice.support.condition.Condition;
+import com.yonyou.iuap.baseservice.support.condition.Match;
 
 /**
  * 说明：逻辑删除基础Model
- * @author houlf
+ * @author Aton
  * 2018年6月12日
  */
-public abstract class AbsDrModel extends AbsModel implements LogicDel {
+public abstract class AbsDrModel extends AbsModel implements Model, LogicDel {
 
 	@Column(name="dr")
 	@Condition(match=Match.EQ)

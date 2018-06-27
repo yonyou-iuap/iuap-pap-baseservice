@@ -12,10 +12,10 @@ import org.springframework.data.domain.PageRequest;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.SqlTemplate;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.matcher.Matcher;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.matcher.MatcherFactory;
-import com.yonyou.iuap.baseservice.persistence.mybatis.ext.annotation.Condition;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.support.Dialect;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.EntityUtil;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.FieldUtil;
+import com.yonyou.iuap.baseservice.support.condition.Condition;
 import com.yonyou.iuap.mvc.type.SearchParams;
 
 import cn.hutool.core.util.ReflectUtil;

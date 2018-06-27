@@ -1,5 +1,7 @@
 package com.yonyou.iuap.baseservice.service;
 
+import java.io.Serializable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +84,7 @@ public abstract class GenericExService<T extends Model & LogicDel> extends Gener
 	 * @param id
 	 */
 	@Override
-	public int delete(String id) {
+	public int delete(Serializable id) {
 		T entity = this.findById(id);
 		return this.delete(entity);
 	}

@@ -1,20 +1,23 @@
 package com.yonyou.iuap.baseservice.entity;
 
-import javax.persistence.Column;
 import javax.persistence.Id;
+import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Version;
 
-import com.yonyou.iuap.baseservice.persistence.mybatis.ext.annotation.Condition;
-import com.yonyou.iuap.baseservice.persistence.mybatis.ext.support.Match;
+import com.yonyou.iuap.baseservice.support.condition.Condition;
+import com.yonyou.iuap.baseservice.support.condition.Match;
 
 /**
  * 说明：基础Model-带版本号、乐观锁：ts
  * @author houlf
  * 2018年6月12日
  */
-public class AbsModel implements Model {
+public abstract class AbsModel implements Model{
 
 	@Id
+	@GeneratedValue()
 	@Column(name="id")
 	@Condition(match=Match.EQ)
 	protected String id;
@@ -41,7 +44,6 @@ public class AbsModel implements Model {
 	public String getId() {
 		return id;
 	}
-
 	public void setId(String id) {
 		this.id = id;
 	}
@@ -49,7 +51,6 @@ public class AbsModel implements Model {
 	public String getCreateTime() {
 		return createTime;
 	}
-
 	public void setCreateTime(String createTime) {
 		this.createTime = createTime;
 	}
@@ -57,7 +58,6 @@ public class AbsModel implements Model {
 	public String getCreateUser() {
 		return createUser;
 	}
-
 	public void setCreateUser(String createUser) {
 		this.createUser = createUser;
 	}
@@ -65,7 +65,6 @@ public class AbsModel implements Model {
 	public String getLastModified() {
 		return lastModified;
 	}
-
 	public void setLastModified(String lastModified) {
 		this.lastModified = lastModified;
 	}
@@ -73,7 +72,6 @@ public class AbsModel implements Model {
 	public String getLastModifyUser() {
 		return lastModifyUser;
 	}
-
 	public void setLastModifyUser(String lastModifyUser) {
 		this.lastModifyUser = lastModifyUser;
 	}
@@ -81,7 +79,6 @@ public class AbsModel implements Model {
 	public String getTs() {
 		return ts;
 	}
-
 	public void setTs(String ts) {
 		this.ts = ts;
 	}
