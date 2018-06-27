@@ -7,7 +7,10 @@ import javax.persistence.Column;
 import javax.persistence.Table;
 import java.util.Date;
 
-
+/**
+ *
+ *
+ */
 @Table(name = "example_sany_order")
 public class SanyOrder extends AbsDrModel {
 
