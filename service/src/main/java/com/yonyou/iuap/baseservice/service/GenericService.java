@@ -144,6 +144,7 @@ public abstract class GenericService<T extends Model>{
 			entity.setCreateUser(InvocationInfoProxy.getUserid());
 			entity.setLastModified(now);
 			entity.setLastModifyUser(InvocationInfoProxy.getUserid());
+			entity.setTs(now);
 			
 			if(entity.getClass().getAnnotation(CodingEntity.class)!=null) {
 				CodingUtil.inst().buildCoding(entity);		//按编码规则设置编码
