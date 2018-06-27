@@ -4,6 +4,9 @@ import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Version;
 
+import com.yonyou.iuap.baseservice.persistence.mybatis.ext.annotation.Condition;
+import com.yonyou.iuap.baseservice.persistence.mybatis.ext.support.Match;
+
 /**
  * 说明：基础Model
  * @author houlf
@@ -13,6 +16,7 @@ public class AbsModel implements Model {
 
 	@Id
 	@Column(name="id")
+	@Condition(match=Match.EQ)
 	protected String id;
 
 	@Column(name="create_time")
@@ -29,6 +33,7 @@ public class AbsModel implements Model {
 	
 	@Version
 	@Column(name="ts")
+	@Condition(match=Match.EQ)
 	protected String ts;
 
 	public String getId() {

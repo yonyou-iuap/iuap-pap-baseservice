@@ -72,7 +72,8 @@ public abstract class GenericController<T extends Model> extends BaseController{
 	@RequestMapping(value = "/saveBatch")
 	@ResponseBody
 	public Object saveBatch(@RequestBody List<T> listData) {
-		return this.buildSuccess(listData);
+		this.service.saveBatch(listData);
+		return this.buildSuccess();
 	}
 	
 	
