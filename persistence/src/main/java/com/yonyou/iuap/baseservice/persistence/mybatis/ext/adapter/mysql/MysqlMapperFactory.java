@@ -44,7 +44,7 @@ public class MysqlMapperFactory implements AutoMapperFactory{
 	
 	@Override
 	public Dialect getDialect() {
-		return Dialect.oracle;
+		return Dialect.mysql;
 	}
 
 	@Override
