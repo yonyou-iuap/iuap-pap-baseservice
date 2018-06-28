@@ -1,9 +1,8 @@
 package com.yonyou.iuap.baseservice.bpm.model;
 
-import com.yonyou.iuap.baseservice.bpm.entity.AbsBpmModel;
 import com.yonyou.iuap.baseservice.bpm.entity.BpmModel;
-import com.yonyou.iuap.baseservice.persistence.mybatis.ext.annotation.Condition;
-import com.yonyou.iuap.baseservice.persistence.mybatis.ext.support.Match;
+import com.yonyou.iuap.baseservice.support.condition.Condition;
+import com.yonyou.iuap.baseservice.support.condition.Match;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
