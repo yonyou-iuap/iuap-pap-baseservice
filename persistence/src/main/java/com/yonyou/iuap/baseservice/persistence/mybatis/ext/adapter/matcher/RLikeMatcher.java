@@ -1,9 +1,9 @@
 package com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.matcher;
 
 import java.lang.reflect.Field;
-import com.yonyou.iuap.baseservice.persistence.mybatis.ext.support.Match;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.support.ParamUtil;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.FieldUtil;
+import com.yonyou.iuap.baseservice.support.condition.Match;
 
 public class RLikeMatcher implements Matcher{
 

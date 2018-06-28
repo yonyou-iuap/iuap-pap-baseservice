@@ -3,17 +3,12 @@ package com.yonyou.iuap.baseservice.persistence.mybatis.mapper;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.DeleteProvider;
-import org.apache.ibatis.annotations.InsertProvider;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.SelectProvider;
-import org.apache.ibatis.annotations.UpdateProvider;
 import org.apache.ibatis.mapping.SqlCommandType;
 import org.springframework.data.domain.PageRequest;
 
 import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.annotation.MethodMapper;
-import com.yonyou.iuap.baseservice.persistence.mybatis.ext.template.SqlProvider;
 import com.yonyou.iuap.mvc.type.SearchParams;
 import com.yonyou.iuap.mybatis.type.PageResult;
 

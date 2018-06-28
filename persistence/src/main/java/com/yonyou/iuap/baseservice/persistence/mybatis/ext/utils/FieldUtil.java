@@ -1,14 +1,11 @@
 package com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils;
 
 import java.lang.reflect.Field;
-
 import javax.persistence.Column;
 import javax.persistence.Transient;
-
-import com.yonyou.iuap.baseservice.persistence.mybatis.ext.annotation.Condition;
-import com.yonyou.iuap.baseservice.persistence.mybatis.ext.support.converter.ConvertorHolder;
-
 import cn.hutool.core.util.StrUtil;
+import com.yonyou.iuap.baseservice.persistence.mybatis.ext.support.converter.ConvertorHolder;
+import com.yonyou.iuap.baseservice.support.condition.Condition;
 
 public class FieldUtil {
 	
@@ -62,7 +59,11 @@ public class FieldUtil {
 	 * @return
 	 */
 	public static boolean isSelectable(Field field) {
-		return true;
+		if(field.getAnnotation(Transient.class) != null) {
+			return false;
+		}else {
+			return true;
+		}
 	}
 	
 	/**

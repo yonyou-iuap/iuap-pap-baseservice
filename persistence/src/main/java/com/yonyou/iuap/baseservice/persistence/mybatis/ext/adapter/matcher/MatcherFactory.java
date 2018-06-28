@@ -3,7 +3,8 @@ package com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.matcher;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
-import com.yonyou.iuap.baseservice.persistence.mybatis.ext.support.Match;
+
+import com.yonyou.iuap.baseservice.support.condition.Match;
 
 public class MatcherFactory {
 
