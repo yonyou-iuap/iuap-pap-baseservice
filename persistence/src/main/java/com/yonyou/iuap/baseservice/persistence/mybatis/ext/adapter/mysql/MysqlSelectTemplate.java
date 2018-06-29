@@ -30,7 +30,7 @@ public class MysqlSelectTemplate implements SqlTemplate{
 
 	@Override
 	public Dialect getDialect() {
-		return Dialect.oracle;
+		return Dialect.mysql;
 	}
 	
 	@Override
