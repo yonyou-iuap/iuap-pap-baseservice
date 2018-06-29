@@ -77,7 +77,7 @@ public class MysqlSelectTemplate implements SqlTemplate{
 				}
 			}
 		}
-		return "<script>"+selectSql.append(whereSql).toString()+"</script>";
+		return "<script>\r\n"+selectSql.append(whereSql).toString()+"\r\n</script>";
 	}
 	
 	private void build(Field field, StringBuilder selectSql) {

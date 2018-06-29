@@ -5,6 +5,8 @@ import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Version;
 
+import com.yonyou.iuap.baseservice.support.condition.Condition;
+
 /**
  * 说明：基础Model-带版本号、乐观锁：ts
  * @author houlf
@@ -15,22 +17,26 @@ public abstract class AbsModel implements Model{
 	@Id
 	@GeneratedValue()
 	@Column(name="id")
+	@Condition
 	protected String id;
 
 	@Column(name="create_time")
 	protected String createTime;
 	
 	@Column(name="create_user")
+	@Condition
 	protected String createUser;
 	
 	@Column(name="last_modified")
 	protected String lastModified;
 	
 	@Column(name="last_modify_user")
+	@Condition
 	protected String lastModifyUser;
 	
 	@Version
 	@Column(name="ts")
+	@Condition
 	protected String ts;
 
 	public String getId() {
