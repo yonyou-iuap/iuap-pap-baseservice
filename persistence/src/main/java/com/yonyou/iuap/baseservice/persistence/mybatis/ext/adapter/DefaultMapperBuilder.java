@@ -57,7 +57,11 @@ public class DefaultMapperBuilder implements MapperBuilder{
 		for(Method curMethod : methods) {
 			MappedStatement statement = this.parseStatement(curMethod, genericClass, mapperClazz);
 			if(statement != null) {
-				configuration.addMappedStatement(statement);
+				if(configuration.hasStatement(statement.getId())) {
+					log.warn("忽略加载Mybatis Mapper方法，该方法已经加载:" + statement.getId());
+				}else {
+					configuration.addMappedStatement(statement);
+				}
 			}
 		}
 	}
@@ -120,6 +124,7 @@ public class DefaultMapperBuilder implements MapperBuilder{
 				return this.mapperFactory;
 			}
 		}
+		log.warn("发现可用的..MapperFactory!");
 		return null;
 	}
 	
