@@ -22,7 +22,7 @@
 		<dependency>
 			<groupId>com.yonyou.iuap.pap</groupId>
 			<artifactId>eiap-plus-common</artifactId>
-			<version>3.6.0-SNAPSHOT</version>
+			<version>${eiap.module.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.alibaba</groupId>
