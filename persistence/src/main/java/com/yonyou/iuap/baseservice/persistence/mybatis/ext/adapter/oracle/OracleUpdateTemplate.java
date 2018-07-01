@@ -18,7 +18,6 @@ import com.yonyou.iuap.baseservice.persistence.mybatis.ext.support.Dialect;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.EntityUtil;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.FieldUtil;
 
-import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 
 public class OracleUpdateTemplate implements SqlTemplate{
@@ -40,10 +39,10 @@ public class OracleUpdateTemplate implements SqlTemplate{
 		boolean isFirst = true;
 		StringBuilder updateSql = new StringBuilder("UPDATE ").append(EntityUtil.getTableName(entityClazz))
 											.append("\r\n SET ");
-		for(Field field : ReflectUtil.getFields(entityClazz)) {
+		for(Field field : EntityUtil.getEntityFields(entityClazz)) {
 			if(FieldUtil.updateable(field)) {
             	if(!isFirst) {
-            		updateSql.append(",\r\n");
+            		updateSql.append(",\r\n\t");
             	}
             	this.build(field, updateSql);
                	isFirst = false;
@@ -73,7 +72,7 @@ public class OracleUpdateTemplate implements SqlTemplate{
 	private String buildWhere(Class<?> entityClazz){
 		if(Model.class.isAssignableFrom(entityClazz)) {			
 			Field idField = null, tsField = null;
-			for (Field field : ReflectUtil.getFields(entityClazz)) {
+			for (Field field : EntityUtil.getEntityFields(entityClazz)) {
 				if (field.getAnnotation(Id.class) != null) {
 					idField = field;
 				}

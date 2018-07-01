@@ -17,8 +17,6 @@ import com.yonyou.iuap.baseservice.persistence.mybatis.ext.support.Dialect;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.EntityUtil;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.FieldUtil;
 
-import cn.hutool.core.util.ReflectUtil;
-
 /**
  * 说明：
  * @author Aton
@@ -65,7 +63,7 @@ public class OracleDeleteTemplate implements SqlTemplate{
 	private String buildWhere(String prefix, Class<?> entityClazz) {
 		if(Model.class.isAssignableFrom(entityClazz)) {			
 			Field idField = null;
-			for (Field field : ReflectUtil.getFields(entityClazz)) {
+			for (Field field : EntityUtil.getEntityFields(entityClazz)) {
 				if (field.getAnnotation(Id.class) != null) {
 					idField = field;
 					break;

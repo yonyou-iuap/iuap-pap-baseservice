@@ -18,7 +18,6 @@ import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.FieldUtil;
 import com.yonyou.iuap.baseservice.support.condition.Condition;
 import com.yonyou.iuap.mvc.type.SearchParams;
 
-import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 
 /**
@@ -43,7 +42,7 @@ public class MysqlSelectTemplate implements SqlTemplate{
 		StringBuilder selectSql = new StringBuilder("SELECT ");
 		StringBuilder whereSql = new StringBuilder("\r\nWHERE 1=1 ");
 		boolean isFirst4Select = true;
-		for(Field field : ReflectUtil.getFields(entityClazz)) {
+		for(Field field : EntityUtil.getEntityFields(entityClazz)) {
 			if(FieldUtil.isSelectable(field)) {		//构建select
 				if(!isFirst4Select) {
 					selectSql.append(",\r\n");
@@ -90,11 +89,15 @@ public class MysqlSelectTemplate implements SqlTemplate{
 	}
 	
 	private void buildWhere4SearchParams(String prefix, Class<?> entityClazz, StringBuilder whereSql) {
-		whereSql.append("\r\n<if test=\"" + prefix + "!= null\">");
-		for(Field field : ReflectUtil.getFields(entityClazz)) {
+		if(!StrUtil.isBlank(prefix)) {
+			whereSql.append("\r\n<if test=\"" + prefix + "!= null\">");
+		}
+		Matcher matcher = null;
+		for(Field field : EntityUtil.getEntityFields(entityClazz)) {
 			if(FieldUtil.isCondition(field)) {					//构建select
 				Condition condition = field.getAnnotation(Condition.class);
-				whereSql.append(MatcherFactory.getMatcher(condition.match()).buildCondition(field, prefix));
+				matcher = MatcherFactory.getMatcher(condition.match());
+				whereSql.append(matcher.buildCondition(field, prefix));
 			}
 		}
 		whereSql.append("</if>");
@@ -105,7 +108,7 @@ public class MysqlSelectTemplate implements SqlTemplate{
 			whereSql.append("\r\n<if test=\"" + prefix + "!= null\">");
 		}
 		Matcher matcher = null;
-		for(Field field : ReflectUtil.getFields(entityClazz)) {
+		for(Field field : EntityUtil.getEntityFields(entityClazz)) {
 			if(FieldUtil.isCondition(field)) {					//构建select
 				Condition condition = field.getAnnotation(Condition.class);
 				matcher = MatcherFactory.getMatcher(condition.match());

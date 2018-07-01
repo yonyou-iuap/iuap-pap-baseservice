@@ -1,11 +1,14 @@
 package com.yonyou.iuap.baseservice.entity;
 
 import javax.persistence.Id;
+
+import java.io.Serializable;
+
 import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Version;
 
 import com.yonyou.iuap.baseservice.support.condition.Condition;
+import com.yonyou.iuap.baseservice.support.generator.GeneratedValue;
 
 /**
  * 说明：基础Model-带版本号、乐观锁：ts
@@ -18,7 +21,7 @@ public abstract class AbsModel implements Model{
 	@GeneratedValue()
 	@Column(name="id")
 	@Condition
-	protected String id;
+	protected Serializable id;
 
 	@Column(name="create_time")
 	protected String createTime;
@@ -39,10 +42,10 @@ public abstract class AbsModel implements Model{
 	@Condition
 	protected String ts;
 
-	public String getId() {
+	public Serializable getId() {
 		return id;
 	}
-	public void setId(String id) {
+	public void setId(Serializable id) {
 		this.id = id;
 	}
 

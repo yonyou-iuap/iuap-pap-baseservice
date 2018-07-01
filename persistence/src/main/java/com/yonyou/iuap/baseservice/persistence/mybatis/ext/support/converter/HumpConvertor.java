@@ -25,7 +25,7 @@ public class HumpConvertor implements NamingConvertor{
 
 	@Override
 	public String column2Field(String column) {
-		throw new RuntimeException();
+		throw new RuntimeException("无效的column:"+column);
 	}
 	
 }
