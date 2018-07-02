@@ -7,20 +7,25 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.Feature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.JsonObject;
+import com.yonyou.iuap.base.utils.RestUtils;
 import com.yonyou.iuap.baseservice.bpm.entity.BpmModel;
 import com.yonyou.iuap.baseservice.bpm.utils.BpmExUtil;
 import com.yonyou.iuap.baseservice.service.GenericExService;
 import com.yonyou.iuap.bpm.pojo.BPMFormJSON;
+import com.yonyou.iuap.bpm.service.NotifyService;
 import com.yonyou.iuap.bpm.service.TenantLimit;
 import com.yonyou.iuap.bpm.util.BpmRestVarType;
 import com.yonyou.iuap.context.InvocationInfoProxy;
 import com.yonyou.iuap.persistence.vo.pub.BusinessException;
+import iuap.uitemplate.base.util.PropertyUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import yonyou.bpm.rest.*;
 import yonyou.bpm.rest.exception.RestException;
+import yonyou.bpm.rest.exception.RestRequestFailedException;
 import yonyou.bpm.rest.param.BaseParam;
 import yonyou.bpm.rest.request.RestVariable;
 import yonyou.bpm.rest.request.historic.BpmHistoricProcessInstanceParam;
@@ -35,6 +40,7 @@ import yonyou.bpm.rest.response.historic.HistoricTaskInstanceResponse;
 import yonyou.bpm.rest.response.runtime.task.TaskActionResponse;
 import yonyou.bpm.rest.utils.BaseUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -78,7 +84,6 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 		baseParam.setOperatorID(userId);
 		//1.U审rest服务地址：http://ys.yyuap.com/ubpm-web-rest
 		baseParam.setServer(serverUrl);
-
 		//2.==========rest安全调用=========begin
 		//租户code
 		//管理端租户管理节点生成的token
@@ -155,27 +160,6 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 		return arrNode;
 	}
 
-
-	/**
-	 * 查询流程所有task列表
-	 *
-	 * @param userId
-	 * @param instanceId
-	 * @return
-	 * @throws Exception
-	 */
-	protected ArrayNode queryInstanceAllHistoryTaskList(String userId, String instanceId)
-			throws RestException {
-		HistoryService ht = bpmRestServices(userId).getHistoryService();// 历史服务
-		HistoricTaskQueryParam htp = new HistoricTaskQueryParam();
-		htp.setProcessInstanceId(instanceId);
-		htp.setIncludeProcessVariables(true);//包含变量
-		JsonNode jsonNode = (JsonNode) ht.getHistoricTaskInstances(htp);
-		if (log.isDebugEnabled()) log.debug("queryInstanceAllHistoryTaskList==>" + jsonNode);
-		if (jsonNode == null) return null;
-		ArrayNode arrayNode = BaseUtils.getData(jsonNode);
-		return arrayNode;
-	}
 
 
 	/**
@@ -268,70 +252,6 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 		}
 		return list;
 	}
-	/**
-	 * 添加附件
-	 * @param userId
-	 * @param taskId
-	 * @param name
-	 * @param desc
-	 * @param is
-	 * @return
-	 * @throws RestException
-	 */
-	protected AttachmentResponse createAttachment(String userId, String taskId, String name, String desc, InputStream is)
-			throws RestException {
-		TaskService ts = bpmRestServices(userId).getTaskService();
-		TaskAttachmentResourceParam parm = new TaskAttachmentResourceParam();
-		parm.setName(name);
-		parm.setDescription(desc);
-		parm.setValue(is);
-		JsonNode obj = (JsonNode) ts.createAttachmentWithContent(taskId, parm);
-		//AttachmentResponse ??
-		if (log.isDebugEnabled()) {
-			log.debug("上传附件返回:" + obj);
-		}
-
-		return JSONObject.parseObject (obj.toString(), AttachmentResponse.class);
-	}
-	/**
-	 * 查询附件
-	 * @param userId
-	 * @param taskId
-	 * @return
-	 * @throws RestException
-	 */
-	protected List<AttachmentResponse> queryAttachmentList(String userId, String taskId)
-			throws RestException {
-		TaskService ts = bpmRestServices(userId).getTaskService();
-		JsonNode node = (JsonNode) ts.getAttachments(taskId);
-
-		if (log.isDebugEnabled()) {
-			log.debug("获取附件列表返回:" + node);
-		}
-
-		ArrayNode arr = BaseUtils.getData(node);
-		int size = arr == null ? 0 : arr.size();
-		List<AttachmentResponse> list = new ArrayList<AttachmentResponse>(size);
-		for (int i = 0; i < size; i++) {
-			AttachmentResponse resp = JSONObject.parseObject (arr.get(i).toString(), AttachmentResponse.class);
-			list.add(resp);
-		}
-		return list;
-	}
-	/**
-	 * 获取附件内容
-	 * @param userId
-	 * @param taskId
-	 * @param attachmentId
-	 * @return
-	 * @throws RestException
-	 */
-	protected InputStream getAttachment(String userId, String taskId, String attachmentId)
-			throws RestException {
-		TaskService ts = bpmRestServices(userId).getTaskService();
-		byte[] bytes = (byte[]) ts.getAttachmentContent(taskId, attachmentId);
-		return new ByteArrayInputStream(bytes);
-	}
 
 	/**
 	 * 对实例添加comment
@@ -410,8 +330,6 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 		return null;
 	}
 
-
-
 /** =================================================================================================================== */
 
 	/**
@@ -421,9 +339,19 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 		List<RestVariable> var = buildOtherVariables(entity);
 		try {
 			entity.setBpmState(BpmExUtil.BPM_STATE_START);//流程状态调整为“已启动”;
-			entity=this.save(entity);
+			entity=this.save(entity);//获得业务实体的id
 			if ( entity.getProcessDefineCode()!=null) {
-				Object result = this.startProcessByKey(InvocationInfoProxy.getUserid(),entity.getProcessDefineCode(),entity.getId(),var);
+				Object result = this.startProcessByKey(InvocationInfoProxy.getUserid(),entity.getProcessDefineCode(),entity.getId().toString(),var);
+				if(result!=null){
+					ObjectNode on= (ObjectNode) result;
+					String processId= String.valueOf(on.get("id") );
+					entity.setProcessInstanceId(processId);
+					entity=this.save(entity);//保存业务实体的流程信息
+				}else
+				{
+					throw new BusinessException("启动流程实例发生错误，请联系管理员！错误原因：流程调用无返回结果");
+				}
+
 				return result;
 			}else{
 				throw new BusinessException("启动流程实例发生错误，请联系管理员！错误原因：未指定流程模板");
@@ -528,7 +456,6 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 	 */
 	public Object doSuspendProcess(String entityId) {
 		T entity=   this.findById(entityId);
-
 		try {
 			Object result = this.suspendProcess(InvocationInfoProxy.getUserid(),entity.getProcessInstanceId());
 			if ( result!=null) {
@@ -541,7 +468,45 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 		}
 		return null;
 	}
-	
+
+	/**
+	 * 改派:任务改给另外用户,并提供审批意见
+	 * @param taskId
+	 * @param delegateUser
+	 * @param comment
+	 * @return
+	 */
+	public boolean doDelegateTask(String taskId, String delegateUser, String comment)  {
+		try {
+			boolean isSuccess = this.bpmRestServices(InvocationInfoProxy.getUserid()).getTaskService()
+					.delegateTaskCompleelyWithCommants(taskId, delegateUser, comment);
+			return isSuccess;
+		} catch (RestException e) {
+			throw new BusinessException("撤回流程实例发生错误，请联系管理员！错误原因：" + e.getMessage());
+		}
+	}
+
+
+	/**
+	 * 查询流程所有task列表
+	 *
+	 * @param userId
+	 * @param instanceId
+	 * @return
+	 * @throws Exception
+	 */
+	public ArrayNode doQueryHistoryTasks( String instanceId)
+			throws RestException {
+		HistoryService ht = bpmRestServices(InvocationInfoProxy.getUserid()).getHistoryService();// 历史服务
+		HistoricTaskQueryParam htp = new HistoricTaskQueryParam();
+		htp.setProcessInstanceId(instanceId);
+		htp.setIncludeProcessVariables(true);//包含变量
+		JsonNode jsonNode = (JsonNode) ht.getHistoricTaskInstances(htp);
+		if (log.isDebugEnabled()) log.debug("queryInstanceAllHistoryTaskList==>" + jsonNode);
+		if (jsonNode == null) return null;
+		ArrayNode arrayNode = BaseUtils.getData(jsonNode);
+		return arrayNode;
+	}
 	/**
 	 * 构建BPMFormJSON
 	 * @param processDefineCode
@@ -553,7 +518,7 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 			BPMFormJSON bpmForm = new BPMFormJSON();
 			bpmForm.setProcessDefinitionKey(processDefineCode);						// 流程定义编码
 			bpmForm.setProcessInstanceName(this.getProcessInstance(entity));		// 流程实例名称
-			bpmForm.setFormId(entity.getId());										// 单据id
+			bpmForm.setFormId(entity.getId().toString());										// 单据id
 			bpmForm.setBillNo(this.getBpmBillCode(entity));							// 单据号
 			bpmForm.setBillMarker(InvocationInfoProxy.getUserid());					// 制单人
 			bpmForm.setTitle(this.getTitle(entity));								// 流程标题
@@ -568,6 +533,8 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 			throw new BusinessException("构建BPM参数出错!", exp);
 		}
 	}
+
+
 
 	/**
 	 * 构建其他变量，用于提交至流程系统
@@ -597,6 +564,8 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 		}
 		return variables;
 	}
+
+
 	
 	/**
 	 * 获取单据编号
@@ -605,7 +574,7 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 	 */
 	public String getBpmBillCode(T entity) {
 		if(StrUtil.isBlank(entity.getBpmBillCode())) {
-			return entity.getId();
+			return entity.getId().toString();
 		}else {
 			return entity.getBpmBillCode();
 		}

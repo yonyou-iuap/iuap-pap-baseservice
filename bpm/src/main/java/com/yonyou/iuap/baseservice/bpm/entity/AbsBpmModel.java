@@ -3,6 +3,7 @@ package com.yonyou.iuap.baseservice.bpm.entity;
 import com.yonyou.iuap.baseservice.entity.AbsDrModel;
 
 import javax.persistence.Column;
+import javax.persistence.Transient;
 
 
 /**
@@ -20,8 +21,13 @@ public abstract class AbsBpmModel extends AbsDrModel implements BpmModel{
 	protected String taskId;			//流程当前环节任务id
 	@Column(name="bpm_process_instance")
 	protected String processInstanceId;	//流程实例id
-	@Column(name="bpm_process_define")
+//	@Column(name="bpm_process_define")
+	@Transient
 	protected String processDefineCode;	//流程定义id
+	@Transient
+	protected String comment;	//流程定义id
+
+
 
 	public String getTaskKey() {
 		return taskKey;
@@ -55,4 +61,7 @@ public abstract class AbsBpmModel extends AbsDrModel implements BpmModel{
 	public void setProcessDefineCode(String processDefineCode) {
 		this.processDefineCode = processDefineCode;
 	}
+
+	public String getComment() {return comment;	}
+	public void setComment(String comment) {this.comment = comment;	}
 }

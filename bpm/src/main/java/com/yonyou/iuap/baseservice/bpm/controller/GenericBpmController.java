@@ -3,8 +3,15 @@ package com.yonyou.iuap.baseservice.bpm.controller;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.yonyou.iuap.bpm.service.NotifyService;
+import com.yonyou.iuap.context.InvocationInfoProxy;
+import com.yonyou.iuap.mvc.constants.RequestStatusEnum;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
@@ -18,6 +25,8 @@ import com.yonyou.iuap.mvc.type.JsonResponse;
 import com.yonyou.iuap.persistence.vo.pub.BusinessException;
 
 import iuap.uitemplate.base.util.PropertyUtil;
+import yonyou.bpm.rest.exception.RestException;
+import yonyou.bpm.rest.exception.RestRequestFailedException;
 
 /**
  * 说明：工作流基础Controller：提供单据增删改查，以及工作流提交、撤回、以及工作流流转回调方法
@@ -34,7 +43,8 @@ public abstract class GenericBpmController<T extends BpmModel> extends GenericEx
 	@ResponseBody
 	public Object doStart(@RequestBody T entity, HttpServletRequest request) throws Exception {
 		try {
-			this.checkSubmit(request);
+			String processDefCode = this.getProcessAllocated(request);
+			entity.setProcessDefineCode(processDefCode);
 			this.service.doStartProcess(entity);
 			return this.buildSuccess("流程已启动！");
 		}catch(Exception exp) {
@@ -45,9 +55,9 @@ public abstract class GenericBpmController<T extends BpmModel> extends GenericEx
 	@ResponseBody
 	public Object doSubmit(@RequestBody T entity, HttpServletRequest request) throws Exception {
 		try {
-			this.checkSubmit(request);
-			String comment=request.getParameter("comment");
-			this.service.doSubmit(entity,comment);
+			String processDefCode = this.getProcessAllocated(request);
+//			String comment=request.getParameter("comment");
+			this.service.doSubmit(entity,entity.getComment());
 			return this.buildSuccess("流程已提交！");
 		}catch(Exception exp) {
 			return this.buildGlobalError(exp.getMessage());
@@ -99,12 +109,25 @@ public abstract class GenericBpmController<T extends BpmModel> extends GenericEx
     @ResponseBody
 	public JsonResponse doSuspendAction(@RequestBody T entity)
 			  {
-			      Object result =         this.service.doSuspendProcess(entity.getId())    ;
-
+			      Object result =  this.service.doSuspendProcess(entity.getId().toString())    ;
 		return  buildSuccess(result);
 	}
-	
-	private String checkSubmit(HttpServletRequest request) {
+
+
+	@RequestMapping(value = "/doListTasks")
+	@ResponseBody
+	public JsonResponse doListHistoryTasks(@RequestBody T entity) throws Exception
+	{
+		ArrayNode result =
+				service.doQueryHistoryTasks(entity.getProcessInstanceId());
+		return  buildSuccess(result);
+	}
+	/**
+	 * 提交前校验流程是都在平台资源分配时挂在到指定流程上
+	 * @param request
+	 * @return
+	 */
+	private String getProcessAllocated(HttpServletRequest request) {
 		String checkUrl = PropertyUtil.getProperty("bpmrest.checkUrl");
 		JSONObject result = RestUtils.getInstance().doGetWithSign(checkUrl, request, JSONObject.class);
 		if(BpmExUtil.inst().isSuccess4CheckSubmit(result)) {
@@ -117,6 +140,24 @@ public abstract class GenericBpmController<T extends BpmModel> extends GenericEx
 			}
 		}
 		throw new BusinessException("流程提交出错【资源分配中未分配流程】");
+	}
+
+	@RequestMapping(value = "/delegate", method = RequestMethod.POST)
+	@ResponseBody
+	public JsonResponse delegate(@RequestBody Map<String, String> params, HttpServletRequest request, HttpServletResponse response) {
+		//參數
+		String taskId = params.get("taskId");
+		String delegateUser= params.get("userId");
+		String comment = params.get("comment");if (comment==null){ comment="";}
+		if (delegateUser==null){ throw new  BusinessException("入参userId为空"); }
+		if (taskId==null){	throw new  BusinessException("入参taskId为空");	}
+
+		boolean isSuccess = service.doDelegateTask(taskId, delegateUser, comment);
+//			NotifyService.instance().taskNotify() //TODO 消息发送暂时先不做
+		if (isSuccess) {
+			return buildSuccess("流程改派成功");
+		}
+		return buildError(null,"流程改派失败",RequestStatusEnum.FAIL_GLOBAL);
 	}
 
 	/************************************************************/

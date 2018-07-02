@@ -3,11 +3,14 @@ package com.yonyou.iuap.baseservice.bpm.model;
 import com.yonyou.iuap.baseservice.bpm.entity.BpmModel;
 import com.yonyou.iuap.baseservice.support.condition.Condition;
 import com.yonyou.iuap.baseservice.support.condition.Match;
+import com.yonyou.iuap.baseservice.support.generator.GeneratedValue;
+import com.yonyou.iuap.baseservice.support.generator.Strategy;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Version;
+import java.io.Serializable;
 
 @Table(name = "example_order_bpm")
 public class MockModel implements BpmModel
@@ -15,8 +18,14 @@ public class MockModel implements BpmModel
 {
     @Id
     @Column(name="id")
+    @GeneratedValue(strategy=Strategy.UUID, module="order")
     @Condition(match=Match.EQ)
     private String id;
+
+
+    public void setId(Serializable id){
+        this.id=id.toString();
+    }
 
     public String getId() {
         return id;

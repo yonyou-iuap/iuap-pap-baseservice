@@ -32,5 +32,8 @@ public interface BpmModel extends Model, LogicDel {
 
     String getProcessDefineCode();
 
-    public void setProcessDefineCode(String processDefineCode);
+    void setProcessDefineCode(String processDefineCode);
+
+    String getComment() ;
+    void setComment(String comment) ;
 }

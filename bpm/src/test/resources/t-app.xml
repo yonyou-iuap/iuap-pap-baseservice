@@ -7,7 +7,7 @@
 
     <description>Spring configuration for bpm service,depend on persistence configuration</description>
 
-    <context:property-placeholder ignore-unresolvable="true" location="classpath*:/t-app.properties"/>
+    <context:property-placeholder ignore-unresolvable="true" location="classpath*:/application.properties"/>
 
 
     <!--使用httpclient的实现，带连接池-->

@@ -98,7 +98,7 @@ public class GeneratorManager {
 	
 	/**
 	 * 生成ID
-	 * @param model
+	 * @param entity
 	 * @return
 	 */
 	public static Serializable generateID(Model entity) {

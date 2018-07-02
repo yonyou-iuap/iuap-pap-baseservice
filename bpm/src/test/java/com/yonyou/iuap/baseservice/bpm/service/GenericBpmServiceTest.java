@@ -1,7 +1,6 @@
 package com.yonyou.iuap.baseservice.bpm.service;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.yonyou.iuap.baseservice.bpm.entity.BpmModel;
 import com.yonyou.iuap.baseservice.bpm.model.MockModel;
 import com.yonyou.iuap.context.InvocationInfoProxy;
 import org.junit.Assert;
@@ -17,7 +16,6 @@ import yonyou.bpm.rest.BpmRest;
 import yonyou.bpm.rest.exception.RestException;
 import yonyou.bpm.rest.response.historic.HistoricTaskInstanceResponse;
 
-import java.util.Date;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -50,7 +48,7 @@ public class GenericBpmServiceTest {
         entity.setSupplier("mock-sp");
         entity.setSupplierName("mock-sp-name");
         entity.setType(1);
-        entity.setTs(new Date().getTime()+"");
+//        entity.setTs(new Date().getTime()+"");
         ObjectNode result = (ObjectNode) service.doStartProcess(entity);
         System.out.println(result.toString());
         entity.setProcessInstanceId(result.get("id").toString().replace("\"",""));
@@ -76,7 +74,7 @@ public class GenericBpmServiceTest {
     /**
      * 执行撤回
      */
-    @Test
+//    @Test
     public void do3() throws RestException {
 //        HistoricTaskInstanceResponse task = service
 //                .getInstanceNotFinishFirstTask(InvocationInfoProxy.getUserid(),
@@ -92,7 +90,7 @@ public class GenericBpmServiceTest {
     /**
      * 执行审批
      */
-    @Test
+//    @Test
     public void do4() throws RestException {
         HistoricTaskInstanceResponse task = service
                 .getInstanceNotFinishFirstTask(InvocationInfoProxy.getUserid(),
@@ -126,7 +124,7 @@ public class GenericBpmServiceTest {
     /**
      * 执行流程终止
      */
-    @Test
+//    @Test
     public void do6() {
         Object result =service.doSuspendProcess(entity.getId());
         Assert.assertNotNull(result);
