@@ -15,7 +15,6 @@ import com.yonyou.iuap.baseservice.persistence.mybatis.ext.support.Dialect;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.EntityUtil;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.FieldUtil;
 
-import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 
 /**
@@ -41,11 +40,11 @@ public class MysqlInsertTemplate implements SqlTemplate{
 		StringBuilder columnSql = new StringBuilder();
 		StringBuilder valuesSql = new StringBuilder();
 		boolean isFirst = true;
-		for(Field field : ReflectUtil.getFields(entityClazz)) {
+		for(Field field : EntityUtil.getEntityFields(entityClazz)) {
 			if(FieldUtil.insertable(field)) {
             	if(!isFirst) {
-            		columnSql.append(", ");
-            		valuesSql.append(", ");
+            		columnSql.append(", \r\n\t");
+            		valuesSql.append(", \r\n\t");
             	}
             	this.build(field, columnSql, valuesSql);
                	isFirst = false;
@@ -53,7 +52,7 @@ public class MysqlInsertTemplate implements SqlTemplate{
 		}
 		if(!isFirst) {
 			return new StringBuilder("INSERT INTO ").append(EntityUtil.getTableName(entityClazz))
-								.append(" (").append(columnSql).append(") VALUES (")
+								.append(" (").append(columnSql).append(") \r\nVALUES (")
 								.append(valuesSql).append(")").toString();
 		}else {
 			log.error("无可插入字段:" + method.getName()+";\t"+entityClazz.getName());
@@ -66,11 +65,9 @@ public class MysqlInsertTemplate implements SqlTemplate{
         if (column==null || StrUtil.isEmpty(column.name())) {			//补充内容,比如驼峰规则
             columnSql.append(FieldUtil.getColumnName(field));
             valuesSql.append(FieldUtil.build4Mybatis(field));
-            //valuesSql.append("#{").append(field.getName()).append("}");
         }else {
             columnSql.append(column.name());
             valuesSql.append(FieldUtil.build4Mybatis(field));
-            //valuesSql.append("#{").append(field.getName()).append("}");
         }
 	}
 

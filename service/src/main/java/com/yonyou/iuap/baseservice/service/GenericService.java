@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.apache.http.client.utils.DateUtils;
 import org.slf4j.Logger;
@@ -18,6 +17,7 @@ import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.entity.annotation.CodingEntity;
 import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericMapper;
 import com.yonyou.iuap.baseservice.service.util.CodingUtil;
+import com.yonyou.iuap.baseservice.support.generator.GeneratorManager;
 import com.yonyou.iuap.context.InvocationInfoProxy;
 import com.yonyou.iuap.mvc.type.SearchParams;
 
@@ -143,7 +143,10 @@ public abstract class GenericService<T extends Model>{
 	 */
 	public T insert(T entity) {
 		if(entity != null) {
-			entity.setId(UUID.randomUUID().toString());
+			//ID为空的情况下，生成生成主键
+			if(entity.getId()==null || StrUtil.isBlankIfStr(entity.getId())) {
+				entity.setId(GeneratorManager.generateID(entity));
+			}
 			String now = DateUtils.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss SSS");
 			entity.setCreateTime(now);
 			entity.setCreateUser(InvocationInfoProxy.getUserid());

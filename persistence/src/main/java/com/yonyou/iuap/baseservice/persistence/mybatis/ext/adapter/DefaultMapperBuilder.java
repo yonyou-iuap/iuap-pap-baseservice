@@ -55,9 +55,14 @@ public class DefaultMapperBuilder implements MapperBuilder{
 		
 		Method[] methods = mapperClazz.getMethods();
 		for(Method curMethod : methods) {
-			MappedStatement statement = this.parseStatement(curMethod, genericClass, mapperClazz);
-			if(statement != null) {
-				configuration.addMappedStatement(statement);
+			String statementId = this.getMappedStatementId(mapperClazz, curMethod);
+			if(configuration.hasStatement(statementId)) {
+				log.warn("Mybatis Mapper方法已存在，自动生成方法忽略，Mapper Method:" + statementId);
+			}else {
+				MappedStatement statement = this.parseStatement(curMethod, genericClass, mapperClazz);
+				if(statement != null) {
+					configuration.addMappedStatement(statement);
+				}
 			}
 		}
 	}
@@ -70,7 +75,8 @@ public class DefaultMapperBuilder implements MapperBuilder{
 			log.debug("Auto generate SQL for Mapper:\r\n" + sql);
 			if(!StrUtil.isBlank(sql)) {
 				SqlSource sqlSource = driver.createSqlSource(configuration, sql, Object.class);
-				String statementId = mapperClazz.getName() + "." + method.getName();
+				//String statementId = mapperClazz.getName() + "." + method.getName();
+				String statementId = this.getMappedStatementId(mapperClazz, method);
 				Builder builder = new Builder(configuration, statementId, sqlSource, methodMapper.type());
 				//添加Result
 				if(methodMapper.type() == SqlCommandType.SELECT) {
@@ -120,7 +126,12 @@ public class DefaultMapperBuilder implements MapperBuilder{
 				return this.mapperFactory;
 			}
 		}
+		log.warn("发现可用的..MapperFactory!");
 		return null;
+	}
+	
+	private String getMappedStatementId(Class<?> mapperClazz, Method method) {
+		return mapperClazz.getName() + "." + method.getName();
 	}
 	
 }

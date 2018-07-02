@@ -1,5 +1,6 @@
 package com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import javax.persistence.Column;
 import javax.persistence.Transient;
@@ -14,36 +15,37 @@ public class FieldUtil {
 	}
 	
 	public static String build4Mybatis(Field field) {
-		return new StringBuilder().append("#{").append(field.getName())
-				.append(", jdbcType=").append(TypeMaping.getJdbcType(field.getType()))
-				.append("}").toString();
-	}
-	
-	public static String build4Mybatis(String prefix, Field field) {
-		if(StrUtil.isBlank(prefix)) {
-			return new StringBuilder().append("#{").append(field.getName())
-					.append(", jdbcType=").append(TypeMaping.getJdbcType(field.getType()))
+		String jdbcType = TypeMaping.getJdbcType(field.getType());
+		if(jdbcType!=null) {
+			return new StringBuilder("#{").append(field.getName())
+					.append(", jdbcType=").append(jdbcType)
 					.append("}").toString();
 		}else {
-			return new StringBuilder().append("#{").append(prefix).append(".").append(field.getName())
-					.append(", jdbcType=").append(TypeMaping.getJdbcType(field.getType()))
+			return new StringBuilder("#{").append(field.getName())
 					.append("}").toString();
 		}
 	}
 	
-	public static boolean isBaseVariable(Field field) {
-		return TypeMaping.getJdbcType(field.getType())!=null;
-	}
-
-	public static String getColumnName1(Field field) {
-		Column column = field.getAnnotation(Column.class);
-        if (column==null || StrUtil.isEmpty(column.name())) {			//补充内容,比如驼峰规则
-        	return field.getName();
-        }else {
-        	return column.name();
-        }
+	public static String build4Mybatis(String prefix, Field field) {
+		if(StrUtil.isBlank(prefix)) {
+			return build4Mybatis(field);
+		}else {
+			String jdbcType = TypeMaping.getJdbcType(field.getType());
+			if(jdbcType!=null) {
+				return new StringBuilder("#{").append(prefix).append(".").append(field.getName())
+						.append(", jdbcType=").append(jdbcType)
+						.append("}").toString();
+			}else {
+				return new StringBuilder("#{").append(prefix).append(".").append(field.getName())
+						.append("}").toString();
+			}
+		}
 	}
 	
+	public static boolean isSupportedVariable(Field field) {
+		return TypeMaping.getJdbcType(field.getType())!=null || field.getType()==Serializable.class;
+	}
+
 	/**
 	 * 判断字段是否可作为条件
 	 * @param field
@@ -79,7 +81,7 @@ public class FieldUtil {
 	        if(column != null) {
 	        	return column.insertable();
 	        }else {
-	        	return FieldUtil.isBaseVariable(field);
+	        	return FieldUtil.isSupportedVariable(field);
 	        }
 		}
 	}
@@ -97,7 +99,7 @@ public class FieldUtil {
 	        if(column != null) {
 	        	return column.updatable();
 	        }else {
-	        	return FieldUtil.isBaseVariable(field);
+	        	return FieldUtil.isSupportedVariable(field);
 	        }
 		}
 	}

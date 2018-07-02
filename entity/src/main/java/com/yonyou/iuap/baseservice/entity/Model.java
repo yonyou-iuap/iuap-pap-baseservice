@@ -1,5 +1,7 @@
 package com.yonyou.iuap.baseservice.entity;
 
+import java.io.Serializable;
+
 /**
  * 说明：基础Model接口
  * @author houlf
@@ -7,9 +9,9 @@ package com.yonyou.iuap.baseservice.entity;
  */
 public interface Model {
 
-	public String getId();
+	public Serializable getId();
 	
-	public void setId(String id);
+	public void setId(Serializable id);
 	
 	public String getCreateTime();
 	

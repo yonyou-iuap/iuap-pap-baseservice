@@ -22,9 +22,13 @@ public class TypeMaping {
 		javaTypeMap.put("java.math.BigDecimal", "NUMERIC");
 	}
 	
-	public static String getJdbcType(Class<?> clazz) {
-		String jdbcType = javaTypeMap.get(clazz.getName());
+	public static String getJdbcType(Class<?> fieldType) {
+		String jdbcType = javaTypeMap.get(fieldType.getName());
 		return jdbcType;
+	}
+	
+	public static boolean isSupported(Class<?> fieldType) {
+		return javaTypeMap.containsKey(fieldType.getName());
 	}
 	
 }
