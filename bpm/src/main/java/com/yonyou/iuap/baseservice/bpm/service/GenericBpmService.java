@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import yonyou.bpm.rest.*;
+import yonyou.bpm.rest.ex.util.DateUtil;
 import yonyou.bpm.rest.exception.RestException;
 import yonyou.bpm.rest.exception.RestRequestFailedException;
 import yonyou.bpm.rest.param.BaseParam;
@@ -51,6 +52,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 /**
  * 说明：工作流基础Service
@@ -672,6 +674,15 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 		}
 		return errorMsg.toString();
 	}
+
+
+    @Override
+    public T insert(T entity) {
+        if(entity.getId()==null ) {
+            entity.setBpmState(BpmExUtil.BPM_STATE_NOTSTART);//默认为0
+        }
+        return super.insert(entity);
+    }
 
 
 }
