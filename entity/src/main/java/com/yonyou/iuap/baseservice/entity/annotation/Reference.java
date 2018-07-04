@@ -15,6 +15,10 @@ import java.lang.annotation.Target;
 public @interface Reference {
     // 参照路径
     public String path() default "";
+    // 参照编码
+    public String code() default "";
+    // 参照类型
+    public RefType type() default RefType.Single;
     // 参照回写源属性
     public String[] srcProperties() default {};
     // 参照回写目的属性
