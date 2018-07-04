@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.yonyou.iuap.baseservice.bpm.utils.BpmExUtil;
 import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +65,7 @@ public abstract class GenericController<T extends Model> extends BaseController{
 			this.service.save(entity);
 			jsonResp = this.buildSuccess(entity);
 		}catch(Exception exp) {
-			jsonResp = this.buildError("msg", exp.getMessage(), RequestStatusEnum.FAIL_FIELD);
+			jsonResp = this.buildError("msg", exp.getMessage(), RequestStatusEnum.FAIL_FIELD);BpmExUtil.BPM_STATE_START
 		}
 		return jsonResp;
 	}

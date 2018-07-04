@@ -355,10 +355,13 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 			if (variableType==null || fieldValue==null) {
 				continue;
 			}
-
 			RestVariable var = new RestVariable();
 			var.setName(curField.getName());
-			var.setType(variableType);
+			if (variableType.equalsIgnoreCase("date")){
+                var.setType("string"); //date 类型的时候,如果日期不符合标准格式会导致流程引擎解析错误,故转为string
+            }else{
+                var.setType(variableType);
+            }
 
 			if (variableType.equals("date") && fieldValue instanceof Date){
 				var.setValue(DatePattern.NORM_DATE_FORMAT.format((Date)fieldValue));
@@ -384,7 +387,7 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 				Object result = this.startProcessByKey(InvocationInfoProxy.getUserid(),entity.getProcessDefineCode(),entity.getId().toString(),var);
 				if(result!=null){
 					ObjectNode on= (ObjectNode) result;
-					String processId= String.valueOf(on.get("id") );
+					String processId= String.valueOf(on.get("id") ).replaceAll("\"","");
 					entity.setProcessInstanceId(processId);
 					entity=this.save(entity);//保存业务实体的流程信息
 				}else
@@ -650,15 +653,19 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 		for(T item : list) {
 			T entity = this.findById(item.getId());
 			if(entity.getBpmState() == BpmExUtil.BPM_STATE_START) {		//当前单据状态：已开启流程,但还未进入运行时,否则无法撤回
-				JSONObject resultJson = bpmSubmitBasicService.unsubmit(String.valueOf(entity.getId()));
-				if (resultJson.get("flag")!=null && resultJson.get("flag").equals("success") ||
-						resultJson.get("success")!=null && resultJson.get("success").equals("success")) {
-					entity.setBpmState( BpmExUtil.BPM_STATE_NOTSTART  );									// 从已提交状态改为未提交状态;
-					this.save(item);
-				} else {
-					Object msg = resultJson.get("message")!=null ? resultJson.get("message"):resultJson.get("msg");
-					throw new BusinessException("提交启动流程实例发生错误，请联系管理员！错误原因：" + msg.toString());
-				}
+                try {
+                    boolean result= bpmRestServices( InvocationInfoProxy.getUserid()).getRuntimeService().deleteProcessInstance(entity.getProcessInstanceId());
+                    if (result) {
+                        entity.setBpmState( BpmExUtil.BPM_STATE_NOTSTART  );									// 从已提交状态改为未提交状态;
+                        this.save(item);
+                    } else {
+                        throw new BusinessException("提交启动流程实例发生错误，请联系管理员！错误原因：流程调用失败" );
+                    }
+                } catch (RestException e) {
+                    throw new BusinessException("提交启动流程实例发生错误，请联系管理员！错误原因：" + e.getMessage() );
+                }
+
+
 			}else {
 				errorMsg.append("工单["+entity.getId()+"]状态不合法，无法撤回!\r\n");
 			}
