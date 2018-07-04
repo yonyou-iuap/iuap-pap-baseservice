@@ -13,6 +13,12 @@ public class SimpleExcelExporter {
 	
 	public static final String splitSign = ":";
 	
+	/**
+	 * 导出文件
+	 * @param listHeader	格式:{"code:编码","name:名称",...}
+	 * @param listData
+	 * @param output
+	 */
 	public void export(String[] listHeader, List listData, String output) {
 		ExcelWriter writer = new ExcelWriter(output);
 		//创建sheet
@@ -25,6 +31,12 @@ public class SimpleExcelExporter {
 		writer.flush();
 	}
 	
+	/**
+	 * 导出到输出流
+	 * @param listHeader	格式:{"code:编码","name:名称",...}
+	 * @param listData
+	 * @param os
+	 */
 	public void export(String[] listHeader, List listData, OutputStream os) {
 		ExcelWriter writer = new ExcelWriter(true);
 		//创建sheet
