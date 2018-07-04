@@ -72,7 +72,7 @@ public class DefaultMapperBuilder implements MapperBuilder{
 		MethodMapper methodMapper = method.getAnnotation(MethodMapper.class);
 		if(methodMapper != null) {
 			String sql = this.buildSql(method, methodMapper, entityClazz);
-			log.debug("Auto generate SQL for Mapper:\r\n" + sql);
+			log.debug(this.getMappedStatementId(mapperClazz,method)+"：Auto generate SQL for Mapper:\r\n" + sql);
 			if(!StrUtil.isBlank(sql)) {
 				SqlSource sqlSource = driver.createSqlSource(configuration, sql, Object.class);
 				//String statementId = mapperClazz.getName() + "." + method.getName();

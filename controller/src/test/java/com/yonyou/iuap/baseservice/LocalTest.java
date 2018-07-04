@@ -1,4 +1,4 @@
-package com.yonyou.iuap.baseservice;
+/*package com.yonyou.iuap.baseservice;
 
 import com.yonyou.iuap.baseservice.entity.SanyOrder;
 import com.yonyou.iuap.baseservice.service.SanyOrderService;
@@ -66,5 +66,5 @@ public class LocalTest {
         int deleted = service.delete(entity);
         Assert.assertEquals(1, deleted);
     }
-}
-
+    
+}*/

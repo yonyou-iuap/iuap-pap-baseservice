@@ -3,9 +3,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.ibatis.mapping.MappedStatement.Builder;
 import org.apache.ibatis.session.Configuration;
@@ -15,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.exception.MapperException;
+import com.yonyou.iuap.mybatis.type.PageResult;
 
 /**
  * 说明：MappedStatement构建帮助类
@@ -34,7 +33,7 @@ public class MappedStatementHelper {
 		Type returnType = method.getGenericReturnType();
 		if(returnType != null && returnType instanceof ParameterizedType) {
 			Type rawType = ((ParameterizedType)returnType).getRawType();
-			if(((Class<?>)rawType).isAssignableFrom(java.util.List.class)) {
+			if(((Class<?>)rawType).isAssignableFrom(java.util.List.class) || ((Class<?>)rawType).isAssignableFrom(PageResult.class)) {
 				Type[] genericType = ((ParameterizedType)returnType).getActualTypeArguments();
 				if(genericType.length != 1) {
 					throw new MapperException("无法识别的泛型类型!");

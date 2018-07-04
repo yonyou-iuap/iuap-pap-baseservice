@@ -8,11 +8,18 @@ import java.util.Map;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.poi.excel.ExcelWriter;
 
-public class ExcelExporter {
+@SuppressWarnings("all")
+public class SimpleExcelExporter {
 	
 	public static final String splitSign = ":";
 	
-	public void export(List<String> listHeader, List<Object> listData, String output) {
+	/**
+	 * 导出文件
+	 * @param listHeader	格式:{"code:编码","name:名称",...}
+	 * @param listData
+	 * @param output
+	 */
+	public void export(String[] listHeader, List listData, String output) {
 		ExcelWriter writer = new ExcelWriter(output);
 		//创建sheet
 		writer.setOrCreateSheet("sheet1");
@@ -24,7 +31,13 @@ public class ExcelExporter {
 		writer.flush();
 	}
 	
-	public void export(List<String> listHeader, List<Object> listData, OutputStream os) {
+	/**
+	 * 导出到输出流
+	 * @param listHeader	格式:{"code:编码","name:名称",...}
+	 * @param listData
+	 * @param os
+	 */
+	public void export(String[] listHeader, List listData, OutputStream os) {
 		ExcelWriter writer = new ExcelWriter(true);
 		//创建sheet
 		writer.setOrCreateSheet("sheet1");
@@ -41,42 +54,40 @@ public class ExcelExporter {
 	 * @param listHeader
 	 * @return
 	 */
-	private List<String> writeHeader(ExcelWriter writer, List<String> listHeader) {
+	private List<String> writeHeader(ExcelWriter writer, String[] listHeader) {
 		List<String> listCode = new ArrayList<String>();
-		List<String> listName = new ArrayList<String>();
-		for(int i=0; i<listHeader.size(); i++) {
-			String[] header = listHeader.get(i).split(":");
+		for(int i=0; i<listHeader.length; i++) {
+			String[] header = listHeader[i].split(":");
 			if(header.length==2) {
 				listCode.add(header[0]);
-				listCode.add(header[1]);
+				writer.writeCellValue(i, 0, header[1]);
 			}else {
 				throw new RuntimeException("Excel Header信息格式不正确，请检查:"+listHeader.toString());
 			}
 		}
-		writer.writeHeadRow(listName);
 		return listCode;
 	}
 	
 	private void writeBody(ExcelWriter writer, List<Object> listData, List<String> listHeader) {
 		for(int row=0; row<listData.size(); row++) {
 			if(listData.get(row) instanceof Map) {
-				this.writeBodyByMap(writer, row, (Map)listData.get(row), listHeader);
+				this.writeBodyByMap(writer, row+1, (Map)listData.get(row), listHeader);
 			}else {
-				this.writeBodyByVo(writer, row, listData.get(row), listHeader);
+				this.writeBodyByVo(writer, row+1, listData.get(row), listHeader);
 			}
 		}
 	}
 	
 	private void writeBodyByMap(ExcelWriter writer, int row,  Map dataMap, List<String> listHeader) {
 		for(int col=0; col<listHeader.size(); col++) {
-			writer.writeCellValue(row, col, dataMap.get(listHeader.get(col)));
+			writer.writeCellValue(col, row, dataMap.get(listHeader.get(col)));
 		}
 	}
 
 	private void writeBodyByVo(ExcelWriter writer, int row, Object data, List<String> listHeader) {
 		for(int col=0; col<listHeader.size(); col++) {
 			Object value = ReflectUtil.getFieldValue(data, listHeader.get(col));
-			writer.writeCellValue(row, col, value);
+			writer.writeCellValue(col, row, value);
 		}
 	}
 

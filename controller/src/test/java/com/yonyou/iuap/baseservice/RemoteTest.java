@@ -11,7 +11,6 @@ import java.util.Map;
 public class RemoteTest {
 
 	public static void main(String[] args) {
-		select();
 		//insert();
 		//update();
 		//delete();

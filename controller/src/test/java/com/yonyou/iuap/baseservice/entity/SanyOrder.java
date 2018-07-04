@@ -3,9 +3,14 @@ package com.yonyou.iuap.baseservice.entity;
 
 import com.yonyou.iuap.baseservice.support.condition.Condition;
 import com.yonyou.iuap.baseservice.support.condition.Match;
+import com.yonyou.iuap.baseservice.support.generator.GeneratedValue;
+import com.yonyou.iuap.baseservice.support.generator.Strategy;
 
 import javax.persistence.Column;
+import javax.persistence.Id;
 import javax.persistence.Table;
+
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -14,6 +19,12 @@ import java.util.Date;
  */
 @Table(name = "example_sany_order")
 public class SanyOrder extends AbsDrModel {
+	
+	@Id
+	@GeneratedValue(strategy=Strategy.CUSTOM, module="order", clazz="")
+	@Column(name="id")
+	@Condition
+	protected Serializable id;
 
 	@Condition(match=Match.GT)
 	@Column(name="order_code")
