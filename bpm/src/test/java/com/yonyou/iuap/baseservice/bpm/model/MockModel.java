@@ -166,7 +166,7 @@ public class MockModel implements BpmModel
     protected String taskId;			//流程当前环节任务id
     @Column(name="bpm_process_instance")
     protected String processInstanceId;	//流程实例id
-    @Column(name="bpm_process_define")
+//    @Column(name="bpm_process_define")
     protected String processDefineCode;	//流程定义id
 
     public String getTaskKey() {
@@ -200,6 +200,16 @@ public class MockModel implements BpmModel
     public String getProcessDefineCode() {return processDefineCode;	}
     public void setProcessDefineCode(String processDefineCode) {
         this.processDefineCode = processDefineCode;
+    }
+
+    @Override
+    public String getComment() {
+        return null;
+    }
+
+    @Override
+    public void setComment(String comment) {
+
     }
 
 }
