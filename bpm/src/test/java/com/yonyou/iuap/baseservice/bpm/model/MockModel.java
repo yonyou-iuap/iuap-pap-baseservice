@@ -202,4 +202,14 @@ public class MockModel implements BpmModel
         this.processDefineCode = processDefineCode;
     }
 
+	public String getComment() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setComment(String comment) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

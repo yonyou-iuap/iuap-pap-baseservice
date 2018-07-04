@@ -26,6 +26,17 @@ public class FieldUtil {
 		}
 	}
 	
+	public static String buildVersionField4Mybatis(Field field) {
+		String jdbcType = TypeMaping.getJdbcType(field.getType());
+		if(jdbcType!=null) {
+			return new StringBuilder("#{newTs").append(", jdbcType=").append(jdbcType)
+					.append("}").toString();
+		}else {
+			return new StringBuilder("#{").append(field.getName())
+					.append("}").toString();
+		}
+	}
+	
 	public static String build4Mybatis(String prefix, Field field) {
 		if(StrUtil.isBlank(prefix)) {
 			return build4Mybatis(field);

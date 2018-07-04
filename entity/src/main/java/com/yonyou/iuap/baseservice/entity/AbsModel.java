@@ -1,8 +1,10 @@
 package com.yonyou.iuap.baseservice.entity;
 
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Version;
@@ -10,12 +12,14 @@ import javax.persistence.Version;
 import com.yonyou.iuap.baseservice.support.condition.Condition;
 import com.yonyou.iuap.baseservice.support.generator.GeneratedValue;
 
+import cn.hutool.core.date.DateUtil;
+
 /**
  * 说明：基础Model-带版本号、乐观锁：ts
  * @author houlf
  * 2018年6月12日
  */
-public abstract class AbsModel implements Model{
+public abstract class AbsModel implements Model, VerLock{
 
 	@Id
 	@GeneratedValue()
@@ -41,6 +45,9 @@ public abstract class AbsModel implements Model{
 	@Column(name="ts")
 	@Condition
 	protected String ts;
+	
+	@Transient
+	protected String newTs;
 
 	public Serializable getId() {
 		return id;
@@ -82,6 +89,13 @@ public abstract class AbsModel implements Model{
 	}
 	public void setTs(String ts) {
 		this.ts = ts;
+	}
+	
+	public String getNewTs() {
+		return this.newTs!=null ? this.newTs:DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss SSS");
+	}
+	public void setNewTs(String newTs) {
+		this.newTs = newTs;
 	}
 
 }

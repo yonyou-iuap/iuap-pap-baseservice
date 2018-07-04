@@ -20,6 +20,7 @@ import com.yonyou.iuap.mybatis.type.PageResult;
  */
 public interface GenericMapper<T extends Model> {
 
+	@MethodMapper(type=SqlCommandType.SELECT)
 	public PageResult<T> selectAllByPage(@Param("page") PageRequest pageRequest, @Param("condition") SearchParams searchParams);
 	
 	@MethodMapper(type=SqlCommandType.SELECT)
