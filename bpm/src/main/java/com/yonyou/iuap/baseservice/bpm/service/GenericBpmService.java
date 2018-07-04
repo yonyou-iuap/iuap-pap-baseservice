@@ -657,7 +657,7 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
                     boolean result= bpmRestServices( InvocationInfoProxy.getUserid()).getRuntimeService().deleteProcessInstance(entity.getProcessInstanceId());
                     if (result) {
                         entity.setBpmState( BpmExUtil.BPM_STATE_NOTSTART  );									// 从已提交状态改为未提交状态;
-                        this.save(item);
+                        this.save(entity);
                     } else {
                         throw new BusinessException("提交启动流程实例发生错误，请联系管理员！错误原因：流程调用失败" );
                     }
