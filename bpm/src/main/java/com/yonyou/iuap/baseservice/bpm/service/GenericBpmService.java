@@ -610,16 +610,6 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 
 
 	/**
-	 * 构建BPMFormJSON
-	 * @param processDefineCode
-	 * @param SanyOrder
-	 * @return
-	 * @throws
-	 */
-	public  abstract BPMFormJSON buildBPMFormJSON(String processDefineCode, T entity);
-
-
-	/**
 	 * 工单申请提交（批量）
 	 * @param list
 	 * @param processDefineCode
@@ -659,7 +649,7 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 		StringBuffer errorMsg = new StringBuffer("");
 		for(T item : list) {
 			T entity = this.findById(item.getId());
-			if(entity.getBpmState() == BpmExUtil.BPM_STATE_RUNNING) {							//当前单据状态：已提交
+			if(entity.getBpmState() == BpmExUtil.BPM_STATE_START) {		//当前单据状态：已开启流程,但还未进入运行时,否则无法撤回
 				JSONObject resultJson = bpmSubmitBasicService.unsubmit(String.valueOf(entity.getId()));
 				if (resultJson.get("flag")!=null && resultJson.get("flag").equals("success") ||
 						resultJson.get("success")!=null && resultJson.get("success").equals("success")) {

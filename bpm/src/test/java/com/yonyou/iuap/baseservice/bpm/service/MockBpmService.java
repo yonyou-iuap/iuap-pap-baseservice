@@ -17,11 +17,6 @@ public class MockBpmService extends GenericBpmService<MockModel>{
         super.setGenericMapper(mockMapper);
     }
 
-    @Override
-    public BPMFormJSON buildBPMFormJSON(String processDefineCode, MockModel entity) {
-        return null;
-    }
-
 
     /**
      * Mock保存数据
