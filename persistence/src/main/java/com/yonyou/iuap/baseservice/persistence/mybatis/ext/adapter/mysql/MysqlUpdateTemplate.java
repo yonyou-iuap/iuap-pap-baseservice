@@ -60,12 +60,18 @@ public class MysqlUpdateTemplate implements SqlTemplate{
         Column column = field.getAnnotation(Column.class);
         if (column==null || StrUtil.isEmpty(column.name())) {			//补充内容,比如驼峰规则
             updateSql.append(FieldUtil.getColumnName(field));
-            updateSql.append("=").append(FieldUtil.build4Mybatis(field));
-            //updateSql.append("=#{").append(field.getName()).append("}");
+            if(field.getAnnotation(Version.class)==null) {				//非乐观锁字段
+            	updateSql.append("=").append(FieldUtil.build4Mybatis(field));
+            }else {														//乐观锁字段
+                updateSql.append("=").append(FieldUtil.buildVersionField4Mybatis(field));
+            }
         }else {
             updateSql.append(column.name());
-            updateSql.append("=").append(FieldUtil.build4Mybatis(field));
-            //updateSql.append("=#{").append(field.getName()).append("}");
+            if(field.getAnnotation(Version.class)==null) {				//非乐观锁字段
+                updateSql.append("=").append(FieldUtil.build4Mybatis(field));
+            }else {														//乐观锁字段
+                updateSql.append("=").append(FieldUtil.buildVersionField4Mybatis(field));
+            }
         }
 	}
 	
@@ -80,15 +86,20 @@ public class MysqlUpdateTemplate implements SqlTemplate{
 					tsField = field;
 				}
 			}
-			if (idField != null && tsField != null) {
-				StringBuffer where = new StringBuffer("\r\n WHERE ");
-				where.append(idField.getName()).append("=").append(FieldUtil.build4Mybatis(idField)).append(" and ")
-						.append(tsField.getName()).append("=").append(FieldUtil.build4Mybatis(tsField));
+			StringBuffer where = new StringBuffer("\r\n WHERE 1=1 ");
+			if(idField != null) {
+				where.append(" and ").append(idField.getName()).append("=").append(FieldUtil.build4Mybatis(idField));
+			}else {
+				throw new MapperException("无效的对象类型,@Id Field必须存在，class="+entityClazz.getName());
+			}
+			
+			if (tsField != null) {
+				where.append(" and ").append(tsField.getName()).append("=").append(FieldUtil.build4Mybatis(tsField));
 				return where.toString();
 			} else {
-				log.error("无效的对象类型，class="+entityClazz.getName()+"\r\n未找到id、ts字段！");
-				throw new MapperException("无效的对象类型，class="+entityClazz.getName());
+				log.warn("无效的对象类型,未找到@Version Field，class="+entityClazz.getName());
 			}
+			return where.toString();
 		}else {
 			log.error("无效的对象类型，class="+entityClazz.getName());
 			throw new MapperException("无效的对象类型，class="+entityClazz.getName());

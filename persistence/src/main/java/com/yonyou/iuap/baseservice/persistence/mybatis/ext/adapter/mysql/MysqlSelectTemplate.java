@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.mapping.SqlCommandType;
 import org.springframework.data.domain.PageRequest;
 
+import com.yonyou.iuap.baseservice.entity.LogicDel;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.SqlTemplate;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.matcher.Matcher;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.matcher.MatcherFactory;
@@ -40,7 +41,7 @@ public class MysqlSelectTemplate implements SqlTemplate{
 	@Override
 	public String parseSQL(Method method, Class<?> entityClazz) {
 		StringBuilder selectSql = new StringBuilder("SELECT ");
-		StringBuilder whereSql = new StringBuilder("\r\nWHERE 1=1 ");
+		StringBuilder whereSql = new StringBuilder(this.getBaseWhere(entityClazz));
 		boolean isFirst4Select = true;
 		for(Field field : EntityUtil.getEntityFields(entityClazz)) {
 			if(FieldUtil.isSelectable(field)) {		//构建select
@@ -68,9 +69,9 @@ public class MysqlSelectTemplate implements SqlTemplate{
 				}
 				String prefix = paramAnno==null ? null:paramAnno.value();
 				if(paramType[i].isAssignableFrom(PageRequest.class)) {
-					this.buildWhere4Page(prefix, PageRequest.class, whereSql);
+					//this.buildWhere4Page(prefix, PageRequest.class, whereSql);
 				}else if(paramType[i].isAssignableFrom(SearchParams.class)) {
-					this.buildWhere4SearchParams(prefix, entityClazz, whereSql);
+					this.buildWhere4SearchParams(prefix+".searchMap", entityClazz, whereSql);
 				}else if(paramType[i].isAssignableFrom(Map.class)) {
 					this.buildWhere4Map(prefix, entityClazz, whereSql);
 				}
@@ -85,7 +86,7 @@ public class MysqlSelectTemplate implements SqlTemplate{
 	}
 	
 	private void buildWhere4Page(String prefix, Class<PageRequest> clazz, StringBuilder whereSql) {
-		
+		//暂不需要
 	}
 	
 	private void buildWhere4SearchParams(String prefix, Class<?> entityClazz, StringBuilder whereSql) {
@@ -117,6 +118,14 @@ public class MysqlSelectTemplate implements SqlTemplate{
 		}
 		if(!StrUtil.isBlank(prefix)) {
 			whereSql.append("</if>");
+		}
+	}
+	
+	private String getBaseWhere(Class<?> entityClazz) {
+		if(LogicDel.class.isAssignableFrom(entityClazz)) {
+			return "\r\nWHERE 1=1 and dr=0";
+		}else{
+			return "\r\nWHERE 1=1 ";
 		}
 	}
 

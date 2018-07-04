@@ -14,6 +14,7 @@ import com.yonyou.iuap.baseservice.bpm.entity.BpmModel;
 import com.yonyou.iuap.baseservice.bpm.utils.BpmExUtil;
 import com.yonyou.iuap.baseservice.service.GenericExService;
 import com.yonyou.iuap.bpm.pojo.BPMFormJSON;
+import com.yonyou.iuap.bpm.service.BPMSubmitBasicService;
 import com.yonyou.iuap.bpm.service.NotifyService;
 import com.yonyou.iuap.bpm.service.TenantLimit;
 import com.yonyou.iuap.bpm.util.BpmRestVarType;
@@ -22,6 +23,7 @@ import com.yonyou.iuap.persistence.vo.pub.BusinessException;
 import iuap.uitemplate.base.util.PropertyUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import yonyou.bpm.rest.*;
 import yonyou.bpm.rest.exception.RestException;
@@ -71,6 +73,8 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 	@Value("${bpmrest.token}")
 	private String token;
 
+	@Autowired
+	private BPMSubmitBasicService bpmSubmitBasicService;
 	/**
 	 * 几套基本服务的实例化工厂
 	 * @param userId
@@ -313,6 +317,13 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 		return null;
 	}
 
+	/**
+	 * 获得待办任务
+	 * @param userId
+	 * @param instanceId
+	 * @return
+	 * @throws RestException
+	 */
 	protected HistoricTaskInstanceResponse getInstanceNotFinishFirstTask(String userId, String instanceId)
 			throws RestException {
 		HistoryService ht = bpmRestServices(userId).getHistoryService();// 历史服务
@@ -328,6 +339,35 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 			return resp;
 		}
 		return null;
+	}
+
+	/**
+	 * 构建其他变量，用于提交至流程系统
+	 * @param entity
+	 * @return
+	 */
+	protected List<RestVariable> buildOtherVariables(T entity) {
+		Field[] fields = ReflectUtil.getFields(entity.getClass());
+		List<RestVariable> variables = new ArrayList<RestVariable>();
+		for (Field curField : fields) {
+			Object fieldValue = ReflectUtil.getFieldValue(entity, curField);
+			String variableType = BpmRestVarType.ClassToRestVariavleTypeMap.get(curField.getType());
+			if (variableType==null || fieldValue==null) {
+				continue;
+			}
+
+			RestVariable var = new RestVariable();
+			var.setName(curField.getName());
+			var.setType(variableType);
+
+			if (variableType.equals("date") && fieldValue instanceof Date){
+				var.setValue(DatePattern.NORM_DATE_FORMAT.format((Date)fieldValue));
+			}else{
+				var.setValue(fieldValue);
+			}
+			variables.add(var);
+		}
+		return variables;
 	}
 
 /** =================================================================================================================== */
@@ -433,7 +473,7 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 	}
 	
 	/**
-	 * 驳回：更新流程状态——未开始
+	 * 驳回：更新流程状态——运行中
 	 * @param id
 	 */
 	public Object doReject(T entity,String comment) {
@@ -448,6 +488,29 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 			throw new BusinessException("驳回流程实例发生错误，请联系管理员！错误原因：" + e.getMessage());
 		}
 		return null;
+	}
+
+	/**
+	 * 驳回到制单人：更新流程状态——未开始
+	 * @param id
+	 */
+	public Object doRejectToInitial(String entityId ,String comment) {
+		try {
+			if (entityId==null){
+				throw new RestException("流程实例未通过BizKey绑定业务实体!");
+			}
+			T entity = this.findById(entityId);
+			Object result = bpmRestServices(InvocationInfoProxy.getUserid()).getRuntimeService().rejectToInitialActivity(entity.getProcessInstanceId(), entity.getComment(), comment);
+			if ( result!=null) {
+				entity.setBpmState(BpmExUtil.BPM_STATE_RUNNING);				//如果撤回到流程起始,流程状态调整为“未开始”;
+				this.save(entity);
+				return result;
+			}else{
+				throw new RestException("驳回到制单人接口调用失败,返回结果为空");
+			}
+		} catch (RestException e) {
+			throw new BusinessException("驳回流程实例发生错误，请联系管理员！错误原因：" + e.getMessage());
+		}
 	}
 	
 	/**
@@ -507,64 +570,6 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 		ArrayNode arrayNode = BaseUtils.getData(jsonNode);
 		return arrayNode;
 	}
-	/**
-	 * 构建BPMFormJSON
-	 * @param processDefineCode
-	 * @return
-	 * @throws
-	 */
-	protected BPMFormJSON buildBPMFormJSON(String processDefineCode, T entity){
-		try{
-			BPMFormJSON bpmForm = new BPMFormJSON();
-			bpmForm.setProcessDefinitionKey(processDefineCode);						// 流程定义编码
-			bpmForm.setProcessInstanceName(this.getProcessInstance(entity));		// 流程实例名称
-			bpmForm.setFormId(entity.getId().toString());										// 单据id
-			bpmForm.setBillNo(this.getBpmBillCode(entity));							// 单据号
-			bpmForm.setBillMarker(InvocationInfoProxy.getUserid());					// 制单人
-			bpmForm.setTitle(this.getTitle(entity));								// 流程标题
-			String orgId = "";														// usercxt.getSysUser().getOrgId() ;
-			bpmForm.setOrgId(orgId);												// 组织
-			bpmForm.setFormUrl(this.getBpmFormUrl(entity));							// 单据url
-			String callBackUrl = this.getBpmCallBackUrl(entity);					// 流程审批后，执行的业务处理类(controller对应URI前缀)
-			bpmForm.setServiceClass(callBackUrl);
-			bpmForm.setOtherVariables(buildOtherVariables(entity));					// 其他变量
-			return bpmForm;
-		}catch(Exception exp){
-			throw new BusinessException("构建BPM参数出错!", exp);
-		}
-	}
-
-
-
-	/**
-	 * 构建其他变量，用于提交至流程系统
-	 * @param entity
-	 * @return
-	 */
-	protected List<RestVariable> buildOtherVariables(T entity) {
-		Field[] fields = ReflectUtil.getFields(entity.getClass());
-		List<RestVariable> variables = new ArrayList<RestVariable>();
-		for (Field curField : fields) {
-			Object fieldValue = ReflectUtil.getFieldValue(entity, curField);
-			String variableType = BpmRestVarType.ClassToRestVariavleTypeMap.get(curField.getType());
-			if (variableType==null || fieldValue==null) {
-				continue;
-			}
-
-			RestVariable var = new RestVariable();
-			var.setName(curField.getName());
-			var.setType(variableType);
-			
-			if (variableType.equals("date") && fieldValue instanceof Date){
-				var.setValue(DatePattern.NORM_DATE_FORMAT.format((Date)fieldValue));
-			}else{
-				var.setValue(fieldValue);
-			}
-			variables.add(var);
-		}
-		return variables;
-	}
-
 
 	
 	/**
@@ -589,12 +594,12 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 	public String getTitle(T entity) throws UnsupportedEncodingException {
 		String userName = InvocationInfoProxy.getUsername();
 		userName = URLDecoder.decode(userName,"utf-8");
-		return "流程[" + entity.getClass().getSimpleName() + "], 单据号：" + entity.getBpmBillCode()
+		return "流程[" + entity.getProcessDefineCode()+"@"+entity.getProcessInstanceId() + "], 单据号：" + entity.getBpmBillCode()
 					+"，提交人:"+userName;
 	}
 	
 	/**
-	 * 获取流程实例
+	 * 获取流程实例信息
 	 * @param entity
 	 * @return
 	 * @throws UnsupportedEncodingException
@@ -602,26 +607,64 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 	public String getProcessInstance(T entity) throws UnsupportedEncodingException {
 		return this.getTitle(entity);
 	}
-	
+
+
 	/**
-	 * 获取流程NodeKey
-	 * @param entity
-	 * @return
+	 * 工单申请提交（批量）
+	 * @param list
+	 * @param processDefineCode
 	 */
-	public abstract String getNodeKey(T entity);
-	
+	public String batchSubmit(List<T> list, String processDefineCode) {
+		StringBuffer errorMsg = new StringBuffer("");
+		for (int i = 0; i <list.size() ; i++) {
+			T inParam = list.get(i);
+			if (inParam.getId()==null || inParam.getId().toString().equalsIgnoreCase("null"))
+			{
+				errorMsg.append("工单"+i+"ID为空提交失败!\r\n");
+				continue;
+			}
+			T entity = this.findById(inParam.getId());
+			entity.setProcessDefineCode(processDefineCode);
+			try {
+				this.doStartProcess(entity);
+			} catch (Exception e) {
+				errorMsg.append("工单["+inParam.getId()+"]提交失败!\r\n");
+			}finally {
+				continue;
+			}
+		}
+		if(org.springframework.util.StringUtils.isEmpty(errorMsg.toString())) {
+			return "保存成功!";
+		}else {
+			return errorMsg.toString();
+		}
+	}
+
+
 	/**
-	 * 获取单据URL
-	 * @param entity
-	 * @return
+	 * 工单申请撤回
+	 * @param list
 	 */
-	public abstract String getBpmFormUrl(T entity);
-	
-	/**
-	 * 获取流程回调URL：应用Controller RequestMapping
-	 * @param entity
-	 * @return
-	 */
-	public abstract String getBpmCallBackUrl(T entity);
+	public String batchRecall(List<T> list) {
+		StringBuffer errorMsg = new StringBuffer("");
+		for(T item : list) {
+			T entity = this.findById(item.getId());
+			if(entity.getBpmState() == BpmExUtil.BPM_STATE_START) {		//当前单据状态：已开启流程,但还未进入运行时,否则无法撤回
+				JSONObject resultJson = bpmSubmitBasicService.unsubmit(String.valueOf(entity.getId()));
+				if (resultJson.get("flag")!=null && resultJson.get("flag").equals("success") ||
+						resultJson.get("success")!=null && resultJson.get("success").equals("success")) {
+					entity.setBpmState( BpmExUtil.BPM_STATE_NOTSTART  );									// 从已提交状态改为未提交状态;
+					this.save(item);
+				} else {
+					Object msg = resultJson.get("message")!=null ? resultJson.get("message"):resultJson.get("msg");
+					throw new BusinessException("提交启动流程实例发生错误，请联系管理员！错误原因：" + msg.toString());
+				}
+			}else {
+				errorMsg.append("工单["+entity.getId()+"]状态不合法，无法撤回!\r\n");
+			}
+		}
+		return errorMsg.toString();
+	}
+
 
 }

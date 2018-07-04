@@ -145,7 +145,8 @@ public abstract class GenericService<T extends Model>{
 		if(entity != null) {
 			//ID为空的情况下，生成生成主键
 			if(entity.getId()==null || StrUtil.isBlankIfStr(entity.getId())) {
-				entity.setId(GeneratorManager.generateID(entity));
+			    Serializable id = GeneratorManager.generateID(entity);
+				entity.setId(id);
 			}
 			String now = DateUtils.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss SSS");
 			entity.setCreateTime(now);

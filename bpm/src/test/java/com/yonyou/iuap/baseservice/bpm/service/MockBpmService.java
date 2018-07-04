@@ -2,6 +2,7 @@ package com.yonyou.iuap.baseservice.bpm.service;
 
 import com.yonyou.iuap.baseservice.bpm.dao.MockMapper;
 import com.yonyou.iuap.baseservice.bpm.model.MockModel;
+import com.yonyou.iuap.bpm.pojo.BPMFormJSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,21 +17,6 @@ public class MockBpmService extends GenericBpmService<MockModel>{
         super.setGenericMapper(mockMapper);
     }
 
-
-    @Override
-    public String getNodeKey(MockModel entity) {
-        return null;
-    }
-
-    @Override
-    public String getBpmFormUrl(MockModel entity) {
-        return null;
-    }
-
-    @Override
-    public String getBpmCallBackUrl(MockModel entity) {
-        return null;
-    }
 
     /**
      * Mock保存数据

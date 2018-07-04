@@ -18,7 +18,7 @@ public @interface GeneratedValue {
 	 * 默认策略：UUID
 	 * @return
 	 */
-	public Strategy strategy() default Strategy.CONFIG;
+	public Strategy strategy() default Strategy.UUID;
 	
 	public String module() default "";
 
