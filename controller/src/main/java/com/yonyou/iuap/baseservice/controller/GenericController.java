@@ -65,7 +65,7 @@ public abstract class GenericController<T extends Model> extends BaseController{
 			this.service.save(entity);
 			jsonResp = this.buildSuccess(entity);
 		}catch(Exception exp) {
-			jsonResp = this.buildError("msg", exp.getMessage(), RequestStatusEnum.FAIL_FIELD);BpmExUtil.BPM_STATE_START
+			jsonResp = this.buildError("msg", exp.getMessage(), RequestStatusEnum.FAIL_FIELD);
 		}
 		return jsonResp;
 	}
