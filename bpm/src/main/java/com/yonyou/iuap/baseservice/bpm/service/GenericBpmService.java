@@ -384,7 +384,8 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 		List<RestVariable> var = buildOtherVariables(entity);
 		try {
 			entity.setBpmState(BpmExUtil.BPM_STATE_START);//流程状态调整为“已启动”;
-			entity=this.save(entity);//获得业务实体的id
+            if (entity.getId()==null)
+			    entity=this.save(entity);//获得业务实体的id
 			if ( entity.getProcessDefineCode()!=null) {
 				Object result = this.startProcessByKey(InvocationInfoProxy.getUserid(),entity.getProcessDefineCode(),entity.getId().toString(),var);
 				if(result!=null){
