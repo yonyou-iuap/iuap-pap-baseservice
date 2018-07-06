@@ -70,12 +70,12 @@ public  class GenericBpmController<T extends BpmModel> extends GenericExControll
 		return this.buildSuccess("流程已撤回！");
 	}
 
-    @RequestMapping(value = "/doApprove")
+    @RequestMapping(value = "/doTaskApprove")
     @ResponseBody
 	public Object doApproveAction(@RequestBody Map<String, Object> params, HttpServletRequest request) 
 			throws Exception {
 		Object approvetype = params.get("approvetype");
-        Object comment = params.get("comment");     if (comment==null){ comment="";}
+        Object comment = params.get("comment");     if (comment==null){ comment="no coomment";}
         Object bpmNode = params.get("historicProcessInstanceNode");
         if (bpmNode==null){
             throw new  BusinessException("入参historicProcessInstanceNode为空");
@@ -214,15 +214,14 @@ public  class GenericBpmController<T extends BpmModel> extends GenericExControll
 	 /**
 	  * 回调:审批通过
 	  */
-	 @RequestMapping(value={"/approve"}, method={RequestMethod.POST})
+	 @RequestMapping(value={"/doApprove"}, method={RequestMethod.POST})
 	 @ResponseBody
 	 public Object callbackApprove(@RequestBody Map<String, Object> params, HttpServletRequest request) throws Exception {
 		 Object node = params.get("historicProcessInstanceNode");
 		 if (node==null) throw new BusinessException("流程审批回调参数为空");
-		 ObjectNode hisProc = (ObjectNode)node;
+		 Map hisProc = (Map)node;
 		 Object endTime = hisProc.get("endTime");
-		 String busiId = hisProc.get("businessKey").textValue();
-
+		 String busiId = hisProc.get("businessKey").toString();
 		 T entity=service.findById(busiId);
 		 if (endTime != null && endTime != JSONNull.getInstance() && !"".equals(endTime)) {
 			 entity.setBpmState(BpmExUtil.BPM_STATE_FINISH);		//已办结

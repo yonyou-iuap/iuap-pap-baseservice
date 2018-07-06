@@ -343,37 +343,61 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 		return null;
 	}
 
-	/**
+    public abstract  BPMFormJSON buildVariables(T entity);
+
+    private String[] names = {"processDefinitionKey","formId","billMarker","orgId","billNo","formUrl","title","serviceClass"};
+
+    /**
 	 * 构建其他变量，用于提交至流程系统
 	 * @param entity
 	 * @return
 	 */
 	protected List<RestVariable> buildOtherVariables(T entity) {
-		Field[] fields = ReflectUtil.getFields(entity.getClass());
-		List<RestVariable> variables = new ArrayList<RestVariable>();
-		for (Field curField : fields) {
-			Object fieldValue = ReflectUtil.getFieldValue(entity, curField);
-			String variableType = BpmRestVarType.ClassToRestVariavleTypeMap.get(curField.getType());
-			if (variableType==null || fieldValue==null) {
-				continue;
-			}
-			RestVariable var = new RestVariable();
-			var.setName(curField.getName());
-			if (variableType.equalsIgnoreCase("date")){
+        List<RestVariable> variables = new ArrayList<RestVariable>();
+        BPMFormJSON bpmjson = buildVariables(entity);
+        if (bpmjson==null){
+            bpmjson = new BPMFormJSON();
+            bpmjson.setTitle("流程单号:"+entity.getBpmBillCode());
+        }
+        bpmjson.setProcessDefinitionKey(entity.getProcessDefineCode());
+        bpmjson.setFormId(entity.getId().toString());							// 单据id
+        bpmjson.setBillNo(entity.getBpmBillCode());								// 单据号
+        bpmjson.setBillMarker(InvocationInfoProxy.getUserid());					// 制单人
+        bpmjson.setOrgId("");													// 组织
+        bpmjson.setOtherVariables(buildEntityVars(entity));
+        for (String name : names) {
+            RestVariable restVariable = new RestVariable();
+            restVariable.setName(name);
+            restVariable.setValue(bpmjson.getProperty(name));
+            variables.add(restVariable);
+        }
+
+        return variables;
+	}
+
+	private List<RestVariable> buildEntityVars(T entity){
+        List<RestVariable> variables = new ArrayList<RestVariable>();
+        Field[] fields = ReflectUtil.getFields(entity.getClass());
+
+        for (Field curField : fields) {
+            Object fieldValue = ReflectUtil.getFieldValue(entity, curField);
+            String variableType = BpmRestVarType.ClassToRestVariavleTypeMap.get(curField.getType());
+            if (variableType==null || fieldValue==null) {
+                continue;
+            }
+            RestVariable var = new RestVariable();
+            var.setName(curField.getName());
+            if (variableType.equals("date") && fieldValue instanceof Date){
+                var.setValue(DatePattern.NORM_DATE_FORMAT.format((Date)fieldValue));
                 var.setType("string"); //date 类型的时候,如果日期不符合标准格式会导致流程引擎解析错误,故转为string
             }else{
-                var.setType(variableType);
+                var.setValue(fieldValue);
             }
+            variables.add(var);
+        }
+        return variables;
 
-			if (variableType.equals("date") && fieldValue instanceof Date){
-				var.setValue(DatePattern.NORM_DATE_FORMAT.format((Date)fieldValue));
-			}else{
-				var.setValue(fieldValue);
-			}
-			variables.add(var);
-		}
-		return variables;
-	}
+    }
 
 /** =================================================================================================================== */
 
