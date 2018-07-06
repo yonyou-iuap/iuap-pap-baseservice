@@ -12,9 +12,14 @@ import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 
+@SuppressWarnings("all")
 public class SimpleExcelImporter {
 	
 	public static final String splitSign = ":";
+	
+	public static SimpleExcelImporter inst() {
+		return Inner.inst;
+	}
 	
 	public static List<Map<String,Object>> readDataByMap(String file){
 		try {
@@ -115,5 +120,11 @@ public class SimpleExcelImporter {
 			}
 		}
 	}
+	
+	/********************************************************/
+	private static class Inner{
+		private static SimpleExcelImporter inst = new SimpleExcelImporter();
+	}
+
 
 }

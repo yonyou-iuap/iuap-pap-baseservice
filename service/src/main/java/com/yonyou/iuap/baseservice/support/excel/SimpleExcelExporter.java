@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.yonyou.iuap.utils.PropertyUtil;
+
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.poi.excel.ExcelWriter;
 
@@ -12,6 +14,10 @@ import cn.hutool.poi.excel.ExcelWriter;
 public class SimpleExcelExporter {
 	
 	public static final String splitSign = ":";
+	
+	public static SimpleExcelExporter inst() {
+		return Inner.inst;
+	}
 	
 	/**
 	 * 导出文件
@@ -29,6 +35,7 @@ public class SimpleExcelExporter {
 		this.writeBody(writer, listData, listKey);
 		//写入磁盘文件
 		writer.flush();
+		writer.close();
 	}
 	
 	/**
@@ -38,15 +45,16 @@ public class SimpleExcelExporter {
 	 * @param os
 	 */
 	public void export(String[] listHeader, List listData, OutputStream os) {
-		ExcelWriter writer = new ExcelWriter(true);
+		ExcelWriter writer = new ExcelWriter(false);
 		//创建sheet
 		writer.setOrCreateSheet("sheet1");
 		//写入Header
 		List<String> listKey = this.writeHeader(writer, listHeader);
 		//写入Body数据
 		this.writeBody(writer, listData, listKey);
-		//写入磁盘文件
+		//写入输出流
 		writer.flush(os);
+		writer.close();
 	}
 	
 	/**
@@ -89,6 +97,11 @@ public class SimpleExcelExporter {
 			Object value = ReflectUtil.getFieldValue(data, listHeader.get(col));
 			writer.writeCellValue(col, row, value);
 		}
+	}
+	
+	/********************************************************/
+	private static class Inner{
+		private static SimpleExcelExporter inst = new SimpleExcelExporter();
 	}
 
 }

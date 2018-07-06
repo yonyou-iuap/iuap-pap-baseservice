@@ -21,6 +21,8 @@ import com.yonyou.iuap.baseservice.support.generator.GeneratorManager;
 import com.yonyou.iuap.context.InvocationInfoProxy;
 import com.yonyou.iuap.mvc.type.SearchParams;
 
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 
 /** 
@@ -145,10 +147,9 @@ public abstract class GenericService<T extends Model>{
 		if(entity != null) {
 			//ID为空的情况下，生成生成主键
 			if(entity.getId()==null || StrUtil.isBlankIfStr(entity.getId())) {
-			    Serializable id = GeneratorManager.generateID(entity);
-				entity.setId(id);
+				this.genAndSetEntityId(entity);
 			}
-			String now = DateUtils.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss SSS");
+			String now = DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss SSS");
 			entity.setCreateTime(now);
 			entity.setCreateUser(InvocationInfoProxy.getUserid());
 			entity.setLastModified(now);
@@ -226,6 +227,14 @@ public abstract class GenericService<T extends Model>{
 		}else {
 			log.error("删除数据出错,记录数="+count+"\r\n"+JSON.toJSONString(id));
 			throw new RuntimeException("删除数据出错,记录数="+count+"\r\n"+JSON.toJSONString(id));
+		}
+	}
+	
+	private void genAndSetEntityId(T entity) {
+		//ID为空的情况下，生成生成主键
+		if(entity.getId()==null || StrUtil.isBlankIfStr(entity.getId())) {
+		    Serializable id = GeneratorManager.generateID(entity);
+		    ReflectUtil.setFieldValue(entity, "id", id);
 		}
 	}
 

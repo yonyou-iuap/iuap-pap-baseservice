@@ -8,6 +8,6 @@ public interface Generator {
 	
 	public String name();
 	
-	public Serializable generate(String module);
+	public Serializable generate(String module, Class<?> entityClazz);
 
 }

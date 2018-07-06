@@ -18,7 +18,7 @@ public class UUIDGenerator implements Generator{
 	}
 
 	@Override
-	public Serializable generate(String module) {
+	public Serializable generate(String module, Class<?> entityClazz) {
 		return UUID.randomUUID().toString().replaceAll("-", "");
 	}
 

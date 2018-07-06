@@ -74,11 +74,11 @@ public class GeneratorManager {
 	 * @param clazz
 	 * @return
 	 */
-	public Serializable generate(Strategy strategy, String module, String clazz) {
+	public Serializable generate(Class<?> entityClazz, Strategy strategy, String module, String clazz) {
 		if(!StrUtil.isBlankIfStr(clazz)) {
-			return generatorBeans.get(clazz).generate(module);
+			return generatorBeans.get(clazz).generate(module, entityClazz);
 		}else if(strategy != null){
-			return generatorMap.get(strategy).generate(module);
+			return generatorMap.get(strategy).generate(module, entityClazz);
 		}else {
 			throw new RuntimeException("无效的ID生成策略Annotation!");
 		}
@@ -106,7 +106,7 @@ public class GeneratorManager {
 		if(field != null) {
 			GeneratedValue annotation = field.getAnnotation(GeneratedValue.class);
 			if(annotation!=null) {
-				return getInstance().generate(annotation.strategy(), 
+				return getInstance().generate(entity.getClass(), annotation.strategy(), 
 										annotation.module(), annotation.clazz());
 			}else {
 				throw new RuntimeException("Not found Annotation:@GeneratedValue in Class:" + entity.getClass());
