@@ -53,7 +53,7 @@ public class EntityUtil {
      */
     public static Field[] getEntityFields(Class<?> clazz) {
     	Field[] cacheFields = fieldCache.get(clazz);
-    	if(cacheFields == null) {
+    	if(cacheFields == null || cacheFields.length==0) {
         	List<Field> listField = getFields(clazz);
         	Field[] validFields = new Field[listField.size()];
         	listField.toArray(validFields);
