@@ -1,0 +1,158 @@
+package com.yonyou.iuap.baseservice.utils;
+
+import com.yonyou.iuap.baseservice.entity.RefParamVO;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 解析参照xml配置
+ * 
+ * @author taomk 2015-7-14
+ */
+public class RefXMLParse {
+
+	private static Logger logger = LoggerFactory.getLogger(RefXMLParse.class);
+	private static RefXMLParse refXMLParse;
+	private static Document refConfigDocument = null;
+	private RefXMLParse() {
+
+	}
+	
+	public static RefXMLParse getInstance() {
+		if (refXMLParse == null) {
+			synchronized (RefXMLParse.class) {
+				// 获取发送者信息
+				refConfigDocument = getDocument("ref");
+			}
+			return new RefXMLParse();
+		} else {
+			return refXMLParse;
+		}
+	}
+
+	private static Document getDocument(String filePath) {
+		SAXReader reader = new SAXReader();
+		Document doc = null;
+		// 先从Java -D的变量中取值
+		String filePath_absolute = System.getProperty(filePath);
+		// 如果为空，再从java env的变量中取值
+		if (filePath_absolute == null) {
+			filePath_absolute = System.getenv().get(filePath);
+		}
+        // 从默认路径中读取
+		if (filePath_absolute == null) {
+			try {
+				InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(filePath+".xml");
+				doc = reader.read(in);
+			} catch (DocumentException e) {
+				logger.error("指定文件路径：" + filePath + "不存在！", e);
+			}
+			
+		} else{
+			try {
+				InputStream in = new FileInputStream(filePath_absolute);
+				doc = reader.read(in);
+			} catch (DocumentException e) {
+				logger.error("解析文件：" + filePath + "时出错！", e);
+			} catch (FileNotFoundException e) {
+				logger.error("指定文件路径：" + filePath + "不存在！", e);
+			}
+		}
+		return doc;
+	}
+	
+	//根据refCode获取表名和字段 --表格
+	public RefParamVO getMSConfig(String refCode) {
+		// 得到根节点
+		Element root = refConfigDocument.getRootElement();
+		List<Element> RefViewModelVOs = root.elements("RefViewModelVO");
+		for(Element refviewmodel:RefViewModelVOs){
+			if(refCode.equals(refviewmodel.attributeValue("code"))){
+				List<Element> ele = refviewmodel.elements("table");
+				Element tableE = null;
+				if(ele.size() == 1){
+					tableE = ele.get(0);
+				}else{
+					//xml结构错误
+				}
+				
+				String tableName = tableE.attributeValue("name");
+				RefParamVO refParamVO = new RefParamVO();
+				Map<String,String> map = new HashMap<String,String>();
+				List<String> list = new ArrayList<String>();
+				
+				refParamVO.setTablename(tableName);
+				List<Element> showele = tableE.elements();
+				for(Element showe : showele){
+					String code = showe.attributeValue("code");
+					String name = showe.getText();
+					if("pidfield".equals(code)){
+						if(!"".equals(name)){
+							refParamVO.setPidfield(name);
+							list.add(name);
+						}
+					}else{
+						map.put(code,name);
+						list.add(code);
+					}
+				}
+				refParamVO.setShowcol(map);
+				refParamVO.setExtcol(list);
+				return refParamVO;
+			}
+		}
+		return null;
+	}
+	//根据refCode获取表名和字段 --树表
+	public RefParamVO getMSConfigTree(String refCode) {
+		// 得到根节点
+		Element root = refConfigDocument.getRootElement();
+		List<Element> RefViewModelVOs = root.elements("RefViewModelVO");
+		for(Element refviewmodel:RefViewModelVOs){
+			if(refCode.equals(refviewmodel.attributeValue("code"))){
+				List<Element> ele = refviewmodel.elements("tableTree");
+				Element tableE = null;
+				if(ele.size() == 1){
+					tableE = ele.get(0);
+				}else{
+					//xml结构错误
+				}
+				
+				RefParamVO refParamVO = new RefParamVO();
+				Map<String,String> map = new HashMap<String,String>();
+				List<String> list = new ArrayList<String>();
+				String tableName = tableE.attributeValue("name");
+				
+				refParamVO.setTablename(tableName);
+				List<Element> showele = tableE.elements();
+				for(Element showe : showele){
+					String code = showe.attributeValue("code");
+					String name = showe.getText();
+					if("pidfield".equals(code)){
+						refParamVO.setPidfield(name);
+					}else if("idfield".equals(code)){
+						refParamVO.setIdfield(name);
+					}else if("codefield".equals(code)){
+						refParamVO.setCodefield(name);
+					}else if("namefield".equals(code)){
+						refParamVO.setNamefield(name);
+					}
+				}
+				return refParamVO;
+			}
+		}	
+		return null;
+	}
+}

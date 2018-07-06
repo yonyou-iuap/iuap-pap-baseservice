@@ -1,7 +1,10 @@
 package com.yonyou.iuap.baseservice.service;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
+import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,6 +13,8 @@ import com.yonyou.iuap.baseservice.entity.LogicDel;
 import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericExMapper;
 import com.yonyou.iuap.persistence.vo.pub.BusinessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 /**
  * 说明：基础Service扩展——支持逻辑删除
@@ -19,6 +24,12 @@ import com.yonyou.iuap.persistence.vo.pub.BusinessException;
 public abstract class GenericExService<T extends Model & LogicDel> extends GenericService<T>{
 	
 	private Logger log = LoggerFactory.getLogger(GenericExService.class);
+
+	protected GenericExMapper<T> genericExMapper;
+
+	public void setGenericMapper(GenericExMapper<T> mapper) {
+		this.genericExMapper = mapper;
+	}
 
 	/**
 	 * 新增保存数据
@@ -87,6 +98,20 @@ public abstract class GenericExService<T extends Model & LogicDel> extends Gener
 	public int delete(Serializable id) {
 		T entity = this.findById(id);
 		return this.delete(entity);
+	}
+
+	public Page<Map<String, Object>> selectRefTable(PageRequest pageRequest,
+													String tablename, String idfield, Map<String, String> condition, List<String> extColumns) {
+		Page<Map<String,Object>> result = genericExMapper.selectRefTable(pageRequest,tablename,idfield, extColumns,condition).getPage();
+		return result;
+	}
+
+	public Page<Map<String, Object>> selectRefTree(PageRequest pageRequest,
+												   String tablename, String idfield, String pidfield,
+												   String codefield, String namefield, Map<String, String> condition,List<String> extColumns) {
+
+		Page<Map<String,Object>> result = genericExMapper.selectRefTree(pageRequest,tablename,idfield,pidfield,codefield,namefield, extColumns,condition).getPage();
+		return result;
 	}
 	
 	/***************************************************/
