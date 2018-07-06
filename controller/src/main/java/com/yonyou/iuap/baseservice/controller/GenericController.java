@@ -47,6 +47,9 @@ public abstract class GenericController<T extends Model> extends BaseController{
 	@ResponseBody
 	public Object get(PageRequest pageRequest, SearchParams searchParams) {
 		String id = MapUtils.getString(searchParams.getSearchMap(), "id");
+		if (id==null){
+            return this.buildSuccess();//前端约定传空id则拿到空对象
+        }
 		if(StrUtil.isBlank(id)) {
 			return this.buildError("msg", "主键id参数为空!", RequestStatusEnum.FAIL_FIELD);
 		}else {
