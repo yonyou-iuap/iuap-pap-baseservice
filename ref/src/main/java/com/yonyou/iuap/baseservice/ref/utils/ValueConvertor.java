@@ -1,4 +1,4 @@
-package com.yonyou.iuap.baseservice.persistence.utils;
+package com.yonyou.iuap.baseservice.ref.utils;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;

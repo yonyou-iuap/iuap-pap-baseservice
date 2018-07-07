@@ -1,4 +1,4 @@
-package com.yonyou.iuap.baseservice.attachment;
+package com.yonyou.iuap.baseservice.ref;
 
 /**
  * Hello world!

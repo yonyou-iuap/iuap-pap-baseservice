@@ -1,4 +1,4 @@
-package com.yonyou.iuap.baseservice.attachment.entity;
+package com.yonyou.iuap.baseservice.ref.entity;
 
 import com.yonyou.iuap.baseservice.entity.AbsDrModel;
 import com.yonyou.iuap.baseservice.support.condition.Condition;

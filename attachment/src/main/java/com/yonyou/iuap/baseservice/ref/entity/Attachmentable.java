@@ -1,4 +1,4 @@
-package com.yonyou.iuap.baseservice.attachment.entity;
+package com.yonyou.iuap.baseservice.ref.entity;
 
 import com.yonyou.iuap.baseservice.entity.LogicDel;
 import com.yonyou.iuap.baseservice.entity.Model;
