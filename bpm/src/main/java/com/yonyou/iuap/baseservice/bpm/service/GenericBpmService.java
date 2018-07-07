@@ -8,43 +8,31 @@ import com.alibaba.fastjson.parser.Feature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.gson.JsonObject;
-import com.yonyou.iuap.base.utils.RestUtils;
 import com.yonyou.iuap.baseservice.bpm.entity.BpmModel;
 import com.yonyou.iuap.baseservice.bpm.utils.BpmExUtil;
 import com.yonyou.iuap.baseservice.service.GenericExService;
 import com.yonyou.iuap.bpm.pojo.BPMFormJSON;
-import com.yonyou.iuap.bpm.service.BPMSubmitBasicService;
-import com.yonyou.iuap.bpm.service.NotifyService;
 import com.yonyou.iuap.bpm.service.TenantLimit;
 import com.yonyou.iuap.bpm.util.BpmRestVarType;
 import com.yonyou.iuap.context.InvocationInfoProxy;
 import com.yonyou.iuap.persistence.vo.pub.BusinessException;
-import iuap.uitemplate.base.util.PropertyUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import yonyou.bpm.rest.*;
-import yonyou.bpm.rest.ex.util.DateUtil;
 import yonyou.bpm.rest.exception.RestException;
-import yonyou.bpm.rest.exception.RestRequestFailedException;
 import yonyou.bpm.rest.param.BaseParam;
 import yonyou.bpm.rest.request.RestVariable;
 import yonyou.bpm.rest.request.historic.BpmHistoricProcessInstanceParam;
 import yonyou.bpm.rest.request.historic.HistoricProcessInstancesQueryParam;
 import yonyou.bpm.rest.request.historic.HistoricTaskQueryParam;
 import yonyou.bpm.rest.request.runtime.ProcessInstanceStartParam;
-import yonyou.bpm.rest.request.task.TaskAttachmentResourceParam;
-import yonyou.bpm.rest.response.AttachmentResponse;
 import yonyou.bpm.rest.response.CommentResponse;
 import yonyou.bpm.rest.response.historic.HistoricProcessInstanceResponse;
 import yonyou.bpm.rest.response.historic.HistoricTaskInstanceResponse;
 import yonyou.bpm.rest.response.runtime.task.TaskActionResponse;
 import yonyou.bpm.rest.utils.BaseUtils;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
@@ -52,7 +40,6 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 /**
  * 说明：工作流基础Service
@@ -75,8 +62,6 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 	@Value("${bpmrest.token}")
 	private String token;
 
-	@Autowired
-	private BPMSubmitBasicService bpmSubmitBasicService;
 	/**
 	 * 几套基本服务的实例化工厂
 	 * @param userId
@@ -363,7 +348,7 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
         bpmjson.setFormId(entity.getId().toString());							// 单据id
         bpmjson.setBillNo(entity.getBpmBillCode());								// 单据号
         bpmjson.setBillMarker(InvocationInfoProxy.getUserid());					// 制单人
-        bpmjson.setOrgId("");													// 组织
+        bpmjson.setOrgId(InvocationInfoProxy.getTenantid());					// 组织
         bpmjson.setOtherVariables(buildEntityVars(entity));
         for (String name : names) {
             RestVariable restVariable = new RestVariable();
