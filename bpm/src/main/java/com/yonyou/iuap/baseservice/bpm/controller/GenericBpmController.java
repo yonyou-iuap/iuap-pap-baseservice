@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.yonyou.iuap.mvc.constants.RequestStatusEnum;
 import net.sf.json.JSONNull;
 import org.springframework.util.StringUtils;
@@ -21,7 +20,7 @@ import com.yonyou.iuap.base.utils.RestUtils;
 import com.yonyou.iuap.baseservice.bpm.entity.BpmModel;
 import com.yonyou.iuap.baseservice.bpm.service.GenericBpmService;
 import com.yonyou.iuap.baseservice.bpm.utils.BpmExUtil;
-import com.yonyou.iuap.baseservice.controller.GenericExController;
+import com.yonyou.iuap.baseservice.controller.GenericRefController;
 import com.yonyou.iuap.mvc.type.JsonResponse;
 import com.yonyou.iuap.persistence.vo.pub.BusinessException;
 
@@ -34,7 +33,7 @@ import iuap.uitemplate.base.util.PropertyUtil;
  *
  * @modified by Leon
  */
-public  class GenericBpmController<T extends BpmModel> extends GenericExController<T>
+public  class GenericBpmController<T extends BpmModel> extends GenericRefController<T>
 		 {
 
 
