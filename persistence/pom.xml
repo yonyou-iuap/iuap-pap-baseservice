@@ -73,9 +73,9 @@
 		</dependency>
 		
 		<dependency>
-        	<groupId>net.sf.jsqlparser</groupId>
-            <artifactId>jsqlparser</artifactId>
-            <version>0.8.0</version>
+		    <groupId>com.github.jsqlparser</groupId>
+		    <artifactId>jsqlparser</artifactId>
+		    <version>1.1</version>
 		</dependency>
 		
 		<dependency>
