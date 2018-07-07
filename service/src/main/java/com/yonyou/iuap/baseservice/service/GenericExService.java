@@ -47,47 +47,47 @@ public abstract class GenericExService<T extends Model & LogicDel> extends Gener
     @Override
     public Page<T> selectAllByPage(PageRequest pageRequest, SearchParams searchParams) {
         try {
-        Page<T> page = genericMapper.selectAllByPage(pageRequest, searchParams).getPage();
-        List<T> contentList = page.getContent();
+            Page<T> page = genericMapper.selectAllByPage(pageRequest, searchParams).getPage();
+            List<T> contentList = page.getContent();
 
-        if (!contentList.isEmpty()) {
-            Map<String, List<Map<String, Object>>> refContentMap = new HashMap<>();
-            Field[] fields = contentList.get(0).getClass().getFields();
-            for (Field field : fields) {
-                Reference ref = field.getAnnotation(Reference.class);
-                if (null != ref) {
-					RefParamVO params = RefXMLParse.getInstance().getMSConfigTree(ref.code());
-                    List<Map<String, Object>> refContents = genericExMapper.selectRefTable(null, params.getTablename(), field.getName(), Arrays.asList(ref.srcProperties()), new HashMap<>()).getContent();
-                    refContentMap.put(field.getName(), refContents);
+            if (!contentList.isEmpty()) {
+                Map<String, List<Map<String, Object>>> refContentMap = new HashMap<>();
+                Field[] fields = contentList.get(0).getClass().getFields();
+                for (Field field : fields) {
+                    Reference ref = field.getAnnotation(Reference.class);
+                    if (null != ref) {
+                        RefParamVO params = RefXMLParse.getInstance().getMSConfigTree(ref.code());
+                        List<Map<String, Object>> refContents = genericExMapper.selectRefTable(null, params.getTablename(), field.getName(), Arrays.asList(ref.srcProperties()), new HashMap<>()).getContent();
+                        refContentMap.put(field.getName(), refContents);
+                    }
                 }
-            }
-            if (!refContentMap.isEmpty()) {
-                for (Object item : contentList) {
-                    Iterator<Map.Entry<String, List<Map<String, Object>>>> it = refContentMap.entrySet().iterator();
-                    while (it.hasNext()) {
-                        Map.Entry<String, List<Map<String, Object>>> entry = it.next();
-                        PropertyDescriptor pd = new PropertyDescriptor(entry.getKey(), item.getClass());
-                        Method getMethod = pd.getReadMethod();
-                        if (getMethod != null) {
-                            getMethod.invoke(item);
-                            for (Map<String, Object> refItem : entry.getValue()) {
-                                Reference ref = item.getClass().getField(entry.getKey()).getAnnotation(Reference.class);
-                                int i = 0;
-                                for (String srcPro : ref.srcProperties()) {
-                                    PropertyDescriptor itemPd = new PropertyDescriptor(ref.desProperties()[i], item.getClass());
-                                    Method setMethod = itemPd.getWriteMethod();
-                                    if (setMethod != null) {
-                                        setMethod.invoke(item, refItem.get(srcPro));
+                if (!refContentMap.isEmpty()) {
+                    for (Object item : contentList) {
+                        Iterator<Map.Entry<String, List<Map<String, Object>>>> it = refContentMap.entrySet().iterator();
+                        while (it.hasNext()) {
+                            Map.Entry<String, List<Map<String, Object>>> entry = it.next();
+                            PropertyDescriptor pd = new PropertyDescriptor(entry.getKey(), item.getClass());
+                            Method getMethod = pd.getReadMethod();
+                            if (getMethod != null) {
+                                getMethod.invoke(item);
+                                for (Map<String, Object> refItem : entry.getValue()) {
+                                    Reference ref = item.getClass().getField(entry.getKey()).getAnnotation(Reference.class);
+                                    int i = 0;
+                                    for (String srcPro : ref.srcProperties()) {
+                                        PropertyDescriptor itemPd = new PropertyDescriptor(ref.desProperties()[i], item.getClass());
+                                        Method setMethod = itemPd.getWriteMethod();
+                                        if (setMethod != null) {
+                                            setMethod.invoke(item, refItem.get(srcPro));
+                                        }
+                                        i++;
                                     }
-                                    i++;
                                 }
                             }
                         }
                     }
                 }
             }
-        }
-        return page;
+            return page;
         } catch (IntrospectionException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {

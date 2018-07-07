@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import com.yonyou.iuap.baseservice.entity.LogicDel;
 import com.yonyou.iuap.baseservice.entity.Model;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -265,10 +266,7 @@ public class GenericRefController<T extends Model & LogicDel> extends BaseContro
 	}
 
 	/************************************************************/
+	@Autowired
 	private GenericExService<T> service;
-
-	public void setService(GenericExService<T> genericService) {
-		this.service = genericService;
-	}
 
 }
