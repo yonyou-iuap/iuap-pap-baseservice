@@ -31,6 +31,7 @@ import java.util.Map;
  * @author houlf
  * 2018年6月13日
  */
+@RequestMapping(value = "/common/ref")
 public abstract class GenericExController<T extends Model & LogicDel> extends GenericController<T>{
 	
 	private Logger log = LoggerFactory.getLogger(GenericExController.class);
