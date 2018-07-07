@@ -41,7 +41,7 @@ public abstract class GenericExController<T extends Model & LogicDel> extends Ge
 	 * @see com.yonyou.iuap.ref.sdk.refmodel.model.AbstractTreeGridRefModel#getRefModelInfo(com.yonyou.iuap.ref.model.RefViewModelVO)
 	 */
 	@RequestMapping(
-			value = {"/getRefTableTitle"},
+			value = {"/getRefModelInfo"},
 			method = {RequestMethod.POST}
 	)
 	@ResponseBody
@@ -75,7 +75,7 @@ public abstract class GenericExController<T extends Model & LogicDel> extends Ge
 	 * @see com.yonyou.iuap.ref.sdk.refmodel.model.AbstractTreeGridRefModel#blobRefTree(com.yonyou.iuap.ref.model.RefViewModelVO)
 	 */
 	@RequestMapping(
-			value = {"/getRefTreeData"},
+			value = {"/blobRefTree"},
 			method = {RequestMethod.POST}
 	)
 	@ResponseBody
@@ -126,7 +126,7 @@ public abstract class GenericExController<T extends Model & LogicDel> extends Ge
 	 * @see com.yonyou.iuap.ref.sdk.refmodel.model.AbstractTreeGridRefModel#blobRefSearch(com.yonyou.iuap.ref.model.RefViewModelVO)
 	 */
 	@RequestMapping(
-			value = {"/getRefTableData"},
+			value = {"/blobRefSearch"},
 			method = {RequestMethod.POST}
 	)
 	@ResponseBody
