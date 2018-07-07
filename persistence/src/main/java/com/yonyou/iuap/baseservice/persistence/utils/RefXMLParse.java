@@ -1,4 +1,4 @@
-package com.yonyou.iuap.baseservice.utils;
+package com.yonyou.iuap.baseservice.persistence.utils;
 
 import com.yonyou.iuap.baseservice.entity.RefParamVO;
 import org.dom4j.Document;

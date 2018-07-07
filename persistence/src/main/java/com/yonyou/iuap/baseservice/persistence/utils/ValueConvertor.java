@@ -1,6 +1,4 @@
-package com.yonyou.iuap.baseservice.utils;
-
-import oracle.sql.TIMESTAMP;
+package com.yonyou.iuap.baseservice.persistence.utils;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -98,18 +96,18 @@ public class ValueConvertor {
       SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
       ret = format.format(datetime);
     }
-    else if (type.equals(TIMESTAMP.class)){
-    	TIMESTAMP datetime = (TIMESTAMP) value;
-    	 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-         
-    	 try {
-    		 ret = format.format(datetime.timestampValue());	
-         } 
-         catch (Exception ex) {
-//           ExceptionUtils.wrapException(ex);
-         }
-       
-    }
+//    else if (type.equals(TIMESTAMP.class)){
+//    	TIMESTAMP datetime = (TIMESTAMP) value;
+//    	 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//
+//    	 try {
+//    		 ret = format.format(datetime.timestampValue());
+//         }
+//         catch (Exception ex) {
+////           ExceptionUtils.wrapException(ex);
+//         }
+//
+//    }
     return ret;
   }
 

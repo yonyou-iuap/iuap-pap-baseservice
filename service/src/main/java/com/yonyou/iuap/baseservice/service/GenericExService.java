@@ -8,7 +8,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
+import com.yonyou.iuap.baseservice.entity.RefParamVO;
 import com.yonyou.iuap.baseservice.entity.annotation.Reference;
+import com.yonyou.iuap.baseservice.persistence.utils.RefXMLParse;
 import com.yonyou.iuap.mvc.type.SearchParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +56,8 @@ public abstract class GenericExService<T extends Model & LogicDel> extends Gener
             for (Field field : fields) {
                 Reference ref = field.getAnnotation(Reference.class);
                 if (null != ref) {
-                    List<Map<String, Object>> refContents = genericExMapper.selectRefTable(null, ref.table(), field.getName(), Arrays.asList(ref.srcProperties()), new HashMap<>()).getContent();
+					RefParamVO params = RefXMLParse.getInstance().getMSConfigTree(ref.code());
+                    List<Map<String, Object>> refContents = genericExMapper.selectRefTable(null, params.getTablename(), field.getName(), Arrays.asList(ref.srcProperties()), new HashMap<>()).getContent();
                     refContentMap.put(field.getName(), refContents);
                 }
             }

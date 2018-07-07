@@ -2,8 +2,8 @@ package com.yonyou.iuap.baseservice.controller;
 
 import com.yonyou.iuap.baseservice.entity.RefParamVO;
 import com.yonyou.iuap.baseservice.service.GenericExService;
-import com.yonyou.iuap.baseservice.utils.RefXMLParse;
-import com.yonyou.iuap.baseservice.utils.ValueConvertor;
+import com.yonyou.iuap.baseservice.persistence.utils.RefXMLParse;
+import com.yonyou.iuap.baseservice.persistence.utils.ValueConvertor;
 import iuap.ref.sdk.refmodel.vo.RefUITypeEnum;
 import iuap.ref.sdk.refmodel.vo.RefViewModelVO;
 import org.apache.commons.collections4.CollectionUtils;
@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 
 import com.yonyou.iuap.baseservice.entity.LogicDel;
 import com.yonyou.iuap.baseservice.entity.Model;
-import com.yonyou.iuap.baseservice.service.GenericService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
