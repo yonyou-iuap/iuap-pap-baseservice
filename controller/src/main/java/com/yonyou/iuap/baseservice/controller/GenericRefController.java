@@ -1,5 +1,6 @@
 package com.yonyou.iuap.baseservice.controller;
 
+import com.yonyou.iuap.base.web.BaseController;
 import com.yonyou.iuap.baseservice.entity.RefParamVO;
 import com.yonyou.iuap.baseservice.service.GenericExService;
 import com.yonyou.iuap.baseservice.persistence.utils.RefXMLParse;
@@ -34,7 +35,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping(value = "/common/ref")
-public class GenericRefController<T extends Model & LogicDel> extends GenericController<T>{
+public class GenericRefController<T extends Model & LogicDel> extends BaseController {
 	
 	private Logger log = LoggerFactory.getLogger(GenericRefController.class);
 
@@ -268,7 +269,6 @@ public class GenericRefController<T extends Model & LogicDel> extends GenericCon
 
 	public void setService(GenericExService<T> genericService) {
 		this.service = genericService;
-		super.setService(genericService);
 	}
 
 }
