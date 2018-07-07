@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * 说明：启用参照的字段Annotation
- * @author 黄东ongoing
+ * @author 黄东东
  * 2018年7月7日
  */
 @Target(ElementType.FIELD)
@@ -17,6 +17,8 @@ public @interface Reference {
     public String path() default "";
     // 参照编码
     public String code() default "";
+    // 参照表
+    public String table() default "";
     // 参照类型
     public RefType type() default RefType.Single;
     // 参照回写源属性
