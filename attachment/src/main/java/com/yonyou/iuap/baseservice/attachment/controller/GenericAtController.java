@@ -1,8 +1,8 @@
-package com.yonyou.iuap.baseservice.ref.controller;
+package com.yonyou.iuap.baseservice.attachment.controller;
 
 import com.yonyou.iuap.base.web.BaseController;
-import com.yonyou.iuap.baseservice.ref.entity.Attachmentable;
-import com.yonyou.iuap.baseservice.ref.service.GenericAtService;
+import com.yonyou.iuap.baseservice.attachment.entity.Attachmentable;
+import com.yonyou.iuap.baseservice.attachment.service.GenericAtService;
 import com.yonyou.iuap.mvc.type.SearchParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

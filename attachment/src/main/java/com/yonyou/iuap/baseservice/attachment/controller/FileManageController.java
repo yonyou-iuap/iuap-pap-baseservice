@@ -1,4 +1,4 @@
-package com.yonyou.iuap.baseservice.ref.controller;
+package com.yonyou.iuap.baseservice.attachment.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.yonyou.iuap.file.FileManager;
