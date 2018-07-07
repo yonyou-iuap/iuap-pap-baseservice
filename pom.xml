@@ -99,7 +99,8 @@
 		<module>controller</module>
 		<module>entity</module>
     	<module>bpm</module>
-    <!--<module>iuap-mybatis-maven-plugin</module>-->
+        <module>attachment</module>
+        <!--<module>iuap-mybatis-maven-plugin</module>-->
   </modules>
 	<distributionManagement>
 		<snapshotRepository>
