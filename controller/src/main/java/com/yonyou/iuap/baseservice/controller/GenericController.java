@@ -30,6 +30,7 @@ import cn.hutool.core.util.StrUtil;
  * @author houlf
  * 2018年6月13日
  */
+@SuppressWarnings("all")
 public abstract class GenericController<T extends Model> extends BaseController{
 	
 	private Logger log = LoggerFactory.getLogger(GenericController.class);
