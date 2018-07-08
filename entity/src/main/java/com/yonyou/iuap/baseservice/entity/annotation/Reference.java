@@ -17,8 +17,6 @@ public @interface Reference {
     public String path() default "";
     // 参照编码
     public String code() default "";
-    // 参照表
-    public String table() default "";
     // 参照类型
     public RefType type() default RefType.Single;
     // 参照回写源属性

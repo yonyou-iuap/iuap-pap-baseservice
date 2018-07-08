@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yonyou.iuap.baseservice.ref.dao.mapper.RefCommonMapper">
+    
+    <select id="findUserListByIds" resultType="java.util.HashMap">
+        Select ${idfield} as id
+			<if test="extcols != null">
+				<foreach collection="extcols" item="item" index="index">
+					, ${item}
+				</foreach>
+			</if>
+				from ${tablename}
+			<where> 
+				dr = 0 and id in
+					<foreach collection="Ids" item="ids" open="(" close=")" separator=",">
+            			#{ids}
+        			</foreach>
+			</where>
+    </select>
+    
+    
+	<select id="gridrefselectAllByPage" resultType="java.util.HashMap">
+			Select ${idfield} as id
+			<if test="extcols != null">
+				<foreach collection="extcols" item="item" index="index">
+					, ${item}
+				</foreach>
+			</if>
+				from ${tablename}
+			<where> 
+				dr = 0 
+			<foreach collection="condmap.keys" item="k">   
+			    <if test="null != condmap[k]">    
+			      and ${k} = #{condmap[${k}]}  
+			    </if>  
+			</foreach>
+			<if test="likefilter != null and likefilter != ''">
+				 and ( ${likefilter} )	
+			</if>
+			</where>
+	</select>
+	
+	<select id="tablerefselectAllByPage" resultType="java.util.HashMap">
+			Select ${idfield} as id
+			<if test="extcols != null">
+				<foreach collection="extcols" item="item" index="index">
+					, ${item}
+				</foreach>
+			</if>
+				from ${tablename}
+			<where> 
+			<foreach collection="condmap.keys" item="k">   
+			    <if test="null != condmap[k]">    
+			      and ${k}   ${condmap[k]}  
+			    </if>  
+			</foreach>
+			<if test="likefilter != null and likefilter != ''">
+				 and ( ${likefilter} )	
+			</if>
+			</where>
+	</select>
+	
+	<select id="treerefselectAllByPage" resultType="java.util.HashMap">
+			Select ${idfield} as id
+			<if test="extcols != null">
+				<foreach collection="extcols" item="item" index="index">
+					, ${item}
+				</foreach>
+			</if>
+				from ${tablename}
+			<where> 
+				dr = 0 
+			<foreach collection="condmap.keys" item="k">   
+			    <if test="null != condmap[k]">    
+			      and ${k} = #{condmap[${k}]}  
+			    </if>  
+			</foreach>
+			</where>
+	</select>
+	
+	<!-- 获取树 -->
+	<select id="selectRefTree" resultType="java.util.HashMap">
+		Select ${idfield} as id,${pidfield} as pid, ${codefield} as refcode,${namefield} as refname
+			<if test="extcols != null">
+				<foreach collection="extcols" item="item" index="index">
+					, ${item}
+				</foreach>
+			</if>
+				from ${tablename}
+			<where> 
+				dr = 0 
+			<foreach collection="condmap.keys" item="k">   
+			    <if test="null != condmap[k]">    
+			      and ${k} = #{condmap[${k}]}  
+			    </if>  
+			</foreach>
+			</where>
+	</select>
+</mapper>
