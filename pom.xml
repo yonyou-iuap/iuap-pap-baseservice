@@ -100,6 +100,7 @@
 		<module>entity</module>
     	<module>bpm</module>
         <module>attachment</module>
+        <module>ref</module>
         <!--<module>iuap-mybatis-maven-plugin</module>-->
   </modules>
 	<distributionManagement>

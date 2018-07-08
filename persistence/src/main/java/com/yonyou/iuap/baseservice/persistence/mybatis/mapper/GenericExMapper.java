@@ -15,38 +15,5 @@ import java.util.Map;
  * 2018年6月12日
  */
 public interface GenericExMapper<T extends Model & LogicDel> extends GenericMapper<T>{
-    /**
-     * 表（树表）的数据查询
-     * @param pageRequest
-     * @param tablename
-     * @param idfield
-     * @param extcols
-     * @param condmap
-     * @return
-     */
-    PageResult<Map<String,Object>> selectRefTable(
-            @Param("page") PageRequest pageRequest,
-            @Param("tablename") String tablename,
-            @Param("idfield") String idfield,
-            @Param("extcols") List<String> extcols,
-            @Param("condmap") Map<String, String> condmap);
 
-    /**
-     * 树表型参照--树的数据查询
-     * @param pageRequest
-     * @param tablename
-     * @param idfield
-     * @param codefield
-     * @param namefield
-     * @return
-     */
-    PageResult<Map<String,Object>> selectRefTree(
-            @Param("page") PageRequest pageRequest,
-            @Param("tablename") String tablename,
-            @Param("idfield") String idfield,
-            @Param("pidfield") String pidfield,
-            @Param("codefield") String codefield,
-            @Param("namefield") String namefield,
-            @Param("extcols") List<String> extcols,
-            @Param("condmap") Map<String, String> condmap);
 }

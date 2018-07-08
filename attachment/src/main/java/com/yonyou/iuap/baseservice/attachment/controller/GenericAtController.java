@@ -40,7 +40,7 @@ public class GenericAtController<T extends Attachmentable> extends BaseControlle
     @RequestMapping(value = "/getListWithAttach", method = RequestMethod.GET)
     @ResponseBody
     public Object getListWithAttach(PageRequest pageRequest,
-                             SearchParams searchParams){
+                             SearchParams searchParams) throws Exception {
         Page<T> page = service.getListWithAttach(pageRequest,searchParams);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("data", page);
