@@ -3,6 +3,8 @@ package com.yonyou.iuap.baseservice.ref.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.yonyou.iuap.baseservice.ref.service.RefCommonService;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.yonyou.iuap.baseservice.entity.RefParamVO;
 import com.yonyou.iuap.baseservice.ref.utils.ValueConvertor;
 import com.yonyou.iuap.baseservice.persistence.utils.RefXMLParse;
@@ -163,6 +165,7 @@ public class RefCommonController extends AbstractTreeGridRefModel {
         String transmitParam = refModel.getTransmitParam();
         String refType = transmitParam;
 
+
         //构建表体，其中list中为要查询的字段，必须和表头设置的相同，并且必须为表中的字段值
         RefParamVO refParamVO = RefXMLParse.getInstance().getMSConfig(refModel.getRefCode());
 
@@ -182,7 +185,6 @@ public class RefCommonController extends AbstractTreeGridRefModel {
             String condition = refModel.getCondition();
 
             Map<String, String> conditions = new HashMap<String,String>();
-
             //获取查询条件 --如果content
             String content = refModel.getContent();
             if("6".equals(refType)){
