@@ -32,6 +32,9 @@ public class AttachmentEntity extends AbsDrModel {
     @Condition(match=Match.LIKE)
     @Column(name="REFNAME")
     private String refName;     //表单名称
+    @Condition(match=Match.LIKE)
+    @Column(name="ORIGINALFILENAME")
+    private String originalFileName;    //原始文件名称
 
     @Transient
     private String del ;
