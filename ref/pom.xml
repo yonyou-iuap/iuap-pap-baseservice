@@ -25,6 +25,12 @@
             <artifactId>uitemplate_common</artifactId>
             <version>2.0.0-ref-profession-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.yonyou.iuap.baseservice</groupId>
+            <artifactId>iuap-pap-baseservice-persistence</artifactId>
+            <version>3.5.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
 
     </dependencies>
 

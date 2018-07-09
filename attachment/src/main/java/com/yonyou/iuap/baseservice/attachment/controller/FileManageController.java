@@ -46,7 +46,9 @@ public final class FileManageController {
                                 String fileName = FileManager.uploadFile(BucketPermission.FULL.toString(), savedFilename, mult.getBytes());
                                 obj.put("accessAddress", FileManager.getImgUrl(BucketPermission.READ, fileName, 0));
                                 obj.put("fileName", fileName);
+                                obj.put("originalFileName", OringinalFilename);
                             }else{
+                                String OringinalFilename = mult.getOriginalFilename();
                                 FastdfsClient client = FastdfsClient.getInstance();
                                 String fileName = client.upload(mult.getBytes());
                                 obj.put("fileName", fileName);
@@ -54,6 +56,7 @@ public final class FileManageController {
                                     obj.put("accessAddress", null);
                                 }
                                 obj.put("accessAddress", FileManager.getImgUrl(BucketPermission.READ, fileName, 0));
+                                obj.put("originalFileName", OringinalFilename);
                             }
                             list.add(obj);
                         }
