@@ -19,12 +19,6 @@
             <version>RELEASE</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>com.yonyou.iuap.baseservice</groupId>
-            <artifactId>iuap-pap-baseservice-service</artifactId>
-            <version>3.5.1-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
 
         <dependency>
             <groupId>com.yonyou.iuap</groupId>

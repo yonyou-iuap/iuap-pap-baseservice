@@ -120,6 +120,9 @@ public class GenericAtService<T extends Attachmentable> extends GenericExService
                 for (Object item : contentList) { //遍历结果集
                     for(String srcField: refCache.keySet() ){//遍历缓存的entity的全部参照字段
                         Reference refInCache = refCache.get(srcField);
+                        if (  ReflectUtil.getFieldValue(item,srcField) == null ){
+                            continue; // 参照字段为空,则跳过本字段数据解析
+                        }
                         String refFieldValue = ReflectUtil.getFieldValue(item,srcField).toString();
                         int loopSize =Math.min( refInCache.srcProperties().length ,refInCache.desProperties().length  );
                         for (int i = 0; i < loopSize; i++) {//遍历参照中的srcPro和desPro 进行值替换
