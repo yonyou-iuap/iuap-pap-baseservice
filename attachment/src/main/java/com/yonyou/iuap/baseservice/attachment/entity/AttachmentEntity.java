@@ -83,4 +83,12 @@ public class AttachmentEntity extends AbsDrModel {
         this.del = del;
     }
 
+	public String getOriginalFileName() {
+		return originalFileName;
+	}
+
+	public void setOriginalFileName(String originalFileName) {
+		this.originalFileName = originalFileName;
+	}
+
 }
