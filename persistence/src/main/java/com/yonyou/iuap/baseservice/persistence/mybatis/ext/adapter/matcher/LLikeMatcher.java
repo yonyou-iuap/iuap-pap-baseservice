@@ -16,7 +16,8 @@ public class LLikeMatcher implements Matcher{
 	public String buildCondition(Field field, String prefix) {
 		StringBuilder strb = new StringBuilder("\r\n\t<if test=\"");
 		String fieldName = ParamUtil.contactParam(prefix, field.getName());
-		strb.append(fieldName).append("!=null \">\r\n");
+		//strb.append(fieldName).append("!=null \">\r\n");
+		strb.append(ParamUtil.adjust4Condition(field, fieldName)).append("\">\r\n");
 		strb.append("\t\t and ").append(FieldUtil.getColumnName(field)).append(" like CONCAT('%', #{")
 			.append(fieldName).append("})\r\n");
 		strb.append("\t</if>\r\n");

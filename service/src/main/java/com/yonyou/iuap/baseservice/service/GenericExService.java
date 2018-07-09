@@ -1,18 +1,7 @@
 package com.yonyou.iuap.baseservice.service;
 
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
 import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.*;
 
-import cn.hutool.core.util.ReflectUtil;
-import com.yonyou.iuap.baseservice.entity.RefParamVO;
-import com.yonyou.iuap.baseservice.entity.annotation.Reference;
-import com.yonyou.iuap.baseservice.persistence.utils.RefXMLParse;
-import com.yonyou.iuap.mvc.type.SearchParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,8 +10,6 @@ import com.yonyou.iuap.baseservice.entity.LogicDel;
 import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericExMapper;
 import com.yonyou.iuap.persistence.vo.pub.BusinessException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 
 /**
  * 说明：基础Service扩展——支持逻辑删除
@@ -32,7 +19,6 @@ import org.springframework.data.domain.PageRequest;
 public abstract class GenericExService<T extends Model & LogicDel> extends GenericService<T>{
 	
 	private Logger log = LoggerFactory.getLogger(GenericExService.class);
-
 
 	/**
 	 * 新增保存数据
@@ -79,7 +65,7 @@ public abstract class GenericExService<T extends Model & LogicDel> extends Gener
 				throw new BusinessException();
 			}
 		}else {
-			throw new BusinessException();
+			throw new BusinessException("数据对象为空,无法删除!");
 		}
 	}
 

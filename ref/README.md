@@ -1,0 +1,4 @@
+## 参照模块
+本模块依赖应用平台的参照基础类AbstractTreeGridRefModel,实现了预定义的数据加载Rest接口。
+运行时需要加载参照模型定义文件ref.xml，通过平台的回调来实现参照数据加载。
+集成时模块内controller可在spring中通过注解扫描完成实例化

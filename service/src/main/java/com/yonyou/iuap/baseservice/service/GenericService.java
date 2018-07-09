@@ -1,10 +1,13 @@
 package com.yonyou.iuap.baseservice.service;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.persistence.Id;
 
 import org.apache.http.client.utils.DateUtils;
 import org.slf4j.Logger;
@@ -15,6 +18,8 @@ import org.springframework.data.domain.PageRequest;
 import com.alibaba.fastjson.JSON;
 import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.entity.annotation.CodingEntity;
+import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.EntityUtil;
+import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.FieldUtil;
 import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericMapper;
 import com.yonyou.iuap.baseservice.service.util.CodingUtil;
 import com.yonyou.iuap.baseservice.support.generator.GeneratorManager;
@@ -234,7 +239,16 @@ public abstract class GenericService<T extends Model>{
 		//ID为空的情况下，生成生成主键
 		if(entity.getId()==null || StrUtil.isBlankIfStr(entity.getId())) {
 		    Serializable id = GeneratorManager.generateID(entity);
-		    ReflectUtil.setFieldValue(entity, "id", id);
+		    Field[] fieldArray = EntityUtil.getEntityFields(entity.getClass());
+		    for(Field curField : fieldArray){
+		    	if(curField.getAnnotation(Id.class)!=null) {
+		    		String columnName = FieldUtil.getColumnName(curField);
+				    ReflectUtil.setFieldValue(entity, columnName, id);
+				    return;
+		    	}
+		    }
+		    log.error("设置id出错，未找到Id Field：" + entity.getClass());
+		    throw new RuntimeException("设置id出错，未找到@Id Field，请检查类定义");
 		}
 	}
 
