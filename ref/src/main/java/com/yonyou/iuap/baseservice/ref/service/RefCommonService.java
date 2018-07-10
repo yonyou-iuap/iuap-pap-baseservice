@@ -109,12 +109,20 @@ public  class RefCommonService {
                             for (Map<String,Object> refData: refDatas){
                                 String[] mutiRefIds = refFieldValue.split(",");
                                 String[] mutiRefValues = new String[mutiRefIds.length];
+                                boolean ifMatched = false;
                                 for (int j = 0; j <mutiRefIds.length ; j++) {
+                                    System.out.println("refData.get(\"ID\"): " + refData.get("ID"));
+                                    System.out.println("mutiRefIds[j]： " + mutiRefIds[j]);
+                                    System.out.println("-----------------------------------");
                                     if (refData.get("ID")!=null && refData.get("ID").toString().equals(mutiRefIds[j])){
+                                        ifMatched = true;
                                         mutiRefValues[j] = String.valueOf( refData.get(srcCol.toUpperCase() )  );
                                     }
                                 }
-                                ReflectUtil.setFieldValue(item,desField,Arrays.toString(mutiRefValues)); //执行反写
+                                if (ifMatched) {
+                                    ReflectUtil.setFieldValue(item, desField, Arrays.toString(mutiRefValues)); //执行反写
+                                    break;
+                                }
                             }
 
                         }
