@@ -187,7 +187,7 @@ public class RefCommonController extends AbstractTreeGridRefModel {
             Map<String, String> conditions = new HashMap<String,String>();
             //获取查询条件 --如果content
             String content = refModel.getContent();
-            if("6".equals(refType)){
+            if("6".equals(refType) && content != null){
                 JSONObject jsonObject = JSON.parseObject(content);
                 Map<String,Object> map = jsonObject;
                 for(String key : map.keySet()){
