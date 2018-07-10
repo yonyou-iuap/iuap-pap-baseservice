@@ -100,30 +100,25 @@ public  class RefCommonService {
                         if (  ReflectUtil.getFieldValue(item,srcField) == null ){
                             continue; // 参照字段为空,则跳过本字段数据解析
                         }
-                        String refFieldValue = ReflectUtil.getFieldValue(item,srcField).toString();
-                        int loopSize =Math.min( refInCache.srcProperties().length ,refInCache.desProperties().length  );
-                        for (int i = 0; i < loopSize; i++) {//遍历参照中的srcPro和desPro 进行值替换
-                            String srcCol = refInCache.srcProperties()[i];
-                            String desField= refInCache.desProperties()[i];
-                            List<Map<String, Object>> refDatas =refContentMap.get(srcField);
-                            for (Map<String,Object> refData: refDatas){
-                                String[] mutiRefIds = refFieldValue.split(",");
-                                String[] mutiRefValues = new String[mutiRefIds.length];
-                                boolean ifMatched = false;
-                                for (int j = 0; j <mutiRefIds.length ; j++) {
+                        String refFieldValue = ReflectUtil.getFieldValue(item,srcField).toString();//取参照字段值
+                        String[] mutiRefIds = refFieldValue.split(",");//参照字段值转数组
+                        String[] mutiRefValues = new String[mutiRefIds.length];//定义结果载体
+                        int loopSize =Math.min( refInCache.srcProperties().length ,refInCache.desProperties().length  );//参照配置多字段参照时需结构匹配
+                        for (int i = 0; i < loopSize; i++) {//遍历参照中配置的多个srcPro和desPro 进行值替换
+                            String srcCol = refInCache.srcProperties()[i]; //参照表value字段
+                            String desField= refInCache.desProperties()[i];//entity对应参照value的字段
+                            List<Map<String, Object>> refDatas =refContentMap.get(srcField);//取出参照缓存数据集
+                            for (Map<String,Object> refData: refDatas){//遍历数据集
+                                for (int j = 0; j <mutiRefIds.length ; j++) {//多值参照时,循环匹配拿到结果进行反写
                                     System.out.println("refData.get(\"ID\"): " + refData.get("ID"));
                                     System.out.println("mutiRefIds[j]： " + mutiRefIds[j]);
                                     System.out.println("-----------------------------------");
                                     if (refData.get("ID")!=null && refData.get("ID").toString().equals(mutiRefIds[j])){
-                                        ifMatched = true;
-                                        mutiRefValues[j] = String.valueOf( refData.get(srcCol.toUpperCase() )  );
+                                        mutiRefValues[j] = String.valueOf( refData.get(srcCol.toUpperCase() )  ); //匹配到就存到结果数组里
                                     }
                                 }
-                                if (ifMatched) {
-                                    ReflectUtil.setFieldValue(item, desField, Arrays.toString(mutiRefValues)); //执行反写
-                                    break;
-                                }
                             }
+                            ReflectUtil.setFieldValue(item, desField, Arrays.toString(mutiRefValues)); //执行反写
 
                         }
 
