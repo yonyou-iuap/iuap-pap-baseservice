@@ -110,9 +110,6 @@ public  class RefCommonService {
                             List<Map<String, Object>> refDatas =refContentMap.get(srcField);//取出参照缓存数据集
                             for (Map<String,Object> refData: refDatas){//遍历数据集
                                 for (int j = 0; j <mutiRefIds.length ; j++) {//多值参照时,循环匹配拿到结果进行反写
-                                    System.out.println("refData.get(\"ID\"): " + refData.get("ID"));
-                                    System.out.println("mutiRefIds[j]： " + mutiRefIds[j]);
-                                    System.out.println("-----------------------------------");
                                     if (refData.get("ID")!=null && refData.get("ID").toString().equals(mutiRefIds[j])){
                                         mutiRefValues[j] = String.valueOf( refData.get(srcCol.toUpperCase() )  ); //匹配到就存到结果数组里
                                     }
