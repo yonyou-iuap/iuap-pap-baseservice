@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.yonyou.iuap.baseservice.ref.dao.mapper.RefCommonMapper">
     
-    <select id="findUserListByIds" resultType="java.util.HashMap">
+    <select id="findRefListByIds" resultType="java.util.HashMap">
         Select ${idfield} as id
 			<if test="extcols != null">
 				<foreach collection="extcols" item="item" index="index">

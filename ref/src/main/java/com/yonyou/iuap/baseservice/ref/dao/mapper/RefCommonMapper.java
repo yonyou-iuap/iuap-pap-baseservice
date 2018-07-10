@@ -65,8 +65,6 @@ public interface RefCommonMapper {
 	 * @param pageRequest
 	 * @param tablename
 	 * @param idfield
-	 * @param codefield
-	 * @param namefield
 	 * @param extcols
 	 * @param condmap
 	 * @return
@@ -79,16 +77,12 @@ public interface RefCommonMapper {
             @Param("condmap") Map<String, String> condmap);
 	/**
 	 * 根据ids批量查询
-	 * @param pageRequest
 	 * @param tablename
 	 * @param idfield
-	 * @param codefield
-	 * @param namefield
 	 * @param extcols
-	 * @param condmap
 	 * @return
 	 */
-	List<Map<String, Object>> findUserListByIds(
+	List<Map<String, Object>> findRefListByIds(
             @Param("tablename") String tablename,
             @Param("idfield") String idfield,
             @Param("extcols") List<String> extcols,
@@ -101,8 +95,6 @@ public interface RefCommonMapper {
 	 * @param idfield
 	 * @param codefield
 	 * @param namefield
-	 * @param extColumns
-	 * @param condition
 	 * @return
 	 */
 	PageResult<Map<String,Object>> selectRefTree(
