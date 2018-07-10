@@ -12,6 +12,7 @@ import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericExMapper;
 import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericMapper;
 import com.yonyou.iuap.baseservice.persistence.utils.RefXMLParse;
 import com.yonyou.iuap.baseservice.ref.dao.mapper.RefCommonMapper;
+import com.yonyou.iuap.baseservice.ref.service.RefCommonService;
 import com.yonyou.iuap.baseservice.service.GenericExService;
 import com.yonyou.iuap.baseservice.service.GenericService;
 import com.yonyou.iuap.baseservice.support.generator.GeneratorManager;
@@ -38,7 +39,7 @@ public class GenericAtService<T extends Attachmentable> extends GenericExService
     @Autowired
     private AttachmentMapper atMapper;
     @Autowired
-    private RefCommonMapper rfMapper;
+    private RefCommonService rfService;
 
 	protected GenericExMapper mapper;
 
@@ -87,7 +88,7 @@ public class GenericAtService<T extends Attachmentable> extends GenericExService
 
         Page<T> page = super.selectAllByPage(pageRequest, searchParams);
         List<T> list = page.getContent();
-        list = fillListWithRef(list);
+        list = rfService.fillListWithRef(list);
         for(T entity : list){
             Map params = new HashMap<>();
             params.put("refId",entity.getId()   );
@@ -98,67 +99,6 @@ public class GenericAtService<T extends Attachmentable> extends GenericExService
     }
 
 
-    public List fillListWithRef(List list){
-        if (!list.isEmpty()) {
-            /**
-             * @Step 1 解析参照配置,一次加载参照数据全集 
-             * TODO 应优化为按需加载
-             */
-            Map<String, List<Map<String, Object>>> refContentMap = new HashMap<>();
-            Map<String,Reference> refCache = new HashMap<>();
-            Field[] fields = ReflectUtil.getFields(list.get(0).getClass());
-            for (Field field : fields) {
-                Reference ref = field.getAnnotation(Reference.class);
-                if (null != ref) {
-                    refCache.put(field.getName(),ref); //将所有参照和field的关系缓存起来后续使用
-                    RefParamVO params = RefXMLParse.getInstance().getMSConfig(ref.code());
-                    Map<String, String> conditions = new HashMap<String,String>();
-//                    conditions.put("dr", "0");
-                    String idfield = StringUtils.isBlank(params.getIdfield()) ? "id"
-                            : params.getIdfield();
-                    List<Map<String, Object>> refContents =
-                            rfMapper.treerefselectAllByPage(
-                                    null, params.getTablename(),
-                                    idfield, params.getExtcol()
-                                    , conditions).getContent();
-                    refContentMap.put(field.getName(), refContents);//将所有参照数据集和field的关系缓存起来后续使用
-                }
-            }
-            /**
-             * @Step 2 逐条遍历业务结果集,将属性替换为参照值
-             */
-            if (!refContentMap.isEmpty()) {
-                for (Object item : list) { //遍历结果集
-                    for(String srcField: refCache.keySet() ){//遍历缓存的entity的全部参照字段
-                        Reference refInCache = refCache.get(srcField);
-                        if (  ReflectUtil.getFieldValue(item,srcField) == null ){
-                            continue; // 参照字段为空,则跳过本字段数据解析
-                        }
-                        String refFieldValue = ReflectUtil.getFieldValue(item,srcField).toString();
-                        int loopSize =Math.min( refInCache.srcProperties().length ,refInCache.desProperties().length  );
-                        for (int i = 0; i < loopSize; i++) {//遍历参照中的srcPro和desPro 进行值替换
-                            String srcCol = refInCache.srcProperties()[i];
-                            String desField= refInCache.desProperties()[i];
-                            List<Map<String, Object>> refDatas =refContentMap.get(srcField);
-                            for (Map<String,Object> refData: refDatas){
-                                String[] mutiRefIds = refFieldValue.split(",");
-                                String[] mutiRefValues = new String[mutiRefIds.length];
-                                for (int j = 0; j <mutiRefIds.length ; j++) {
-                                    if (refData.get("ID")!=null && refData.get("ID").toString().equals(mutiRefIds[j])){
-                                        mutiRefValues[j] = String.valueOf( refData.get(srcCol.toUpperCase() )  );
-                                    }
-                                }
-                                ReflectUtil.setFieldValue(item,desField,Arrays.toString(mutiRefValues)); //执行反写
-                            }
 
-                        }
-
-                    }
-                }
-            }
-        }
-
-        return list;
-    }
 
 }
