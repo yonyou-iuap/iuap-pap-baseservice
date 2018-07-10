@@ -86,16 +86,27 @@ public class GenericAtService<T extends Attachmentable> extends GenericExService
 //        Page page = mapper.selectAllByPage(pageRequest, searchParams).getPage();
 
         Page<T> page = super.selectAllByPage(pageRequest, searchParams);
+        List<T> list = page.getContent();
+        list = fillListWithRef(list);
+        for(T entity : list){
+            Map params = new HashMap<>();
+            params.put("refId",entity.getId()   );
+            List<AttachmentEntity> attachments = atMapper.queryList(params);
+            entity.setAttachment(attachments);
+        }
+        return page;
+    }
 
-        List<T> contentList = page.getContent();
 
-        if (!contentList.isEmpty()) {
+    public List fillListWithRef(List list){
+        if (!list.isEmpty()) {
             /**
-             * @Step 1 解析参照配置,一次加载参照数据全集
+             * @Step 1 解析参照配置,一次加载参照数据全集 
+             * TODO 应优化为按需加载
              */
             Map<String, List<Map<String, Object>>> refContentMap = new HashMap<>();
             Map<String,Reference> refCache = new HashMap<>();
-            Field[] fields = ReflectUtil.getFields(contentList.get(0).getClass());
+            Field[] fields = ReflectUtil.getFields(list.get(0).getClass());
             for (Field field : fields) {
                 Reference ref = field.getAnnotation(Reference.class);
                 if (null != ref) {
@@ -117,7 +128,7 @@ public class GenericAtService<T extends Attachmentable> extends GenericExService
              * @Step 2 逐条遍历业务结果集,将属性替换为参照值
              */
             if (!refContentMap.isEmpty()) {
-                for (Object item : contentList) { //遍历结果集
+                for (Object item : list) { //遍历结果集
                     for(String srcField: refCache.keySet() ){//遍历缓存的entity的全部参照字段
                         Reference refInCache = refCache.get(srcField);
                         if (  ReflectUtil.getFieldValue(item,srcField) == null ){
@@ -126,15 +137,19 @@ public class GenericAtService<T extends Attachmentable> extends GenericExService
                         String refFieldValue = ReflectUtil.getFieldValue(item,srcField).toString();
                         int loopSize =Math.min( refInCache.srcProperties().length ,refInCache.desProperties().length  );
                         for (int i = 0; i < loopSize; i++) {//遍历参照中的srcPro和desPro 进行值替换
-                           String srcCol = refInCache.srcProperties()[i];
-                           String desField= refInCache.desProperties()[i];
-                           List<Map<String, Object>> refDatas =refContentMap.get(srcField);
-                           for (Map<String,Object> refData: refDatas){
-                               if (refData.get("ID")!=null && refData.get("ID").toString().equals(refFieldValue)){
-                                   Object refValue = refData.get(srcCol.toUpperCase());
-                                   ReflectUtil.setFieldValue(item,desField,refValue); //执行反写
-                               }
-                           }
+                            String srcCol = refInCache.srcProperties()[i];
+                            String desField= refInCache.desProperties()[i];
+                            List<Map<String, Object>> refDatas =refContentMap.get(srcField);
+                            for (Map<String,Object> refData: refDatas){
+                                String[] mutiRefIds = refFieldValue.split(",");
+                                String[] mutiRefValues = new String[mutiRefIds.length];
+                                for (int j = 0; j <mutiRefIds.length ; j++) {
+                                    if (refData.get("ID")!=null && refData.get("ID").toString().equals(mutiRefIds[j])){
+                                        mutiRefValues[j] = String.valueOf( refData.get(srcCol.toUpperCase() )  );
+                                    }
+                                }
+                                ReflectUtil.setFieldValue(item,desField,Arrays.toString(mutiRefValues)); //执行反写
+                            }
 
                         }
 
@@ -143,14 +158,7 @@ public class GenericAtService<T extends Attachmentable> extends GenericExService
             }
         }
 
-        List<T> list = page.getContent();
-        for(T entity : list){
-            Map params = new HashMap<>();
-            params.put("refId",entity.getId()   );
-            List<AttachmentEntity> attachments = atMapper.queryList(params);
-            entity.setAttachment(attachments);
-        }
-        return page;
+        return list;
     }
 
 }

@@ -19,7 +19,7 @@ public  class RefCommonService {
     public List<Map<String, Object>> getFilterRef(String tablename, String idfield,
                                                   List<String> extColumns, List<String> ids) {
 
-        List<Map<String, Object>> result = mapper.findUserListByIds(tablename,idfield,extColumns,ids);
+        List<Map<String, Object>> result = mapper.findRefListByIds(tablename,idfield,extColumns,ids);
 
         return result;
     }
