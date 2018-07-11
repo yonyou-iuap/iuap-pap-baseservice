@@ -11,10 +11,13 @@
 			</if>
 				from ${tablename}
 			<where> 
-				dr = 0 and id in
-					<foreach collection="Ids" item="ids" open="(" close=")" separator=",">
-            			#{ids}
-        			</foreach>
+				dr = 0
+                    and id in
+                    <foreach collection="ids" item="id" open="(" close=")" separator=",">
+                        #{id}
+                    </foreach>
+
+
 			</where>
     </select>
     
