@@ -21,6 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
@@ -29,13 +30,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 说明：基础Controller——提供数据增、删、改、查
- * @author houlf
- * 2018年6月13日
+ * 说明：参照基础controller,所有参照都通过平台回调到这个地址取数据
+ * @WARN 需要平台的REF_REFINFO表中有相应的配置数据,例如 23    common_ref	通用树表参照	common_ref		/iuap_pap_quickstart/common/ref/				AAAzpkAAGAAAev+AAA
+ * @author leon
+ * 2018年7月11日
  */
 @Controller
 @RequestMapping(value = "/common/ref")
-public class RefCommonController extends AbstractTreeGridRefModel {
+public final class RefCommonController extends AbstractTreeGridRefModel {
 	
 	private Logger log = LoggerFactory.getLogger(RefCommonController.class);
 
@@ -48,15 +50,6 @@ public class RefCommonController extends AbstractTreeGridRefModel {
     public RefViewModelVO getRefModelInfo(@RequestBody RefViewModelVO refViewModel) {
 
         RefViewModelVO refModel = super.getRefModelInfo(refViewModel);
-//		String transmitParam = refViewModel.getTransmitParam();
-//		String tableName = "";
-//		if(transmitParam.contains(",")){
-//			String[] tableNames = transmitParam.split(",");
-//			tableName = tableNames[0];
-//		}else{
-//			tableName = transmitParam;
-//		}
-
         RefParamVO refParamVO = RefXMLParse.getInstance().getMSConfig(refViewModel.getRefCode());
 
         Map<String,String> showcolMap = refParamVO.getShowcol();
@@ -79,27 +72,46 @@ public class RefCommonController extends AbstractTreeGridRefModel {
         return refModel;
     }
 
+    /**
+     * 通过pk查询所有数据,String pk数组入参
+     * @param arg0
+     * @return
+     */
     @Override
     public List<Map<String, String>> matchPKRefJSON(RefViewModelVO arg0) {
-        // TODO Auto-generated method stub
         return null;
     }
 
+    /**
+     * 模糊查询,content 入参
+     * @param arg0
+     * @return
+     */
     @Override
     public List<Map<String, String>> filterRefJSON(RefViewModelVO arg0) {
-        // TODO Auto-generated method stub
+        //
         return null;
     }
 
+    /**
+     * 表单下拉提示数据,智能输入检索用
+     * @param arg0
+     * @return
+     */
     @Override
     public List<Map<String, String>> matchBlurRefJSON(RefViewModelVO arg0) {
-        // TODO Auto-generated method stub
+        //
         return null;
     }
 
+    /**
+     * 左树查询
+     * @param arg0
+     * @return
+     */
     @Override
     public List<Map<String, String>> blobRefClassSearch(RefViewModelVO arg0) {
-        // TODO Auto-generated method stub
+        //
         return null;
     }
 
@@ -305,6 +317,47 @@ public class RefCommonController extends AbstractTreeGridRefModel {
         }
         return results;
     }
+
+    /**
+     * 根据id反查所有参照信息,参照组件加载是需调用
+     * @param list
+     * @return
+     */
+    @RequestMapping(value = "/filterRef",method = RequestMethod.POST)
+    @ResponseBody
+    public List<Map<String,String>> filterRef(@RequestBody List<Map<String,String>> list) {
+        if(list.size() > 0){
+            String refCode = "";
+            List<String> idsList = new ArrayList<String>();
+            List<Map<String, String>> results = new ArrayList<Map<String, String>>();
+
+            for(Map<String,String> map:list){
+                refCode = map.get("refCode");
+                String ids = map.get("id");
+                if(ids != null && !"".equals(ids)){
+                    String[] idArray =ids.split(",");
+                    for(String id:idArray){
+                        idsList.add(id);
+                    }
+                }
+            }
+
+            RefParamVO refParamVO = RefXMLParse.getInstance().getMSConfig(refCode);
+            String idfield = StringUtils.isBlank(refParamVO.getIdfield()) ? "id"
+                    : refParamVO.getIdfield();
+            String tableName = refParamVO.getTablename();
+            List<Map<String, Object>> obj = service.getFilterRef(tableName,idfield,refParamVO.getExtcol(),idsList);
+            if (CollectionUtils.isNotEmpty(obj)) {
+                results = buildRtnValsOfRef(obj);
+            }
+            return results;
+        }
+        return (new ArrayList<>());
+    }
+
+
+
+
 	/************************************************************/
     @Autowired
 	private RefCommonService service;
