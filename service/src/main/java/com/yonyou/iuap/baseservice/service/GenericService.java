@@ -19,7 +19,6 @@ import com.alibaba.fastjson.JSON;
 import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.entity.annotation.CodingEntity;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.EntityUtil;
-import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.FieldUtil;
 import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericMapper;
 import com.yonyou.iuap.baseservice.service.util.CodingUtil;
 import com.yonyou.iuap.baseservice.support.generator.GeneratorManager;
@@ -235,6 +234,10 @@ public abstract class GenericService<T extends Model>{
 		}
 	}
 	
+	/**
+	 * 生成并设置ID
+	 * @param entity
+	 */
 	private void genAndSetEntityId(T entity) {
 		//ID为空的情况下，生成生成主键
 		if(entity.getId()==null || StrUtil.isBlankIfStr(entity.getId())) {
@@ -242,8 +245,7 @@ public abstract class GenericService<T extends Model>{
 		    Field[] fieldArray = EntityUtil.getEntityFields(entity.getClass());
 		    for(Field curField : fieldArray){
 		    	if(curField.getAnnotation(Id.class)!=null) {
-		    		String columnName = FieldUtil.getColumnName(curField);
-				    ReflectUtil.setFieldValue(entity, columnName, id);
+				    ReflectUtil.setFieldValue(entity, curField.getName(), id);
 				    return;
 		    	}
 		    }

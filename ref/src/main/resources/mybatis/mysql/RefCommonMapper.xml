@@ -3,7 +3,7 @@
 <mapper namespace="com.yonyou.iuap.baseservice.ref.dao.mapper.RefCommonMapper">
     
     <select id="findRefListByIds" resultType="java.util.HashMap">
-        Select ${idfield} as id
+        Select ${idfield} as ID
 			<if test="extcols != null">
 				<foreach collection="extcols" item="item" index="index">
 					, ${item}
