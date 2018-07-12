@@ -58,8 +58,7 @@ public abstract  class GenericAssoController<T extends Model> extends BaseContro
             String sublistKey = StringUtils.uncapitalize(assoKey.getSimpleName())+"List";
             vo.addList( sublistKey,subList);
         }
-        String entityKey = StringUtils.uncapitalize(entity.getClass().getSimpleName());
-        JsonResponse result = this.buildSuccess(entityKey,vo.getEntity());
+        JsonResponse result = this.buildSuccess("entity",vo.getEntity());//保证入参出参结构一致
         result.getDetailMsg().putAll(vo.getSublist());
         return  result;
     }
