@@ -1,6 +1,9 @@
 package com.yonyou.iuap.baseservice.controller;
 
 import cn.hutool.core.util.ReflectUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.parser.Feature;
 import com.yonyou.iuap.base.web.BaseController;
 import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.entity.annotation.Associative;
@@ -37,6 +40,7 @@ public abstract  class GenericAssoController<T extends Model> extends BaseContro
 
     @Autowired
     RefCommonService refService;
+  
 
     @RequestMapping(value = "/getAssoVo")
     @ResponseBody
@@ -69,8 +73,16 @@ public abstract  class GenericAssoController<T extends Model> extends BaseContro
         T newEntity = service.save( vo.getEntity());
         for (Class assoKey:subServices.keySet() ){
             String sublistKey = StringUtils.uncapitalize(assoKey.getSimpleName())+"List";
-            if (  vo.getList(sublistKey)!=null && vo.getList(sublistKey).size()>0 )
-                subServices.get(assoKey).saveBatch( vo.getList(sublistKey)  );
+            List<Map> subEntities=vo.getList(sublistKey);
+            if ( subEntities !=null && subEntities.size()>0 ){
+                for (Map subEntity:subEntities){
+                    String mj=  JSONObject.toJSONString(subEntity);
+                    Model entity = (Model) JSON.parseObject(mj,assoKey,Feature.IgnoreNotMatch);
+                    subServices.get(assoKey).save(entity);
+                }
+
+            }
+
         }
         return this.buildSuccess(newEntity) ;
     }
