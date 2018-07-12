@@ -31,12 +31,12 @@ import java.util.Map;
 
 /**
  * 说明：参照基础controller,所有参照都通过平台回调到这个地址取数据
- * @WARN 需要平台的REF_REFINFO表中有相应的配置数据,例如 23    common_ref	通用树表参照	common_ref		/iuap_pap_quickstart/common/ref/				AAAzpkAAGAAAev+AAA
+ * @WARN 需要平台的REF_REFINFO表中有相应的配置数据,例如 23    common_ref	通用树表参照	common_ref		/iuap_pap_quickstart/common/				AAAzpkAAGAAAev+AAA
  * @author leon
  * 2018年7月11日
  */
 @Controller
-@RequestMapping(value = "/common/ref")
+@RequestMapping(value = "/common")
 public final class RefCommonController extends AbstractTreeGridRefModel {
 	
 	private Logger log = LoggerFactory.getLogger(RefCommonController.class);

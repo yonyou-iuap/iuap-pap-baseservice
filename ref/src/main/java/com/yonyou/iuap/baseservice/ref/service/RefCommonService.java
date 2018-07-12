@@ -2,6 +2,8 @@ package com.yonyou.iuap.baseservice.ref.service;
 
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.map.CaseInsensitiveMap;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
 import com.yonyou.iuap.baseservice.entity.RefParamVO;
@@ -119,6 +121,7 @@ public  class RefCommonService {
                 List<Map<String, Object>> refContents =
                         mapper.findRefListByIds(params.getTablename(),
                                 idfield, params.getExtcol(), setList);
+//                CaseInsensitiveMap map =new CaseInsensitiveMap( list.get(0));
                 if ( null!= refContents && refContents.size()>0)
                     refDataCache.put(field, refContents);//将所有参照数据集和field的关系缓存起来后续使用
             }
@@ -145,8 +148,11 @@ public  class RefCommonService {
                             List<Map<String, Object>> refDatas =refDataCache.get(refField);//取出参照缓存数据集
                             for (Map<String,Object> refData: refDatas){
                                 for (int j = 0; j <mutiRefIds.length ; j++) {//多值参照时,循环匹配拿到结果进行反写
-                                    if (refData.get("ID")!=null && refData.get("ID").toString().equals(mutiRefIds[j])){
-                                        mutiRefValues[j] = String.valueOf( refData.get(srcCol.toUpperCase() )  ); //匹配到就存到结果数组里
+                                    if (refData.get("ID")!=null && refData.get("ID").toString().equals(mutiRefIds[j])){ //数据库适配时 mysql也要将此字段as ID
+                                        for(String columnKey:refData.keySet()){//解决大小写适配问题
+                                            if (columnKey.equalsIgnoreCase(srcCol))
+                                                mutiRefValues[j] = String.valueOf( refData.get(columnKey) );
+                                        }
                                     }
                                 }
                             }
