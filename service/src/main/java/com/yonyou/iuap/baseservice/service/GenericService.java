@@ -234,6 +234,10 @@ public abstract class GenericService<T extends Model>{
 		}
 	}
 	
+	/**
+	 * 生成并设置ID
+	 * @param entity
+	 */
 	private void genAndSetEntityId(T entity) {
 		//ID为空的情况下，生成生成主键
 		if(entity.getId()==null || StrUtil.isBlankIfStr(entity.getId())) {
