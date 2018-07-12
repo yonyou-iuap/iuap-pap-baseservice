@@ -1,6 +1,5 @@
 package com.yonyou.iuap.baseservice.vo;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.yonyou.iuap.baseservice.entity.Model;
 
 import java.io.Serializable;
