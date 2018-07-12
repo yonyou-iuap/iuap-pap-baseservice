@@ -1,8 +1,11 @@
 package com.yonyou.iuap.baseservice.controller;
 
+import cn.hutool.core.util.ReflectUtil;
 import com.yonyou.iuap.base.web.BaseController;
 import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.entity.annotation.Associative;
+import com.yonyou.iuap.baseservice.entity.annotation.Reference;
+import com.yonyou.iuap.baseservice.ref.service.RefCommonService;
 import com.yonyou.iuap.baseservice.service.GenericService;
 import com.yonyou.iuap.baseservice.vo.GenericAssoVo;
 import com.yonyou.iuap.mvc.constants.RequestStatusEnum;
@@ -11,6 +14,7 @@ import com.yonyou.iuap.mvc.type.SearchParams;
 import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,9 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Field;
+import java.util.*;
 
 /**
  * 说明：基础Controller——仅提供主子表关联特性,单表增删改查请参照GenericExController,GenericController
@@ -32,6 +35,8 @@ import java.util.Map;
 public abstract  class GenericAssoController<T extends Model> extends BaseController {
     private Logger log = LoggerFactory.getLogger(GenericAssoController.class);
 
+    @Autowired
+    RefCommonService refService;
 
     @RequestMapping(value = "/getAssoVo")
     @ResponseBody
@@ -42,11 +47,14 @@ public abstract  class GenericAssoController<T extends Model> extends BaseContro
         T entity = service.findById(id);
         Associative associative= entity.getClass().getAnnotation(Associative.class);
         if (associative==null|| StringUtils.isEmpty(associative.fkName())){
-            return buildError("","Nothing with @Associative or without fkName",RequestStatusEnum.FAIL_FIELD);
+            return buildError("","Nothing got @Associative or without fkName",RequestStatusEnum.FAIL_FIELD);
         }
         GenericAssoVo vo = new GenericAssoVo(entity) ;
         for (Class assoKey:subServices.keySet() ){
             List subList= subServices.get(assoKey).queryList(associative.fkName(),id);
+            if ( hasReferrence(assoKey)){
+                subList=refService.fillListWithRef(subList);
+            }
             String sublistKey = StringUtils.uncapitalize(assoKey.getSimpleName())+"List";
             vo.addList( sublistKey,subList);
         }
@@ -67,6 +75,17 @@ public abstract  class GenericAssoController<T extends Model> extends BaseContro
         }
         return this.buildSuccess(newEntity) ;
     }
+    protected boolean hasReferrence(Class entityClass){
+        Field[] fields = ReflectUtil.getFields(entityClass);
+        for (Field field : fields) {
+            Reference ref = field.getAnnotation(Reference.class);
+            if (null != ref) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     /************************************************************/
     private Map<Class ,GenericService> subServices = new HashMap<>();
