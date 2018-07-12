@@ -1,5 +1,6 @@
 package com.yonyou.iuap.baseservice.vo;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.yonyou.iuap.baseservice.entity.Model;
 
 import java.io.Serializable;
@@ -18,7 +19,8 @@ public class GenericAssoVo<T extends Model> implements Serializable {
     protected T entity; //主表对象
     protected Map<String, List> sublist = new HashMap<>();//字表list,支持一主多子
 
-
+    public GenericAssoVo() {
+    }
     public GenericAssoVo(T entity) {
         this.entity = entity;
     }

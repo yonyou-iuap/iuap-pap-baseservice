@@ -65,8 +65,8 @@ public abstract  class GenericAssoController<T extends Model> extends BaseContro
 
     @RequestMapping(value = "/SaveAssoVo")
     @ResponseBody
-    public Object  saveAssoVo(@RequestBody GenericAssoVo vo){
-        T newEntity = service.save((T) vo.getEntity());
+    public Object  saveAssoVo(@RequestBody GenericAssoVo<T> vo){
+        T newEntity = service.save( vo.getEntity());
         for (Class assoKey:subServices.keySet() ){
             String sublistKey = StringUtils.uncapitalize(assoKey.getSimpleName())+"List";
             if (  vo.getList(sublistKey)!=null && vo.getList(sublistKey).size()>0 )
