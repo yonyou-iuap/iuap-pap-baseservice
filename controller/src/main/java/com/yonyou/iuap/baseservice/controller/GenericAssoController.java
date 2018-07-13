@@ -70,12 +70,17 @@ public abstract  class GenericAssoController<T extends Model> extends BaseContro
     @RequestMapping(value = "/SaveAssoVo")
     @ResponseBody
     public Object  saveAssoVo(@RequestBody GenericAssoVo<T> vo){
+        Associative annotation= vo.getEntity().getClass().getAnnotation(Associative.class);
+        if (annotation==null|| StringUtils.isEmpty(annotation.fkName())){
+            return buildError("","Nothing got @Associative or without fkName",RequestStatusEnum.FAIL_FIELD);
+        }
         T newEntity = service.save( vo.getEntity());
         for (Class assoKey:subServices.keySet() ){
             String sublistKey = StringUtils.uncapitalize(assoKey.getSimpleName())+"List";
             List<Map> subEntities=vo.getList(sublistKey);
             if ( subEntities !=null && subEntities.size()>0 ){
                 for (Map subEntity:subEntities){
+                    subEntity.put(annotation.fkName(),newEntity.getId());//外键保存
                     String mj=  JSONObject.toJSONString(subEntity);
                     Model entity = (Model) JSON.parseObject(mj,assoKey,Feature.IgnoreNotMatch);
                     subServices.get(assoKey).save(entity);
