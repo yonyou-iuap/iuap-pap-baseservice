@@ -30,6 +30,7 @@ import java.util.*;
 
 /**
  * 说明：基础Controller——仅提供主子表关联特性,单表增删改查请参照GenericExController,GenericController
+ * 使用时需要在Entity上增加@Associative注解
  * TODO 级联删除下个版本支持
  * @author leon
  * 2018年7月11日
