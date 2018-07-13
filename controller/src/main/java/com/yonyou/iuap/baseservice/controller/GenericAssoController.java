@@ -50,6 +50,8 @@ public abstract  class GenericAssoController<T extends Model> extends BaseContro
         Serializable id = MapUtils.getString(searchParams.getSearchMap(), "id");
         if (null==id){ return buildSuccess();}
         T entity = service.findById(id);
+        List<T> single= refService.fillListWithRef( Arrays.asList(entity) )  ;
+        entity=single.get(0);
         Associative associative= entity.getClass().getAnnotation(Associative.class);
         if (associative==null|| StringUtils.isEmpty(associative.fkName())){
             return buildError("","Nothing got @Associative or without fkName",RequestStatusEnum.FAIL_FIELD);
