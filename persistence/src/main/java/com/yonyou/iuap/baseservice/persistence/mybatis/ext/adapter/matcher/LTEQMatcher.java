@@ -18,7 +18,7 @@ public class LTEQMatcher implements Matcher{
 		String fieldName = ParamUtil.contactParam(prefix, field.getName());
 		//strb.append(fieldName).append("!=null \">\r\n");
 		strb.append(ParamUtil.adjust4Condition(field, fieldName)).append("\">\r\n");
-		strb.append("\t\t and ").append(FieldUtil.getColumnName(field)).append(" <= #{")
+		strb.append("\t\t and ").append(FieldUtil.getColumnName(field)).append(" <![CDATA[ <= ]]> #{")
 			.append(fieldName).append("}\r\n");
 		strb.append("\t</if>\r\n");
 		return strb.toString();
