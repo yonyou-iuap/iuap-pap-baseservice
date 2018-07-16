@@ -103,6 +103,10 @@ public class RefXMLParse {
 							refParamVO.setPidfield(name);
 							list.add(name);
 						}
+					}else if("idfield".equals(code)){
+						if(!"".equals(name)){
+							refParamVO.setIdfield(name);
+						}	
 					}else{
 						map.put(code,name);
 						list.add(code);
