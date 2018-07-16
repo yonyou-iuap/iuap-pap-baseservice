@@ -8,6 +8,7 @@ import java.util.Map;
 import com.yonyou.iuap.baseservice.support.excel.SimpleExcelExporter;
 import com.yonyou.iuap.baseservice.support.excel.SimpleExcelImporter;
 
+@SuppressWarnings("all")
 public class TestExcel {
 	
 	public static void main(String[] args) {
@@ -17,10 +18,10 @@ public class TestExcel {
 	
 	public static void importer() {
 		SimpleExcelImporter importer = new SimpleExcelImporter();
-		String[] listHeader = new String[] {"id:标识","code:编码","name:名称"};
-		importer.readData("d:/output.xlsx", listHeader, Entity.class);
+		String[] listHeader = new String[] {"id:标识","code:编码","name:名称","createDate:日期", "intNum:整数","fltNum:小数","bdmNum:长小数"};
+		List<Data> listData = importer.readData("d:/output.xlsx", listHeader, Data.class);
 		
-		List<Map<String,Object>> listMap = importer.readDataByMap("d:/output.xlsx");
+		//List<Map<String,Object>> listMap = importer.readDataByMap("d:/output.xlsx");
 		System.out.println();
 	}
 	

@@ -4,9 +4,14 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import com.yonyou.iuap.baseservice.support.excel.convertor.ConvertorHolder;
+import com.yonyou.iuap.baseservice.support.excel.convertor.ValueConvertor;
 
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.poi.excel.ExcelReader;
@@ -69,19 +74,11 @@ public class SimpleExcelImporter {
 		}
 		for(int i=0; i<rowData.size(); i++) {
 			Field field = ReflectUtil.getField(data.getClass(), headKey[i]);
-			String fieldType = field.getType().getName();
-			if(field.getType() == String.class) {
-				ReflectUtil.setFieldValue(data, field, rowData.get(i));
-			}else if(fieldType.equals("int") || field.getType() == Integer.class) {
-				ReflectUtil.setFieldValue(data, field, convert2Int(rowData.get(i)));
-			}else if(fieldType.equals("long") || field.getType() == Long.class) {
-				
-			}else if(fieldType.equals("float") || field.getType() == Float.class) {
-				
-			}else if(fieldType.equals("double") || field.getType() == Double.class) {
-				
+			ValueConvertor convertor = ConvertorHolder.inst().getConvertor(field.getType());
+			if(convertor!=null) {
+				ReflectUtil.setFieldValue(data, field, convertor.convert(rowData.get(i)));
 			}else {
-				
+				throw new RuntimeException("无效的数据类型:"+field.getType());
 			}
 		}
 	}
@@ -97,34 +94,9 @@ public class SimpleExcelImporter {
 		return new String[][]{headerKey, headerName};
 	}
 	
-	private static String convert2Str(Object value) {
-		if(value == null) {
-			return null;
-		}else {
-			if(value instanceof String) {
-				return (String)value;
-			}else {
-				return String.valueOf(value);
-			}
-		}
-	}
-	
-	private static int convert2Int(Object value) {
-		if(value == null) {
-			return 0;
-		}else {
-			if(value instanceof Integer) {
-				return ((Integer) value).intValue();
-			}else {
-				return Integer.parseInt(String.valueOf(value));
-			}
-		}
-	}
-	
 	/********************************************************/
 	private static class Inner{
 		private static SimpleExcelImporter inst = new SimpleExcelImporter();
 	}
-
 
 }

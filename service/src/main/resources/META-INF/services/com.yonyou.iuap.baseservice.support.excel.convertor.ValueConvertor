@@ -1,0 +1,11 @@
+com.yonyou.iuap.baseservice.support.excel.convertor.StringConvertor
+com.yonyou.iuap.baseservice.support.excel.convertor.IntConvertor
+com.yonyou.iuap.baseservice.support.excel.convertor.IntegerConvertor
+com.yonyou.iuap.baseservice.support.excel.convertor.LongConvertor
+com.yonyou.iuap.baseservice.support.excel.convertor.LongObjectConvertor
+com.yonyou.iuap.baseservice.support.excel.convertor.FloatConvertor
+com.yonyou.iuap.baseservice.support.excel.convertor.FloatObjectConvertor
+com.yonyou.iuap.baseservice.support.excel.convertor.DoubleConvertor
+com.yonyou.iuap.baseservice.support.excel.convertor.DoubleObjectConvertor
+com.yonyou.iuap.baseservice.support.excel.convertor.DateConvertor
+com.yonyou.iuap.baseservice.support.excel.convertor.BigDecimalConvertor
