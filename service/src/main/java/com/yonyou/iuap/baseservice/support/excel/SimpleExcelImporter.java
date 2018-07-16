@@ -70,7 +70,7 @@ public class SimpleExcelImporter {
 	
 	private static <T> void buildRowData(T data, List<Object> rowData, String[] headKey) {
 		if(rowData.size() != headKey.length) {
-			throw new RuntimeException();
+			throw new RuntimeException("Excel数据列数与Header定义不一致!");
 		}
 		for(int i=0; i<rowData.size(); i++) {
 			Field field = ReflectUtil.getField(data.getClass(), headKey[i]);
