@@ -11,4 +11,10 @@ public @interface Condition{
 
 	public Match match() default Match.EQ;
 
+	//区间判断：开始值属性name
+	public String param1() default "";
+
+	//区间判断：结束值属性name
+	public String param2() default "";
+
 }

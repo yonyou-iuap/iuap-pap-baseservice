@@ -688,10 +688,17 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 
     @Override
     public T insert(T entity) {
-        if(entity.getId()==null ) {
+        if(entity.getBpmState()==null ) {
             entity.setBpmState(BpmExUtil.BPM_STATE_NOTSTART);//默认为0
         }
         return super.insert(entity);
+    }
+    @Override
+    public T save(T entity) {
+        if(entity.getBpmState()==null ) {
+            entity.setBpmState(BpmExUtil.BPM_STATE_NOTSTART);//默认为0
+        }
+        return super.save(entity);
     }
 
 
