@@ -1,5 +1,7 @@
 package com.yonyou.iuap.baseservice.support.excel.convertor;
 
+import cn.hutool.core.util.StrUtil;
+
 public class LongObjectConvertor implements ValueConvertor{
 
 	@Override
@@ -17,6 +19,9 @@ public class LongObjectConvertor implements ValueConvertor{
 		}else if(cellValue instanceof Long) {
 			return ((Long) cellValue).longValue();
 		}else if(cellValue instanceof String) {
+			if(StrUtil.isBlankIfStr(cellValue)) {
+				return null;
+			}
 			return Long.parseLong((String)cellValue);
 		}else {
 			throw new RuntimeException("cellValue转换出错:"+cellValue);

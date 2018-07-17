@@ -2,6 +2,8 @@ package com.yonyou.iuap.baseservice.support.excel.convertor;
 
 import java.math.BigDecimal;
 
+import cn.hutool.core.util.StrUtil;
+
 public class BigDecimalConvertor implements ValueConvertor{
 
 	@Override
@@ -17,7 +19,11 @@ public class BigDecimalConvertor implements ValueConvertor{
 		if(cellValue.getClass() == BigDecimal.class) {
 			return cellValue;
 		}else {
-			return new BigDecimal(String.valueOf(cellValue));
+			if(StrUtil.isBlankIfStr(cellValue)) {
+				return null;
+			}else {
+				return new BigDecimal(String.valueOf(cellValue));
+			}
 		}
 	}
 

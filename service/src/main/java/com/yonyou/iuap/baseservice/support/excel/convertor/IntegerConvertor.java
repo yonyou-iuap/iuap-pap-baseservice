@@ -1,5 +1,7 @@
 package com.yonyou.iuap.baseservice.support.excel.convertor;
 
+import cn.hutool.core.util.StrUtil;
+
 public class IntegerConvertor implements ValueConvertor{
 
 	@Override
@@ -17,6 +19,9 @@ public class IntegerConvertor implements ValueConvertor{
 		}else if(cellValue instanceof Integer){
 			return ((Integer) cellValue).intValue();
 		}else if(cellValue instanceof String) {
+			if(StrUtil.isBlankIfStr(cellValue)) {
+				return null;
+			}
 			return Integer.parseInt((String)cellValue);
 		}else {
 			throw new RuntimeException("cellValue转换出错:"+cellValue);

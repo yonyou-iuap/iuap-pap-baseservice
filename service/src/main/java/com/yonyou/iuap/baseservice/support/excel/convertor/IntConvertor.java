@@ -1,5 +1,6 @@
 package com.yonyou.iuap.baseservice.support.excel.convertor;
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.poi.excel.cell.CellValue;
 
 public class IntConvertor implements ValueConvertor{
@@ -21,6 +22,9 @@ public class IntConvertor implements ValueConvertor{
 		}else if(cellValue instanceof Long) {
 			return ((Long) cellValue).intValue();
 		}else if(cellValue instanceof String) {
+			if(StrUtil.isBlankIfStr(cellValue)) {
+				return 0;
+			}
 			return Integer.parseInt((String)cellValue);
 		}else {
 			throw new RuntimeException("cellValue转换出错:"+cellValue+", 数据类型="+CellValue.class);
