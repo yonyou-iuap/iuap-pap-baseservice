@@ -26,6 +26,11 @@ public class SimpleExcelImporter {
 		return Inner.inst;
 	}
 	
+	/**
+	 * 读取Excel文件返回List<Map>
+	 * @param file
+	 * @return
+	 */
 	public static List<Map<String,Object>> readDataByMap(String file){
 		try {
 			InputStream ins = new FileInputStream(file);
@@ -35,10 +40,18 @@ public class SimpleExcelImporter {
 		}
 	}
 	
+	/**
+	 * 指定headerRow、startRow读取Excel输入流
+	 * @param ins
+	 * @param headerRow
+	 * @param startRow
+	 * @return
+	 */
 	public static List<Map<String,Object>> readDataByMap(InputStream ins,int headerRow, int startRow){
 		ExcelReader excelReader = ExcelUtil.getReader(ins);
 		return excelReader.read(headerRow, startRow, excelReader.getSheet().getLastRowNum());
 	}
+	
 	
 	public static <T> List<T> readData(String file, String[] listHeader, Class<T> clazz){
 		try {
