@@ -52,7 +52,16 @@ public class SimpleExcelImporter {
 	public static <T> List<T> readData(InputStream ins, String[] listHeader, Class<T> clazz){
 		return readData(ins, listHeader, 1, clazz);
 	}
-	
+
+	public static <T> List<T> readData(String file, String[] listHeader, int startRow, Class<T> clazz){
+		try {
+			InputStream ins = new FileInputStream(file);
+			return readData(ins, listHeader, startRow, clazz);
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException();
+		}
+	}
+
 	public static <T> List<T> readData(InputStream ins, String[] listHeader, int startRow, Class<T> clazz){
 		String[][] header = getHeaderKeyName(listHeader);
 		ExcelReader excelReader = ExcelUtil.getReader(ins);
