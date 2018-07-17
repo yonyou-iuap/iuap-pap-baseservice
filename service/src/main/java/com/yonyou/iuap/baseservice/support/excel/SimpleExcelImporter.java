@@ -52,7 +52,13 @@ public class SimpleExcelImporter {
 		return excelReader.read(headerRow, startRow, excelReader.getSheet().getLastRowNum());
 	}
 	
-	
+	/**
+	 * 根据输入头信息，读取excel文件，并转换成clazz对象
+	 * @param file
+	 * @param listHeader
+	 * @param clazz
+	 * @return
+	 */
 	public static <T> List<T> readData(String file, String[] listHeader, Class<T> clazz){
 		try {
 			InputStream ins = new FileInputStream(file);
