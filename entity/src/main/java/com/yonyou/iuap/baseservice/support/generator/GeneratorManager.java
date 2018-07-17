@@ -97,7 +97,7 @@ public class GeneratorManager {
 	}
 	
 	/**
-	 * 生成ID
+	 * 生成ID，并赋值
 	 * @param entity
 	 * @return
 	 */
@@ -114,6 +114,14 @@ public class GeneratorManager {
 		}else {
 			throw new RuntimeException("未找到生成策略field【id】，无效的Class:"+entity);
 		}
+	}
+	
+	/**
+	 * 生成UUID
+	 * @return
+	 */
+	public static String generateUUID() {
+		return (String)getInstance().generate(null, Strategy.UUID, "", null);
 	}
 	
 	/*********************************************************/
