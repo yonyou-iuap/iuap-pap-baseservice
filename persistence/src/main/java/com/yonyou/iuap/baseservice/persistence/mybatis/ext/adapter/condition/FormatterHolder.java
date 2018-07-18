@@ -36,6 +36,7 @@ public class FormatterHolder {
 		ServiceLoader<Formatter> formatterLoader = ServiceLoader.load(Formatter.class);
 		for(Formatter curFormater: formatterLoader) {
 			formaterMap.put(curFormater.getName(), curFormater);
+			log.info("注册条件formatter:"+curFormater.getClass());
 		}
 		log.info("The formatter of Ccondition was loaded successfully!");
 	}
