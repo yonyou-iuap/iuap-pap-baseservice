@@ -17,7 +17,6 @@ import com.yonyou.iuap.baseservice.persistence.mybatis.ext.support.Dialect;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.EntityUtil;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.FieldUtil;
 
-
 /**
  * 说明：
  * @author Aton
@@ -71,9 +70,9 @@ public class MysqlDeleteTemplate implements SqlTemplate{
 				}
 			}
 			if (idField != null) {
-				StringBuffer where = new StringBuffer("\r\n WHERE ");
-				where.append(idField.getName()).append("=")
-					.append(FieldUtil.build4Mybatis(prefix, idField));
+				StringBuffer where = new StringBuffer("\r\n WHERE 1=1 and ");
+				where.append(FieldUtil.getColumnName(idField)).append("=")
+					 .append(FieldUtil.build4Mybatis(prefix, idField));
 				return where.toString();
 			} else {
 				log.error("无效的对象类型，class="+entityClazz.getName()+"\r\n未找到id字段！");

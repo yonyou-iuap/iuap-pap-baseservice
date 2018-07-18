@@ -9,6 +9,7 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Version;
 
+import com.yonyou.iuap.baseservice.entity.annotation.ReferValue;
 import com.yonyou.iuap.baseservice.support.condition.Condition;
 import com.yonyou.iuap.baseservice.support.generator.GeneratedValue;
 
@@ -42,6 +43,7 @@ public abstract class AbsModel implements Model, VerLock{
 	protected String lastModifyUser;
 	
 	@Version
+	@ReferValue("newTs")
 	@Column(name="ts")
 	@Condition
 	protected String ts;

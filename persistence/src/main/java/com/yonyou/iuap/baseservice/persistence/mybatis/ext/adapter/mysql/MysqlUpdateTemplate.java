@@ -58,7 +58,7 @@ public class MysqlUpdateTemplate implements SqlTemplate{
 	
 	private void build(Field field, StringBuilder updateSql) {
         Column column = field.getAnnotation(Column.class);
-        if (column==null || StrUtil.isEmpty(column.name())) {			//补充内容,比如驼峰规则
+        if (column==null || StrUtil.isEmpty(column.name())) {
             updateSql.append(FieldUtil.getColumnName(field));
             if(field.getAnnotation(Version.class)==null) {				//非乐观锁字段
             	updateSql.append("=").append(FieldUtil.build4Mybatis(field));
@@ -88,13 +88,15 @@ public class MysqlUpdateTemplate implements SqlTemplate{
 			}
 			StringBuffer where = new StringBuffer("\r\n WHERE 1=1 ");
 			if(idField != null) {
-				where.append(" and ").append(idField.getName()).append("=").append(FieldUtil.build4Mybatis(idField));
+				where.append(" and ").append(FieldUtil.getColumnName(idField))
+					 .append("=").append(FieldUtil.build4Mybatis(idField));
 			}else {
 				throw new MapperException("无效的对象类型,@Id Field必须存在，class="+entityClazz.getName());
 			}
 			
 			if (tsField != null) {
-				where.append(" and ").append(tsField.getName()).append("=").append(FieldUtil.build4Mybatis(tsField));
+				where.append(" and ").append(FieldUtil.getColumnName(tsField))
+					 .append("=").append(FieldUtil.build4Mybatis(tsField));
 				return where.toString();
 			} else {
 				log.warn("无效的对象类型,未找到@Version Field，class="+entityClazz.getName());

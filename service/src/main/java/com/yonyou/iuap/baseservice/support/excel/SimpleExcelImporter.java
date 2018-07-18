@@ -36,7 +36,7 @@ public class SimpleExcelImporter {
 			InputStream ins = new FileInputStream(file);
 			return readDataByMap(ins,0, 1);
 		} catch (FileNotFoundException e) {
-			throw new RuntimeException();
+			throw new RuntimeException(e);
 		}
 	}
 	
@@ -64,7 +64,7 @@ public class SimpleExcelImporter {
 			InputStream ins = new FileInputStream(file);
 			return readData(ins, listHeader, 1, clazz);
 		} catch (FileNotFoundException e) {
-			throw new RuntimeException();
+			throw new RuntimeException(e);
 		}
 	}
 	
@@ -77,7 +77,7 @@ public class SimpleExcelImporter {
 			InputStream ins = new FileInputStream(file);
 			return readData(ins, listHeader, startRow, clazz);
 		} catch (FileNotFoundException e) {
-			throw new RuntimeException();
+			throw new RuntimeException(e);
 		}
 	}
 

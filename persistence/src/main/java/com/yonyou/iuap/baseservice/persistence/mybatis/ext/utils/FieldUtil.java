@@ -5,6 +5,8 @@ import java.lang.reflect.Field;
 import javax.persistence.Column;
 import javax.persistence.Transient;
 import cn.hutool.core.util.StrUtil;
+
+import com.yonyou.iuap.baseservice.entity.annotation.ReferValue;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.support.converter.ConvertorHolder;
 import com.yonyou.iuap.baseservice.support.condition.Condition;
 
@@ -29,11 +31,23 @@ public class FieldUtil {
 	public static String buildVersionField4Mybatis(Field field) {
 		String jdbcType = TypeMaping.getJdbcType(field.getType());
 		if(jdbcType!=null) {
-			return new StringBuilder("#{newTs").append(", jdbcType=").append(jdbcType)
-					.append("}").toString();
+			ReferValue newTs = field.getAnnotation(ReferValue.class);
+			if(newTs == null) {
+				return new StringBuilder("#{").append(field.getName())
+						.append(", jdbcType=").append(jdbcType).append("}").toString();
+			} else {
+				return new StringBuilder("#{").append(newTs.value())
+						.append(", jdbcType=").append(jdbcType).append("}").toString();
+			}
 		}else {
-			return new StringBuilder("#{").append(field.getName())
-					.append("}").toString();
+			ReferValue newTs = field.getAnnotation(ReferValue.class);
+			if(newTs == null) {
+				return new StringBuilder("#{").append(field.getName())
+						.append("}").toString();
+			} else {
+				return new StringBuilder("#{").append(newTs.value())
+						.append("}").toString();
+			}
 		}
 	}
 	

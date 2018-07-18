@@ -16,5 +16,8 @@ public @interface Condition{
 
 	//区间判断：结束值属性name
 	public String param2() default "";
+	
+	//条件格式化工具
+	public String format() default "";
 
 }
