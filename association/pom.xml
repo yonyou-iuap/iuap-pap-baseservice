@@ -9,26 +9,12 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.yonyou.iuap.baseservice</groupId>
-    <artifactId>iuap-pap-baseservice-attachment</artifactId>
-    <name>iuap-pap-baseservice-attachment</name>
+    <artifactId>iuap-pap-baseservice-asso</artifactId>
     <dependencies>
-
-        <dependency>
-            <groupId>com.yonyou.iuap</groupId>
-            <artifactId>iuap-persistence</artifactId>
-            <version>RELEASE</version>
-            <scope>compile</scope>
-        </dependency>
         <dependency>
             <groupId>com.yonyou.iuap.baseservice</groupId>
             <artifactId>iuap-pap-baseservice-controller</artifactId>
             <version>${pap.module.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.yonyou.iuap</groupId>
-            <artifactId>iuap-file</artifactId>
-            <version>3.1.1-RELEASE</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -38,6 +24,5 @@
             <scope>compile</scope>
         </dependency>
     </dependencies>
-
 
 </project>

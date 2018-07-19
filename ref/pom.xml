@@ -28,7 +28,7 @@
         <dependency>
             <groupId>com.yonyou.iuap.baseservice</groupId>
             <artifactId>iuap-pap-baseservice-persistence</artifactId>
-            <version>3.5.1-SNAPSHOT</version>
+            <version>${pap.module.version}</version>
             <scope>compile</scope>
         </dependency>
 

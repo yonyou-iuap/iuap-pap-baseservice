@@ -101,6 +101,7 @@
     	<module>bpm</module>
         <module>attachment</module>
         <module>ref</module>
+        <module>association</module>
         <!--<module>iuap-mybatis-maven-plugin</module>-->
   </modules>
 	<distributionManagement>
