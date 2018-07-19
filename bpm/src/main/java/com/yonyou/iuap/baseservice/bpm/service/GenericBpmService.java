@@ -344,6 +344,7 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
             bpmjson = new BPMFormJSON();
             bpmjson.setTitle("流程单号:"+entity.getBpmBillCode());
         }
+
         bpmjson.setProcessDefinitionKey(entity.getProcessDefineCode());
         bpmjson.setFormId(entity.getId().toString());							// 单据id
         bpmjson.setBillNo(entity.getBpmBillCode());								// 单据号

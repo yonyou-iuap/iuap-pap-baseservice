@@ -98,10 +98,10 @@
 		<module>service</module>
 		<module>controller</module>
 		<module>entity</module>
-    	<!--<module>bpm</module>
+    	<module>bpm</module>
         <module>attachment</module>
         <module>ref</module>
-        <module>iuap-mybatis-maven-plugin</module>-->
+        <!--<module>iuap-mybatis-maven-plugin</module>-->
   </modules>
 	<distributionManagement>
 		<snapshotRepository>
