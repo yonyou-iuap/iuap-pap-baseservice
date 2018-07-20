@@ -1,19 +1,15 @@
 package com.yonyou.iuap.baseservice.controller;
 
-import cn.hutool.core.util.ReflectUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.parser.Feature;
-import com.yonyou.iuap.base.web.BaseController;
-import com.yonyou.iuap.baseservice.entity.Model;
-import com.yonyou.iuap.baseservice.entity.annotation.Associative;
-import com.yonyou.iuap.baseservice.entity.annotation.Reference;
-import com.yonyou.iuap.baseservice.ref.service.RefCommonService;
-import com.yonyou.iuap.baseservice.service.GenericService;
-import com.yonyou.iuap.baseservice.vo.GenericAssoVo;
-import com.yonyou.iuap.mvc.constants.RequestStatusEnum;
-import com.yonyou.iuap.mvc.type.JsonResponse;
-import com.yonyou.iuap.mvc.type.SearchParams;
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,11 +18,26 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.util.*;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.parser.Feature;
+import com.yonyou.iuap.base.web.BaseController;
+import com.yonyou.iuap.baseservice.entity.Model;
+import com.yonyou.iuap.baseservice.entity.SanyOrder;
+import com.yonyou.iuap.baseservice.entity.annotation.Associative;
+import com.yonyou.iuap.baseservice.entity.annotation.Reference;
+import com.yonyou.iuap.baseservice.ref.service.RefCommonService;
+import com.yonyou.iuap.baseservice.service.GenericService;
+import com.yonyou.iuap.baseservice.vo.GenericAssoVo;
+import com.yonyou.iuap.mvc.constants.RequestStatusEnum;
+import com.yonyou.iuap.mvc.type.JsonResponse;
+import com.yonyou.iuap.mvc.type.SearchParams;
+
+import cn.hutool.core.util.ReflectUtil;
 
 /**
  * 说明：基础Controller——仅提供主子表关联特性,单表增删改查请参照GenericExController,GenericController
@@ -97,6 +108,40 @@ public abstract  class GenericAssoController<T extends Model> extends BaseContro
         }
         return this.buildSuccess(newEntity) ;
     }
+    
+    @RequestMapping(value = "/dataForPrint", method = RequestMethod.POST)
+	@ResponseBody
+	public Object getDataForPrint(HttpServletRequest request) {
+		String params = request.getParameter("params");
+		JSONObject jsonObj = JSON.parseObject(params);
+		String id = (String) jsonObj.get("id");
+		
+		T vo = service.findById(id);
+		JSONObject jsonVo = JSONObject.parseObject(JSONObject.toJSON(vo).toString());
+		
+		JSONObject mainData = new JSONObject();
+		JSONObject childData = new JSONObject();
+		
+		JSONArray mainDataJson = new JSONArray();// 主实体数据
+		JSONArray childrenDataJson = new JSONArray();// 第一个子实体数据,多个子表需要多个数组
+		
+		Set<String> setKey = jsonVo.keySet();
+		for(String key : setKey ){
+			String value = jsonVo.getString(key);
+			mainData.put(key, value);
+		}
+		mainDataJson.add(mainData);// 主表只有一行
+		
+		//增加子表的逻辑
+		
+		JSONObject boAttr = new JSONObject();
+		//key：主表业务对象code
+		boAttr.put("example_print", mainDataJson);
+		//key：子表业务对象code
+		boAttr.put("ygdemo_yw_sub", childrenDataJson);
+		System.out.println(boAttr.toString());
+		return boAttr.toString();
+	}
 
     protected boolean hasReferrence(Class entityClass){
         Field[] fields = ReflectUtil.getFields(entityClass);
