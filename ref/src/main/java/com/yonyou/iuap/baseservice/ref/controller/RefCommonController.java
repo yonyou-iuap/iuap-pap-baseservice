@@ -1,15 +1,10 @@
 package com.yonyou.iuap.baseservice.ref.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.yonyou.iuap.baseservice.ref.service.RefCommonService;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.yonyou.iuap.baseservice.entity.RefParamVO;
-import com.yonyou.iuap.baseservice.ref.utils.ValueConvertor;
-import com.yonyou.iuap.baseservice.persistence.utils.RefXMLParse;
-import com.yonyou.iuap.ref.sdk.refmodel.model.AbstractTreeGridRefModel;
- import com.yonyou.iuap.ref.model.RefViewModelVO;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -24,10 +19,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.yonyou.iuap.baseservice.entity.RefParamVO;
+import com.yonyou.iuap.baseservice.persistence.utils.RefXMLParse;
+import com.yonyou.iuap.baseservice.ref.service.RefCommonService;
+import com.yonyou.iuap.baseservice.ref.utils.ValueConvertor;
+import com.yonyou.iuap.ref.model.RefViewModelVO;
+import com.yonyou.iuap.ref.sdk.refmodel.model.AbstractTreeGridRefModel;
 
 /**
  * 说明：参照基础controller,所有参照都通过平台回调到这个地址取数据
@@ -132,11 +131,20 @@ public final class RefCommonController extends AbstractTreeGridRefModel {
         try {
             int pageNum = refModel.getRefClientPageInfo().getCurrPageIndex();
             int pageSize = 10000;
-
-            PageRequest request = buildPageRequest(pageNum, pageSize, null);
-
+            PageRequest request = null;
             Map<String, String> conditions = new HashMap<String, String>();
-            conditions.put("dr", "0");
+            
+            String basic = params.getIsBasic();
+            if(basic != null && "false".equals(basic)){//需要业务自己传递orderby字段
+            	String ts = params.getTs();
+            	request = buildPageRequest(pageNum, pageSize, ts);
+            	conditions.put(params.getDr(), params.getDrValue());
+            }else if(basic != null && "true".equals(basic)){//orderby ts
+            	request = buildPageRequest(pageNum, pageSize, "auto");
+            	conditions.put("dr", "0");
+            }else{//不加orderby过滤
+            	request = buildPageRequest(pageNum, pageSize, null);
+            }
 
             String idfield = StringUtils.isBlank(params.getIdfield()) ? "id"
                     : params.getIdfield();
@@ -189,14 +197,27 @@ public final class RefCommonController extends AbstractTreeGridRefModel {
             //每页显示的数量
             int pageSize = 10;
             //拼装分页请求对象
-            PageRequest request = buildPageRequest(pageNum, pageSize, null);
+            PageRequest request = null;
 
+            Map<String, String> conditions = new HashMap<String,String>();
+            
+            String basic = refParamVO.getIsBasic();
+            if(basic != null && "false".equals(basic)){//需要业务自己传递orderby字段
+            	String ts = refParamVO.getTs();
+            	request = buildPageRequest(pageNum, pageSize, ts);
+            	conditions.put(refParamVO.getDr(),refParamVO.getDrValue());
+            }else if(basic != null && "true".equals(basic)){//orderby ts
+            	request = buildPageRequest(pageNum, pageSize, "auto");
+            	conditions.put("dr", "0");
+            }else{//不加orderby过滤
+            	request = buildPageRequest(pageNum, pageSize, null);
+            }
+            
             refModel.getRefClientPageInfo().setPageSize(pageSize);
 
             //树节点的ID
             String condition = refModel.getCondition();
 
-            Map<String, String> conditions = new HashMap<String,String>();
             //获取查询条件 --如果content
             String content = refModel.getContent();
             if("6".equals(refType) && content != null){
@@ -213,8 +234,6 @@ public final class RefCommonController extends AbstractTreeGridRefModel {
                     }
                 }
             }
-
-            conditions.put("dr", "0");
 
             String idfield = StringUtils.isBlank(refParamVO.getIdfield()) ? "id"
                     : refParamVO.getIdfield();
@@ -246,11 +265,14 @@ public final class RefCommonController extends AbstractTreeGridRefModel {
     private PageRequest buildPageRequest(int pageNum, int pageSize,
                                          String sortColumn) {
         Sort sort = null;
-        if (("auto".equalsIgnoreCase(sortColumn))
-                || (StringUtils.isEmpty(sortColumn))) {
-            sort = new Sort(Sort.Direction.ASC, "ts");
-        } else {
-            sort = new Sort(Sort.Direction.DESC, sortColumn);
+        if(StringUtils.isEmpty(sortColumn)){
+        	
+        }else{
+        	if ("auto".equalsIgnoreCase(sortColumn)) {
+                 sort = new Sort(Sort.Direction.ASC, "ts");
+             } else {
+                 sort = new Sort(Sort.Direction.DESC, sortColumn);
+             }
         }
         return new PageRequest(pageNum, pageSize, sort);
     }
@@ -352,7 +374,7 @@ public final class RefCommonController extends AbstractTreeGridRefModel {
             }
             return results;
         }
-        return (new ArrayList<>());
+        return (new ArrayList<Map<String,String>>());
     }
 
 
