@@ -102,6 +102,7 @@
         <module>attachment</module>
         <module>ref</module>
         <module>association</module>
+        <module>print</module>
         <!--<module>iuap-mybatis-maven-plugin</module>-->
   </modules>
 	<distributionManagement>
