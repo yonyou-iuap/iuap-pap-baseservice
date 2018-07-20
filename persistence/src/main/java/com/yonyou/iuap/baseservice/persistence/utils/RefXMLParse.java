@@ -88,12 +88,19 @@ public class RefXMLParse {
 					//xml结构错误
 				}
 				
-				String tableName = tableE.attributeValue("name");
 				RefParamVO refParamVO = new RefParamVO();
+				//解析ref.xml表名
+				String tableName = tableE.attributeValue("name");
+				refParamVO.setTablename(tableName);
+				//解析参照模型是否是标准模型
+				String isBasic = tableE.attributeValue("isBasicTable");
+				if(isBasic != null){
+					refParamVO.setIsBasic(isBasic);
+				}
+				
 				Map<String,String> map = new HashMap<String,String>();
 				List<String> list = new ArrayList<String>();
 				
-				refParamVO.setTablename(tableName);
 				List<Element> showele = tableE.elements();
 				for(Element showe : showele){
 					String code = showe.attributeValue("code");
@@ -106,6 +113,16 @@ public class RefXMLParse {
 					}else if("idfield".equals(code)){
 						if(!"".equals(name)){
 							refParamVO.setIdfield(name);
+						}	
+					}else if("ts".equals(code)){
+						if(!"".equals(name)){
+							refParamVO.setTs(name);
+						}	
+					}else if("dr".equals(code)){
+						if(!"".equals(name)){
+							String[] sArray = name.split(",");
+							refParamVO.setDr(sArray[0]);
+							refParamVO.setDrValue(sArray[1]);
 						}	
 					}else{
 						map.put(code,name);
@@ -135,11 +152,16 @@ public class RefXMLParse {
 				}
 				
 				RefParamVO refParamVO = new RefParamVO();
+				String tableName = tableE.attributeValue("name");				
+				refParamVO.setTablename(tableName);
+				//解析参照模型是否是标准模型
+				String isBasic = tableE.attributeValue("isBasicTable");
+				if(isBasic != null && "false".equals(isBasic)){
+					refParamVO.setIsBasic(isBasic);
+				}
+				
 				Map<String,String> map = new HashMap<String,String>();
 				List<String> list = new ArrayList<String>();
-				String tableName = tableE.attributeValue("name");
-				
-				refParamVO.setTablename(tableName);
 				List<Element> showele = tableE.elements();
 				for(Element showe : showele){
 					String code = showe.attributeValue("code");
@@ -152,6 +174,16 @@ public class RefXMLParse {
 						refParamVO.setCodefield(name);
 					}else if("namefield".equals(code)){
 						refParamVO.setNamefield(name);
+					}else if("ts".equals(code)){
+						if(!"".equals(name)){
+							refParamVO.setTs(name);
+						}	
+					}else if("dr".equals(code)){
+						if(!"".equals(name)){
+							String[] sArray = name.split("|");
+							refParamVO.setDr(sArray[0]);
+							refParamVO.setDrValue(sArray[1]);
+						}	
 					}
 				}
 				return refParamVO;

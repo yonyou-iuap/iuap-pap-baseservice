@@ -132,11 +132,20 @@ public final class RefCommonController extends AbstractTreeGridRefModel {
         try {
             int pageNum = refModel.getRefClientPageInfo().getCurrPageIndex();
             int pageSize = 10000;
-
-            PageRequest request = buildPageRequest(pageNum, pageSize, null);
-
+            PageRequest request = null;
             Map<String, String> conditions = new HashMap<String, String>();
-            conditions.put("dr", "0");
+            
+            String basic = params.getIsBasic();
+            if(basic != null && "false".equals(basic)){//需要业务自己传递orderby字段
+            	String ts = params.getTs();
+            	request = buildPageRequest(pageNum, pageSize, ts);
+            	conditions.put(params.getDr(), params.getDrValue());
+            }else if(basic != null && "true".equals(basic)){//orderby ts
+            	request = buildPageRequest(pageNum, pageSize, "auto");
+            	conditions.put("dr", "0");
+            }else{//不加orderby过滤
+            	request = buildPageRequest(pageNum, pageSize, null);
+            }
 
             String idfield = StringUtils.isBlank(params.getIdfield()) ? "id"
                     : params.getIdfield();
@@ -189,14 +198,27 @@ public final class RefCommonController extends AbstractTreeGridRefModel {
             //每页显示的数量
             int pageSize = 10;
             //拼装分页请求对象
-            PageRequest request = buildPageRequest(pageNum, pageSize, null);
+            PageRequest request = null;
 
+            Map<String, String> conditions = new HashMap<String,String>();
+            
+            String basic = refParamVO.getIsBasic();
+            if(basic != null && "false".equals(basic)){//需要业务自己传递orderby字段
+            	String ts = refParamVO.getTs();
+            	request = buildPageRequest(pageNum, pageSize, ts);
+            	conditions.put(refParamVO.getDr(),refParamVO.getDrValue());
+            }else if(basic != null && "true".equals(basic)){//orderby ts
+            	request = buildPageRequest(pageNum, pageSize, "auto");
+            	conditions.put("dr", "0");
+            }else{//不加orderby过滤
+            	request = buildPageRequest(pageNum, pageSize, null);
+            }
+            
             refModel.getRefClientPageInfo().setPageSize(pageSize);
 
             //树节点的ID
             String condition = refModel.getCondition();
 
-            Map<String, String> conditions = new HashMap<String,String>();
             //获取查询条件 --如果content
             String content = refModel.getContent();
             if("6".equals(refType) && content != null){
@@ -213,8 +235,6 @@ public final class RefCommonController extends AbstractTreeGridRefModel {
                     }
                 }
             }
-
-            conditions.put("dr", "0");
 
             String idfield = StringUtils.isBlank(refParamVO.getIdfield()) ? "id"
                     : refParamVO.getIdfield();
@@ -246,11 +266,14 @@ public final class RefCommonController extends AbstractTreeGridRefModel {
     private PageRequest buildPageRequest(int pageNum, int pageSize,
                                          String sortColumn) {
         Sort sort = null;
-        if (("auto".equalsIgnoreCase(sortColumn))
-                || (StringUtils.isEmpty(sortColumn))) {
-            sort = new Sort(Sort.Direction.ASC, "ts");
-        } else {
-            sort = new Sort(Sort.Direction.DESC, sortColumn);
+        if(StringUtils.isEmpty(sortColumn)){
+        	
+        }else{
+        	if ("auto".equalsIgnoreCase(sortColumn)) {
+                 sort = new Sort(Sort.Direction.ASC, "ts");
+             } else {
+                 sort = new Sort(Sort.Direction.DESC, sortColumn);
+             }
         }
         return new PageRequest(pageNum, pageSize, sort);
     }
@@ -352,7 +375,7 @@ public final class RefCommonController extends AbstractTreeGridRefModel {
             }
             return results;
         }
-        return (new ArrayList<>());
+        return (new ArrayList<Map<String,String>>());
     }
 
 
