@@ -70,7 +70,7 @@ public abstract  class GenericAssoController<T extends Model> extends BaseContro
         return  result;
     }
 
-    @RequestMapping(value = "/SaveAssoVo")
+    @RequestMapping(value = "/saveAssoVo")
     @ResponseBody
     public Object  saveAssoVo(@RequestBody GenericAssoVo<T> vo){
         Associative annotation= vo.getEntity().getClass().getAnnotation(Associative.class);
