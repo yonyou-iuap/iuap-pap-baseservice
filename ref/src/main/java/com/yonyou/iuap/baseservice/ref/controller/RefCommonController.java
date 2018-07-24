@@ -45,11 +45,7 @@ public final class RefCommonController extends AbstractTreeGridRefModel {
      * 获取表头信息
      * @see com.yonyou.iuap.ref.sdk.refmodel.model.AbstractTreeGridRefModel#getRefModelInfo(com.yonyou.iuap.ref.model.RefViewModelVO)
      */
-    @RequestMapping(
-            value = {"/matchPKRefJSON"},
-            method = {RequestMethod.POST}
-    )
-    @ResponseBody
+    @Override
     public RefViewModelVO getRefModelInfo(@RequestBody RefViewModelVO refViewModel) {
 
         RefViewModelVO refModel = super.getRefModelInfo(refViewModel);
