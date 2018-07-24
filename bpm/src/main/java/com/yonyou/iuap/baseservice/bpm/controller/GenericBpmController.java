@@ -1,5 +1,7 @@
 package com.yonyou.iuap.baseservice.bpm.controller;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -210,19 +212,20 @@ public  class GenericBpmController<T extends BpmModel> extends GenericController
 		@ResponseBody
 		public Object assignSubmit(@RequestBody Map<String, Object> data,HttpServletRequest request) {
 			try { 
-				String jsonString = jsonResultService.toJson(data);
-				JSONObject jsonObject = JSONObject.parseObject(jsonString);
-				String processDefineCode = jsonObject.getString("processDefineCode");
-				String map = jsonObject.getString("obj");
+//				String jsonString = jsonResultService.toJson(data);
+//				JSONObject jsonObject = JSONObject.parseObject(jsonString);
+				Type superclassType = this.getClass().getGenericSuperclass();
+			    if (!ParameterizedType.class.isAssignableFrom(superclassType.getClass())) {
+			        return null;
+			    }
+			    Type[] t = ((ParameterizedType) superclassType).getActualTypeArguments();
 				
+				String processDefineCode = data.get("processDefineCode").toString();
+				Object map = data.get("obj");
 				String mj=  JSONObject.toJSONString(map);
 				
-//				Class clazz1 = GenericBpmController.class;
+				T entity = (T) JSON.parseObject(mj,t[0], Feature.IgnoreNotMatch);
 				
-				T entity = (T) JSON.parseObject(mj,BpmModel.class, Feature.IgnoreNotMatch);
-				
-//				Map entity = (Map)data.get("obj");
-//				String processDefineCode = (String)data.get("processDefineCode"); 
 				String aj=  JSONObject.toJSONString(data.get("assignInfo"));
 				AssignInfo assignInfo = jsonResultService.toObject(aj, AssignInfo.class);
 				
