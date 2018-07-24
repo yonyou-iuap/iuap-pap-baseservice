@@ -24,11 +24,16 @@
             <artifactId>iuap-file</artifactId>
             <version>3.1.1-RELEASE</version>
         </dependency>
-		<dependency>
-			<groupId>com.yonyou.iuap.pap</groupId>
-			<artifactId>eiap-plus-common</artifactId>
-			<version>${eiap.module.version}</version>
-		</dependency>
+        <dependency>
+            <groupId>com.yonyou.iuap.pap.bpm</groupId>
+            <artifactId>ubpm-rest-sdk</artifactId>
+            <version>3.6.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.yonyou.iuap.pap</groupId>
+            <artifactId>eiap-plus-common</artifactId>
+            <version>3.6.0-SNAPSHOT</version>
+        </dependency>
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
