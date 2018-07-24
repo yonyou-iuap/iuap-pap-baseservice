@@ -1,27 +1,35 @@
 package com.yonyou.iuap.baseservice.bpm.controller;
 
-import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.yonyou.iuap.base.utils.RestUtils;
-import com.yonyou.iuap.baseservice.bpm.entity.BpmModel;
-import com.yonyou.iuap.baseservice.bpm.service.GenericBpmService;
-import com.yonyou.iuap.baseservice.bpm.utils.BpmExUtil;
-import com.yonyou.iuap.baseservice.controller.GenericController;
-import com.yonyou.iuap.mvc.constants.RequestStatusEnum;
-import com.yonyou.iuap.mvc.type.JsonResponse;
-import com.yonyou.iuap.persistence.vo.pub.BusinessException;
-import iuap.uitemplate.base.util.PropertyUtil;
-import net.sf.json.JSONNull;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-import java.util.Map;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.parser.Feature;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.yonyou.iuap.base.utils.RestUtils;
+import com.yonyou.iuap.baseservice.bpm.entity.BpmModel;
+import com.yonyou.iuap.baseservice.bpm.service.GenericBpmService;
+import com.yonyou.iuap.baseservice.bpm.utils.BpmExUtil;
+import com.yonyou.iuap.baseservice.controller.GenericController;
+import com.yonyou.iuap.bpm.service.JsonResultService;
+import com.yonyou.iuap.mvc.constants.RequestStatusEnum;
+import com.yonyou.iuap.mvc.type.JsonResponse;
+import com.yonyou.iuap.persistence.vo.pub.BusinessException;
+
+import iuap.uitemplate.base.util.PropertyUtil;
+import net.sf.json.JSONNull;
+import yonyou.bpm.rest.request.AssignInfo;
 
 /**
  * 说明：工作流基础Controller：提供单据增删改查，以及工作流提交、撤回、以及工作流流转回调方法
@@ -185,13 +193,45 @@ public  class GenericBpmController<T extends BpmModel> extends GenericController
 		 String processDefineCode = request.getParameter("processDefineCode");
 		 if (processDefineCode==null){ throw new BusinessException("入参流程定义为空"); }
 		 try{
-			String result= service.batchSubmit(list,processDefineCode);
-			return buildSuccess(result);
+			Object result= service.batchSubmit(list,processDefineCode);
+			JSONObject json = (JSONObject)result;
+			if("true".equals(json.getString("assignAble"))){
+				return result;
+			}
+			return super.buildSuccess(result);
 		 }catch(Exception exp) {
 			 return this.buildGlobalError(exp.getMessage());
 		 }
 
 	 }
+	 
+	 /** 指派审批 */
+		@RequestMapping(value = "/assignSubmit", method = RequestMethod.POST)
+		@ResponseBody
+		public Object assignSubmit(@RequestBody Map<String, Object> data,HttpServletRequest request) {
+			try { 
+				String jsonString = jsonResultService.toJson(data);
+				JSONObject jsonObject = JSONObject.parseObject(jsonString);
+				String processDefineCode = jsonObject.getString("processDefineCode");
+				String map = jsonObject.getString("obj");
+				
+				String mj=  JSONObject.toJSONString(map);
+				
+//				Class clazz1 = GenericBpmController.class;
+				
+				T entity = (T) JSON.parseObject(mj,BpmModel.class, Feature.IgnoreNotMatch);
+				
+//				Map entity = (Map)data.get("obj");
+//				String processDefineCode = (String)data.get("processDefineCode"); 
+				String aj=  JSONObject.toJSONString(data.get("assignInfo"));
+				AssignInfo assignInfo = jsonResultService.toObject(aj, AssignInfo.class);
+				
+				service.assignSubmitEntity(entity, processDefineCode, assignInfo);
+				return super.buildSuccess(entity);
+			} catch (Exception e) {
+				return super.buildGlobalError(e.getMessage());
+			}
+		}
 
 	 /**
 	  * 回调:撤回申请
@@ -236,6 +276,8 @@ public  class GenericBpmController<T extends BpmModel> extends GenericController
 	}
 
 
+	@Autowired
+	private JsonResultService jsonResultService;
 
 
 

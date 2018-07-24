@@ -1,8 +1,18 @@
 package com.yonyou.iuap.baseservice.bpm.service;
 
-import cn.hutool.core.date.DatePattern;
-import cn.hutool.core.util.ReflectUtil;
-import cn.hutool.core.util.StrUtil;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.Feature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -12,16 +22,23 @@ import com.yonyou.iuap.baseservice.bpm.entity.BpmModel;
 import com.yonyou.iuap.baseservice.bpm.utils.BpmExUtil;
 import com.yonyou.iuap.baseservice.service.GenericExService;
 import com.yonyou.iuap.bpm.pojo.BPMFormJSON;
+import com.yonyou.iuap.bpm.service.BPMSubmitBasicService;
 import com.yonyou.iuap.bpm.service.TenantLimit;
 import com.yonyou.iuap.bpm.util.BpmRestVarType;
 import com.yonyou.iuap.context.InvocationInfoProxy;
 import com.yonyou.iuap.persistence.vo.pub.BusinessException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import yonyou.bpm.rest.*;
+
+import cn.hutool.core.date.DatePattern;
+import cn.hutool.core.util.ReflectUtil;
+import cn.hutool.core.util.StrUtil;
+import yonyou.bpm.rest.BpmRest;
+import yonyou.bpm.rest.BpmRests;
+import yonyou.bpm.rest.HistoryService;
+import yonyou.bpm.rest.RuntimeService;
+import yonyou.bpm.rest.TaskService;
 import yonyou.bpm.rest.exception.RestException;
 import yonyou.bpm.rest.param.BaseParam;
+import yonyou.bpm.rest.request.AssignInfo;
 import yonyou.bpm.rest.request.RestVariable;
 import yonyou.bpm.rest.request.historic.BpmHistoricProcessInstanceParam;
 import yonyou.bpm.rest.request.historic.HistoricProcessInstancesQueryParam;
@@ -32,14 +49,6 @@ import yonyou.bpm.rest.response.historic.HistoricProcessInstanceResponse;
 import yonyou.bpm.rest.response.historic.HistoricTaskInstanceResponse;
 import yonyou.bpm.rest.response.runtime.task.TaskActionResponse;
 import yonyou.bpm.rest.utils.BaseUtils;
-
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Field;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * 说明：工作流基础Service
@@ -61,6 +70,9 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 	private String tenant;
 	@Value("${bpmrest.token}")
 	private String token;
+	
+	@Autowired
+	private BPMSubmitBasicService bpmSubmitBasicService;
 
 	/**
 	 * 几套基本服务的实例化工厂
@@ -104,6 +116,28 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 		if (log.isDebugEnabled()) log.debug("启动流程。流程变量数据=" + JSONObject.toJSONString(variables));
 		RuntimeService rt = bpmRestServices(userId).getRuntimeService();
 		return rt.startProcessInstanceByKeyAndTenantId(processKey,businessKey,variables,tenant);
+	}
+	
+	/**
+	 * 根据流程定义、租户ID和业务key启动流程实例
+	 *
+	 * @param userId
+	 * @param tenantId
+	 * @param processKey
+	 * @param businessKey
+	 * @return
+	 * @throws RestException
+	 */
+	protected Object assignStartProcessByKey(AssignInfo assignInfo,BPMFormJSON bpmjson , String userId, String processKey, String businessKey,List<RestVariable> variables) throws RestException {
+		RuntimeService rt = bpmRestServices(userId).getRuntimeService();
+		ProcessInstanceStartParam parm = new ProcessInstanceStartParam();
+		parm.setAssignInfo(assignInfo);
+		parm.setProcessDefinitionKey(bpmjson.getProcessDefinitionKey());
+		parm.setVariables(variables);
+		parm.setBusinessKey(bpmjson.getFormId());
+		parm.setProcessInstanceName(bpmjson.getProcessInstanceName());
+		parm.setReturnTasks(true);
+		return rt.startProcess(parm);
 	}
 
 	/**
@@ -360,6 +394,22 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 
         return variables;
 	}
+	
+	public BPMFormJSON buildBPMFormJSON(T entity) {
+		BPMFormJSON bpmjson = buildVariables(entity);
+        if (bpmjson==null){
+            bpmjson = new BPMFormJSON();
+            bpmjson.setTitle("流程单号:"+entity.getBpmBillCode());
+        }
+
+        bpmjson.setProcessDefinitionKey(entity.getProcessDefineCode());
+        bpmjson.setFormId(entity.getId().toString());							// 单据id
+        bpmjson.setBillNo(entity.getBpmBillCode());								// 单据号
+        bpmjson.setBillMarker(InvocationInfoProxy.getUserid());					// 制单人
+        bpmjson.setOrgId(InvocationInfoProxy.getTenantid());					// 组织
+        bpmjson.setOtherVariables(buildEntityVars(entity));
+        return bpmjson;
+	}
 
 	private List<RestVariable> buildEntityVars(T entity){
         List<RestVariable> variables = new ArrayList<RestVariable>();
@@ -392,12 +442,26 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 	 */
 	public Object doStartProcess(T entity) throws RestException{
 		List<RestVariable> var = buildOtherVariables(entity);
+		Object result = null;
 		try {
 			entity.setBpmState(BpmExUtil.BPM_STATE_START);//流程状态调整为“已启动”;
             if (entity.getId()==null)
 			    entity=this.save(entity);//获得业务实体的id
 			if ( entity.getProcessDefineCode()!=null) {
-				Object result = this.startProcessByKey(InvocationInfoProxy.getUserid(),entity.getProcessDefineCode(),entity.getId().toString(),var);
+				JSONObject rejson = new JSONObject();
+				BPMFormJSON bpmform = buildBPMFormJSON(entity);
+				rejson = bpmSubmitBasicService.assignCheck(bpmform);
+				if(rejson.getBoolean("assignAble") != null && rejson.getBoolean("assignAble")){
+		            JSONObject assignedActivities=bpmSubmitBasicService.assignedActivities(bpmform);
+							JSONObject assignJson = new JSONObject();
+							assignJson.put("success","success");
+							assignJson.put("assignAble","true");
+							assignJson.put("assignedActivities",assignedActivities.get("assignedActivities"));
+							return assignJson;
+				}else {
+					result = this.startProcessByKey(InvocationInfoProxy.getUserid(),entity.getProcessDefineCode(),entity.getId().toString(),var);
+				}
+				
 				if(result!=null){
 					ObjectNode on= (ObjectNode) result;
 					String processId= String.valueOf(on.get("id") ).replaceAll("\"","");
@@ -630,8 +694,9 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 	 * @param list
 	 * @param processDefineCode
 	 */
-	public String batchSubmit(List<T> list, String processDefineCode) {
+	public Object batchSubmit(List<T> list, String processDefineCode) {
 		StringBuffer errorMsg = new StringBuffer("");
+		Object result = null;
 		for (int i = 0; i <list.size() ; i++) {
 			T inParam = list.get(i);
 			if (inParam.getId()==null || inParam.getId().toString().equalsIgnoreCase("null"))
@@ -642,7 +707,7 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 			T entity = this.findById(inParam.getId());
 			entity.setProcessDefineCode(processDefineCode);
 			try {
-				this.doStartProcess(entity);
+				result = this.doStartProcess(entity);
 			} catch (Exception e) {
 				errorMsg.append("工单["+inParam.getId()+"]提交失败!\r\n");
 			}finally {
@@ -650,12 +715,43 @@ public abstract class GenericBpmService<T extends BpmModel> extends GenericExSer
 			}
 		}
 		if(org.springframework.util.StringUtils.isEmpty(errorMsg.toString())) {
-			return "保存成功!";
+			return result;
 		}else {
 			return errorMsg.toString();
 		}
 	}
+	/**
+	 * 工单指派提交
+	 * @param list
+	 * @param processDefineCode
+	 */
+	public Object assignSubmitEntity(T entity,String psrocessDefineCode,AssignInfo assignInfo) {
+		List<RestVariable> variables = buildOtherVariables(entity);
+		BPMFormJSON bpmform = buildBPMFormJSON(entity);
+		
+		try {
+			if ( entity.getProcessDefineCode() != null ) {
+				Object result = this.assignStartProcessByKey(assignInfo,bpmform,InvocationInfoProxy.getUserid(),entity.getProcessDefineCode(),entity.getId().toString(),variables);
+				
+				if(result!=null){
+					ObjectNode on= (ObjectNode) result;
+					String processId= String.valueOf(on.get("id") ).replaceAll("\"","");
+					entity.setProcessInstanceId(processId);
+					entity=this.save(entity);//保存业务实体的流程信息
+				}else
+				{
+					throw new BusinessException("启动流程实例发生错误，请联系管理员！错误原因：流程调用无返回结果");
+				}
 
+				return result;
+			}else{
+				throw new BusinessException("启动流程实例发生错误，请联系管理员！错误原因：未指定流程模板");
+			}
+		} catch (RestException e) {
+			throw new BusinessException("启动流程实例发生错误，请联系管理员！错误原因：" + e.getMessage());
+		}
+	
+	}
 
 	/**
 	 * 工单申请撤回
