@@ -47,10 +47,6 @@ public  class GenericBpmController<T extends BpmModel> extends GenericExControll
 		 if (processDefineCode==null){ throw new BusinessException("入参流程定义为空"); }
 		 try{
 			Object result= service.batchSubmit(list,processDefineCode);
-			JSONObject json = (JSONObject)result;
-			if("true".equals(json.getString("assignAble"))){
-				return result;
-			}
 			return super.buildSuccess(result);
 		 }catch(Exception exp) {
 			 return this.buildGlobalError(exp.getMessage());
@@ -63,8 +59,6 @@ public  class GenericBpmController<T extends BpmModel> extends GenericExControll
 		@ResponseBody
 		public Object assignSubmit(@RequestBody Map<String, Object> data,HttpServletRequest request) {
 			try { 
-//				String jsonString = jsonResultService.toJson(data);
-//				JSONObject jsonObject = JSONObject.parseObject(jsonString);
 				Type superclassType = this.getClass().getGenericSuperclass();
 			    if (!ParameterizedType.class.isAssignableFrom(superclassType.getClass())) {
 			        return null;
@@ -79,7 +73,7 @@ public  class GenericBpmController<T extends BpmModel> extends GenericExControll
 				
 				String aj=  JSONObject.toJSONString(data.get("assignInfo"));
 				AssignInfo assignInfo = jsonResultService.toObject(aj, AssignInfo.class);
-				
+				entity.setProcessDefineCode(processDefineCode);
 				service.assignSubmitEntity(entity, processDefineCode, assignInfo);
 				return super.buildSuccess(entity);
 			} catch (Exception e) {
