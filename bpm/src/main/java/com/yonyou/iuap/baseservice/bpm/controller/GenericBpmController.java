@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.yonyou.iuap.baseservice.bpm.entity.BpmSimpleModel;
 import com.yonyou.iuap.baseservice.controller.GenericExController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -35,7 +36,7 @@ import yonyou.bpm.rest.request.AssignInfo;
  *
  * @update  将依赖sdk的rest接口转移到GenericBpmSdkController by Leon
  */
-public  class GenericBpmController<T extends BpmModel> extends GenericExController<T>
+public  class GenericBpmController<T extends BpmSimpleModel> extends GenericExController<T>
 		 {
 	 /**
 	  * 回调后-提交申请
