@@ -337,7 +337,7 @@ public abstract class GenericBpmService<T extends BpmSimpleModel> extends Generi
             bpmform.setTitle(title);
             
             // 单据id
-            bpmform.setFormId((String) entity.getId());
+            bpmform.setFormId(entity.getId().toString());
             // 单据号
             bpmform.setBillNo(entity.getBpmBillCode());
             // 制单人
