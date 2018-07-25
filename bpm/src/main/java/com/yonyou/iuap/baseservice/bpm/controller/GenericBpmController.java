@@ -46,7 +46,7 @@ public  class GenericBpmController<T extends BpmModel> extends GenericExControll
 		 String processDefineCode = request.getParameter("processDefineCode");
 		 if (processDefineCode==null){ throw new BusinessException("入参流程定义为空"); }
 		 try{
-			Object result= service.batchSubmit(list,processDefineCode);
+			Object result= service.submit(list,processDefineCode);
 			return super.buildSuccess(result);
 		 }catch(Exception exp) {
 			 return this.buildGlobalError(exp.getMessage());
