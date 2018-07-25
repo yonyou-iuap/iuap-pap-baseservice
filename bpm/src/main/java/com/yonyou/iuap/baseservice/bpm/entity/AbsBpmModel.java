@@ -7,22 +7,25 @@ import javax.persistence.Transient;
 
 
 /**
- * 说明：工作流基础Model
+ * 说明：工作流基础Model,建议实现BpmModel或BpmSimpleModel接口
  * @author houlf
  * 2018年6月12日
  */
-public abstract class AbsBpmModel extends AbsDrModel implements BpmModel{
+public abstract class AbsBpmModel extends AbsDrModel implements BpmModel {
 
 	@Column(name="bpm_state")
 	protected Integer bpmState;			//流程状态：参考BpmExUtil
-	@Column(name="bpm_task_key")
+//	@Column(name="bpm_task_key")
+    @Transient
 	protected String taskKey;			//流程及节点定义：例如ApproveUserTask
-	@Column(name="bpm_taskid")
+    @Transient
+    //@Column(name="bpm_taskid")
 	protected String taskId;			//流程当前环节任务id
-	@Column(name="bpm_process_instance")
+    @Transient
+    //@Column(name="bpm_process_instance")
 	protected String processInstanceId;	//流程实例id
-	@Column(name="bpm_process_define")
-//	@Transient
+	//@Column(name="bpm_process_define")
+    @Transient
 	protected String processDefineCode;	//流程定义编码
 	@Transient
 	protected String comment;	//流程审批意见

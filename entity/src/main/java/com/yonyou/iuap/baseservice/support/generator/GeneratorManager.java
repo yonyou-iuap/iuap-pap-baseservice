@@ -20,7 +20,7 @@ public class GeneratorManager {
 	
 	private Map<Strategy, Generator> generatorMap = new HashMap<Strategy, Generator>();
 	private Map<String, Generator> generatorBeans = new HashMap<String, Generator>();
-	private Boolean isInited = new Boolean(false);			//一定要使用new
+	private volatile Boolean isInited = new Boolean(false);			//一定要使用new
 	
 	/**
 	 * 初始化

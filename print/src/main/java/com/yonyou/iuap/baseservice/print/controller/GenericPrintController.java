@@ -79,9 +79,9 @@ public abstract  class GenericPrintController<T extends Printable> extends BaseC
             }
             List subList= subServices.get(subBoCode).queryList(associative.fkName(),id);
             subList=refService.fillListWithRef(subList);
-            JSONArray childrenDataJson = new JSONArray();// 第一个子实体数据,多个子表需要多个数组
+            JSONArray childrenDataJson = new JSONArray();
             childrenDataJson.addAll(subList);
-            boAttr.put(subBoCode, childrenDataJson);//TODO 同上??
+            boAttr.put(subBoCode, childrenDataJson);//子表填充
         }
 
 

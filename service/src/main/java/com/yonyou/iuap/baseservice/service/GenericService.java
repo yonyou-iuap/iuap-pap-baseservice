@@ -244,6 +244,7 @@ public abstract class GenericService<T extends Model>{
 		    Serializable id = GeneratorManager.generateID(entity);
 		    Field[] fieldArray = EntityUtil.getEntityFields(entity.getClass());
 		    for(Field curField : fieldArray){
+                //TODO 设置ID改为entity.setId();
 		    	if(curField.getAnnotation(Id.class)!=null) {
 				    ReflectUtil.setFieldValue(entity, curField.getName(), id);
 				    return;
