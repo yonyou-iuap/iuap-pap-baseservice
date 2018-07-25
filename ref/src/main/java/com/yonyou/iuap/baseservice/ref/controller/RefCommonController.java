@@ -2,14 +2,12 @@ package com.yonyou.iuap.baseservice.ref.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.yonyou.iuap.baseservice.ref.service.RefCommonService;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.yonyou.iuap.baseservice.entity.RefParamVO;
-import com.yonyou.iuap.baseservice.ref.utils.ValueConvertor;
 import com.yonyou.iuap.baseservice.persistence.utils.RefXMLParse;
-import com.yonyou.iuap.ref.sdk.refmodel.model.AbstractTreeGridRefModel;
- import com.yonyou.iuap.ref.model.RefViewModelVO;
+import com.yonyou.iuap.baseservice.ref.entity.RefUITypeEnum;
+import com.yonyou.iuap.baseservice.ref.entity.RefViewModelVO;
+import com.yonyou.iuap.baseservice.ref.service.RefCommonService;
+import com.yonyou.iuap.baseservice.ref.utils.ValueConvertor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -34,10 +32,11 @@ import java.util.Map;
  * @WARN 需要平台的REF_REFINFO表中有相应的配置数据,例如 23    common_ref	通用树表参照	common_ref		/iuap_pap_quickstart/common/				AAAzpkAAGAAAev+AAA
  * @author leon
  * 2018年7月11日
+ * @update 2018-7-25 移除了对平台uitemplate_common的依赖
  */
 @Controller
 @RequestMapping(value = "/common")
-public final class RefCommonController extends AbstractTreeGridRefModel {
+public final class RefCommonController  {
 	
 	private Logger log = LoggerFactory.getLogger(RefCommonController.class);
 
@@ -45,10 +44,9 @@ public final class RefCommonController extends AbstractTreeGridRefModel {
      * 获取表头信息
      * @see com.yonyou.iuap.ref.sdk.refmodel.model.AbstractTreeGridRefModel#getRefModelInfo(com.yonyou.iuap.ref.model.RefViewModelVO)
      */
-    @Override
     public RefViewModelVO getRefModelInfo(@RequestBody RefViewModelVO refViewModel) {
-
-        RefViewModelVO refModel = super.getRefModelInfo(refViewModel);
+        refViewModel.setRefUIType(RefUITypeEnum.RefGridTree);
+        RefViewModelVO refModel =  refViewModel;
         RefParamVO refParamVO = RefXMLParse.getInstance().getMSConfig(refViewModel.getRefCode());
 
         Map<String,String> showcolMap = refParamVO.getShowcol();
@@ -76,7 +74,11 @@ public final class RefCommonController extends AbstractTreeGridRefModel {
      * @param arg0
      * @return
      */
-    @Override
+    @RequestMapping(
+            value = {"/matchPKRefJSON"},
+            method = {RequestMethod.POST}
+    )
+    @ResponseBody
     public List<Map<String, String>> matchPKRefJSON(RefViewModelVO arg0) {
         return null;
     }
@@ -86,7 +88,11 @@ public final class RefCommonController extends AbstractTreeGridRefModel {
      * @param arg0
      * @return
      */
-    @Override
+    @RequestMapping(
+            value = {"/filterRefJSON"},
+            method = {RequestMethod.POST}
+    )
+    @ResponseBody
     public List<Map<String, String>> filterRefJSON(RefViewModelVO arg0) {
         //
         return null;
@@ -97,7 +103,11 @@ public final class RefCommonController extends AbstractTreeGridRefModel {
      * @param arg0
      * @return
      */
-    @Override
+    @RequestMapping(
+            value = {"/matchBlurRefJSON"},
+            method = {RequestMethod.POST}
+    )
+    @ResponseBody
     public List<Map<String, String>> matchBlurRefJSON(RefViewModelVO arg0) {
         //
         return null;
@@ -108,18 +118,24 @@ public final class RefCommonController extends AbstractTreeGridRefModel {
      * @param arg0
      * @return
      */
-    @Override
+    @RequestMapping(
+            value = {"/blobRefClassSearch"},
+            method = {RequestMethod.POST}
+    )
+    @ResponseBody
     public List<Map<String, String>> blobRefClassSearch(RefViewModelVO arg0) {
         //
         return null;
     }
 
-
     /*
      * 树
      * @see com.yonyou.iuap.ref.sdk.refmodel.model.AbstractTreeGridRefModel#blobRefTree(com.yonyou.iuap.ref.model.RefViewModelVO)
      */
-    @Override
+    @RequestMapping(
+            value = {"/blobRefTree"},
+            method = {RequestMethod.POST}
+    )
     @ResponseBody
     public Map<String, Object> blobRefTree(@RequestBody RefViewModelVO refModel) {
 
@@ -130,7 +146,7 @@ public final class RefCommonController extends AbstractTreeGridRefModel {
         List<Map<String, String>> results = new ArrayList<Map<String, String>>();
         try {
             int pageNum = refModel.getRefClientPageInfo().getCurrPageIndex();
-            int pageSize = 10000;
+            int pageSize = refModel.getRefClientPageInfo().getPageSize();
             PageRequest request = null;
             Map<String, String> conditions = new HashMap<String, String>();
             
@@ -177,7 +193,10 @@ public final class RefCommonController extends AbstractTreeGridRefModel {
      * 获取表体信息
      * @see com.yonyou.iuap.ref.sdk.refmodel.model.AbstractTreeGridRefModel#blobRefSearch(com.yonyou.iuap.ref.model.RefViewModelVO)
      */
-    @Override
+    @RequestMapping(
+            value = {"/blobRefSearch"},
+            method = {RequestMethod.POST}
+    )
     @ResponseBody
     public Map<String, Object> blobRefSearch(@RequestBody RefViewModelVO refModel) {
 
@@ -280,8 +299,6 @@ public final class RefCommonController extends AbstractTreeGridRefModel {
     /**
      * 过滤完的数据组装--表格
      *
-     * @param peoplelist
-     * @return
      */
     private List<Map<String, String>> buildRtnValsOfRef(
             List<Map<String, Object>> headVOs) {
@@ -307,7 +324,6 @@ public final class RefCommonController extends AbstractTreeGridRefModel {
     /**
      * 过滤完的数据组装--树
      *
-     * @param peoplelist
      * @return
      */
     private List<Map<String, String>> buildRtnValsOfRefTree(
