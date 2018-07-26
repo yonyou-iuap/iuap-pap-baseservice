@@ -32,7 +32,7 @@ class GenericBpmSdkController<T extends BpmModel> extends GenericExController<T>
             String processDefCode = this.getAllocatedProcess(request);
             entity.setProcessDefineCode(processDefCode);
             entity=service.save(entity);
-            this.service.doStartProcess(entity);
+          //  this.service.doStartProcess(entity);
             return this.buildSuccess("流程已启动！");
         } catch (Exception exp) {
             return this.buildGlobalError(exp.getMessage());
