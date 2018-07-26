@@ -39,19 +39,15 @@ import yonyou.bpm.rest.request.AssignInfo;
 public  class GenericBpmController<T extends BpmSimpleModel> extends GenericExController<T>
 		 {
 	 /**
-	  * 回调后-提交申请
+	  * 提交申请
 	  */
 	 @RequestMapping(value = "/submit", method = RequestMethod.POST)
 	 @ResponseBody
-	 public Object callbackSubmit(@RequestBody List<T> list, HttpServletRequest request, HttpServletResponse response) {
+	 public Object submit(@RequestBody List<T> list, HttpServletRequest request, HttpServletResponse response) {
 		 String processDefineCode = request.getParameter("processDefineCode");
 		 if (processDefineCode==null){ throw new BusinessException("入参流程定义为空"); }
 		 try{
-			Object result= service.batchSubmit(list,processDefineCode);
-			JSONObject json = (JSONObject)result;
-			if("true".equals(json.getString("assignAble"))){
-				return result;
-			}
+			Object result= service.submit(list,processDefineCode);
 			return super.buildSuccess(result);
 		 }catch(Exception exp) {
 			 return this.buildGlobalError(exp.getMessage());
@@ -59,13 +55,11 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends GenericExCo
 
 	 }
 	 
-	 /** 指派审批 */
+	 /** 指派提交 */
 		@RequestMapping(value = "/assignSubmit", method = RequestMethod.POST)
 		@ResponseBody
 		public Object assignSubmit(@RequestBody Map<String, Object> data,HttpServletRequest request) {
 			try { 
-//				String jsonString = jsonResultService.toJson(data);
-//				JSONObject jsonObject = JSONObject.parseObject(jsonString);
 				Type superclassType = this.getClass().getGenericSuperclass();
 			    if (!ParameterizedType.class.isAssignableFrom(superclassType.getClass())) {
 			        return null;
@@ -80,7 +74,7 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends GenericExCo
 				
 				String aj=  JSONObject.toJSONString(data.get("assignInfo"));
 				AssignInfo assignInfo = jsonResultService.toObject(aj, AssignInfo.class);
-				
+				entity.setProcessDefineCode(processDefineCode);
 				service.assignSubmitEntity(entity, processDefineCode, assignInfo);
 				return super.buildSuccess(entity);
 			} catch (Exception e) {
@@ -89,11 +83,11 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends GenericExCo
 		}
 
 	 /**
-	  * 回调:撤回申请
+	  * 撤回申请
 	  */
 	 @RequestMapping(value = "/recall", method = RequestMethod.POST)
 	 @ResponseBody
-	 public Object callbakRecall(@RequestBody List<T> list, HttpServletRequest request, HttpServletResponse response) {
+	 public Object recall(@RequestBody List<T> list, HttpServletRequest request, HttpServletResponse response) {
 		 String resultMsg = service.batchRecall(list);
 		 if(StringUtils.isEmpty(resultMsg)) {
 			 return this.buildSuccess("工单撤回操作成功!");
