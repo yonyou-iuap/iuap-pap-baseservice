@@ -44,6 +44,11 @@ public final class RefCommonController  {
      * 获取表头信息
      * @see com.yonyou.iuap.ref.sdk.refmodel.model.AbstractTreeGridRefModel#getRefModelInfo(com.yonyou.iuap.ref.model.RefViewModelVO)
      */
+	@RequestMapping(
+            value = {"/getRefModelInfo"},
+            method = {RequestMethod.POST}
+    )
+	@ResponseBody
     public RefViewModelVO getRefModelInfo(@RequestBody RefViewModelVO refViewModel) {
         refViewModel.setRefUIType(RefUITypeEnum.RefGridTree);
         RefViewModelVO refModel =  refViewModel;
