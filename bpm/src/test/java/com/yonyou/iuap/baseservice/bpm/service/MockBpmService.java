@@ -22,6 +22,10 @@ public class MockBpmService extends GenericBpmService<MockModel>{
         return new BPMFormJSON();
     }
 
+    public BPMFormJSON buildBPMFormJSON(String processDefineCode, MockModel entity) {
+        return new BPMFormJSON();
+    }
+
 
     /**
      * Mock保存数据

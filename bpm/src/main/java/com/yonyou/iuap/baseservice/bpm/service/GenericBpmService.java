@@ -66,7 +66,9 @@ public abstract class GenericBpmService<T extends BpmSimpleModel> extends Generi
      * @param entity
      * @return
      */
-    public abstract  BPMFormJSON buildVariables(T entity);
+    public  BPMFormJSON buildVariables(T entity){
+        return  new BPMFormJSON();
+    }
 
     private String[] names = {"processDefinitionKey","formId","billMarker","orgId","billNo","formUrl","title","serviceClass"};
 
@@ -115,7 +117,7 @@ public abstract class GenericBpmService<T extends BpmSimpleModel> extends Generi
         return bpmjson;
     }
 
-    private List<RestVariable> buildEntityVars(T entity){
+    protected List<RestVariable> buildEntityVars(T entity){
         List<RestVariable> variables = new ArrayList<RestVariable>();
         Field[] fields = ReflectUtil.getFields(entity.getClass());
 
@@ -138,6 +140,17 @@ public abstract class GenericBpmService<T extends BpmSimpleModel> extends Generi
         return variables;
 
     }
+
+    /**
+     * 设置BPMFormJSON
+     *
+     * @param processDefineCode
+     * @param ygdemo
+     * @return
+     * @throws
+     */
+     public abstract  BPMFormJSON buildBPMFormJSON(String processDefineCode, T entity);
+
     
 	/**
      * 设置BPMFormJSON
@@ -147,7 +160,7 @@ public abstract class GenericBpmService<T extends BpmSimpleModel> extends Generi
      * @return
      * @throws
      */
-    public BPMFormJSON buildBPMFormJSON(String processDefineCode, T entity) {
+    public BPMFormJSON buildBPMFormJSON2(String processDefineCode, T entity) {
         try {
         	BPMFormJSON bpmform = new BPMFormJSON();
         	bpmform.setProcessDefinitionKey(processDefineCode);
