@@ -289,7 +289,7 @@ public abstract class GenericBpmService<T extends BpmSimpleModel> extends Generi
 	 * 工单申请撤回
 	 * @param list
 	 */
-	public String  batchRecall(List<T> list) {
+	public JSONObject  batchRecall(List<T> list) {
         T entity = list.get(0);
         JSONObject result = bpmSubmitBasicService.unsubmit(entity.getId().toString());
         if (result.get("success") != null ) {
@@ -297,7 +297,7 @@ public abstract class GenericBpmService<T extends BpmSimpleModel> extends Generi
             //修改DB表数据
             save(entity);
         }
-        return result.toJSONString();
+        return result;
 
 	}
 

@@ -88,12 +88,8 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends GenericExCo
 	 @RequestMapping(value = "/recall", method = RequestMethod.POST)
 	 @ResponseBody
 	 public Object recall(@RequestBody List<T> list, HttpServletRequest request, HttpServletResponse response) {
-		 String resultMsg = service.batchRecall(list);
-		 if(StringUtils.isEmpty(resultMsg)) {
-			 return this.buildSuccess("工单撤回操作成功!");
-		 }else {
-			 return this.buildGlobalError(resultMsg);
-		 }
+		 Object unsubmitJson = service.batchRecall(list);
+		 return super.buildSuccess(unsubmitJson);
 	 }
 
 	 /**
