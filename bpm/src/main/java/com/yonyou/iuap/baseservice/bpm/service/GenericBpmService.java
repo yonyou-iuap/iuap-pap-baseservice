@@ -293,6 +293,7 @@ public abstract class GenericBpmService<T extends BpmSimpleModel> extends Generi
         T entity = list.get(0);
         JSONObject result = bpmSubmitBasicService.unsubmit(entity.getId().toString());
         if (result.get("success") != null ) {
+            entity=findById(entity.getId().toString());
             entity.setBpmState(BpmExUtil.BPM_STATE_NOTSTART);// 从已提交状态改为未提交状态;
             //修改DB表数据
             save(entity);
