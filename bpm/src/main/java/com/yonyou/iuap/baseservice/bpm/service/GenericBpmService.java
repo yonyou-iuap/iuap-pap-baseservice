@@ -318,5 +318,14 @@ public abstract class GenericBpmService<T extends BpmSimpleModel> extends Generi
         return super.save(entity);
     }
 
-
+    /**
+     * 驳回到制单人
+     * @param billId  单据ID
+     */
+    public void doRejectMarkerBill(String billId) {
+       T entity=findById(billId);
+        entity.setBpmState(BpmExUtil.BPM_STATE_NOTSTART);// 从已提交状态改为未提交状态;
+        //修改DB表数据
+        save(entity);
+    }
 }

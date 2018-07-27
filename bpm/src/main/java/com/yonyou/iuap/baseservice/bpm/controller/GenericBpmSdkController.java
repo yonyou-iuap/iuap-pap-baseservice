@@ -104,8 +104,8 @@ class GenericBpmSdkController<T extends BpmModel> extends GenericExController<T>
     @ResponseBody
     public JsonResponse doRejectMarkerBillAction(Map<String, Object> params) throws Exception {
         String busiId = String.valueOf(params.get("billId"));
-        String comment = String.valueOf(params.get("comment"));
-        service.doRejectToInitial(busiId, comment);
+        String approvetype = String.valueOf(params.get("approvetype"));
+        service.doRejectToInitial(busiId, approvetype);
         return null;
     }
 
