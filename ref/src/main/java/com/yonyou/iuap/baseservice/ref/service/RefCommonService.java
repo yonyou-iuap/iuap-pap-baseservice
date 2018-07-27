@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,6 +33,8 @@ import cn.hutool.core.util.ReflectUtil;
  */
 @Service
 public  class RefCommonService {
+    private static Logger log= LoggerFactory.getLogger(RefCommonService.class);
+
 
     @Autowired
     RefCommonMapper mapper;
@@ -117,6 +121,10 @@ public  class RefCommonService {
 
             for (Field field : refCache.keySet()) {
                 RefParamVO params = RefXMLParse.getInstance().getMSConfig(refCache.get(field).code());
+                if (params==null){
+                    log.warn("参照配置错误:"+refCache.get(field).code()+"不存在");
+                    continue;
+                }
                 String idfield = StringUtils.isBlank(params.getIdfield()) ? "id"
                         : params.getIdfield();
                 List<String> setList = new ArrayList<>(idCache.get(field));
