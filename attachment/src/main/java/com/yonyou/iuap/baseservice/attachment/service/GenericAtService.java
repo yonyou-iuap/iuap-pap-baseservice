@@ -60,6 +60,9 @@ public class GenericAtService<T extends Attachmentable> extends GenericExService
         String id = newEntity.getId().toString();
         String name = newEntity.getClass().getSimpleName();
         List<AttachmentEntity> attachments = entity.getAttachment();
+        if (attachments==null){//没有附件需要保存
+            return entity;
+        }
         for(AttachmentEntity att:attachments){
             if(att.getDel() != null){
                 att.setDr(1);
