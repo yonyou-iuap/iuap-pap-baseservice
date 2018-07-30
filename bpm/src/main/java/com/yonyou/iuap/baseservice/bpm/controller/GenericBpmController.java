@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.yonyou.iuap.baseservice.bpm.entity.BpmSimpleModel;
 import com.yonyou.iuap.baseservice.controller.GenericExController;
+import com.yonyou.iuap.mvc.type.JsonResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -88,12 +89,8 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends GenericExCo
 	 @RequestMapping(value = "/recall", method = RequestMethod.POST)
 	 @ResponseBody
 	 public Object recall(@RequestBody List<T> list, HttpServletRequest request, HttpServletResponse response) {
-		 String resultMsg = service.batchRecall(list);
-		 if(StringUtils.isEmpty(resultMsg)) {
-			 return this.buildSuccess("工单撤回操作成功!");
-		 }else {
-			 return this.buildGlobalError(resultMsg);
-		 }
+		 Object unsubmitJson = service.batchRecall(list);
+		 return super.buildSuccess(unsubmitJson);
 	 }
 
 	 /**
@@ -116,6 +113,31 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends GenericExCo
 		 T result = service.save(entity);
 		 return buildSuccess(result);
 	 }
+
+
+	 /**
+	  * 驳回到制单人回调
+	  * @param params
+	  * @return
+	  * @throws Exception
+	  */
+	 @RequestMapping(value = {"/doRejectMarkerBill"}, method = {RequestMethod.POST})
+	 @ResponseBody
+	 public JsonResponse doRejectMarkerBillAction(@RequestBody Map<String, Object> params) throws Exception {
+		 String billId = String.valueOf(params.get("billId"));
+		 service.doRejectMarkerBill(billId);
+		 return null;
+	 }
+
+
+
+
+
+
+
+
+
+
 			 /************************************************************/
 	private GenericBpmService<T> service;
 
