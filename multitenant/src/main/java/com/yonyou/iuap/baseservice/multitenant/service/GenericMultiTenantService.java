@@ -6,7 +6,7 @@ import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.entity.annotation.CodingEntity;
-import com.yonyou.iuap.baseservice.multitenant.dao.mapper.IMultiTenantMapper;
+import com.yonyou.iuap.baseservice.multitenant.dao.mapper.GenericMultiTenantMapper;
 import com.yonyou.iuap.baseservice.multitenant.entity.MultiTenant;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.EntityUtil;
 import com.yonyou.iuap.baseservice.service.GenericService;
@@ -37,17 +37,17 @@ import java.util.Map;
  * 2018年8月8日
  *
  */
-public abstract class AbstractMultiTenantService<T extends MultiTenant> extends GenericService<T> {
+public abstract class GenericMultiTenantService<T extends MultiTenant> extends GenericService<T> {
 
-	protected Logger log = LoggerFactory.getLogger(AbstractMultiTenantService.class);
+	protected Logger log = LoggerFactory.getLogger(GenericMultiTenantService.class);
 
-	protected IMultiTenantMapper multiTenantMapper;
+	protected GenericMultiTenantMapper multiTenantMapper;
 
 	/**
 	 * 设置dao层并调用父类dao层注入方法
 	 * @param multiTenantMapper
 	 */
-	public void setmultiTenantMapper(IMultiTenantMapper<T> multiTenantMapper) {
+	public void setmultiTenantMapper(GenericMultiTenantMapper<T> multiTenantMapper) {
 		this.multiTenantMapper = multiTenantMapper;
 		super.setGenericMapper(multiTenantMapper);
 	}
@@ -243,7 +243,7 @@ public abstract class AbstractMultiTenantService<T extends MultiTenant> extends 
 	public Page<T> selectAllByPageWithSign(PageRequest pageRequest, SearchParams searchParams,String tenantid) {
 		Map<String,Object> searchMap=searchParams.getSearchMap();
 		checkQueryMapTenantidWithSign(searchMap,tenantid);
-		return this.multiTenantMapper.selectAllByPage(pageRequest, searchParams).getPage();
+		return super.selectAllByPage(pageRequest,searchParams);
 	}
 
 	/**
@@ -265,7 +265,7 @@ public abstract class AbstractMultiTenantService<T extends MultiTenant> extends 
 	 */
 	public List<T> queryListWithSign(Map<String,Object> queryParams,String tenantid){
 		checkQueryMapTenantidWithSign(queryParams,tenantid);
-		return this.multiTenantMapper.queryList(queryParams);
+		return super.queryList(queryParams);
 	}
 
 	/**
@@ -279,7 +279,7 @@ public abstract class AbstractMultiTenantService<T extends MultiTenant> extends 
 		Map<String,Object> queryParams = new HashMap<>(2);
 		queryParams.put(name, value);
 		checkQueryMapTenantidWithSign(queryParams,tenantid);
-		return this.multiTenantMapper.queryList(queryParams);
+		return super.queryList(queryParams);
 	}
 
 	/**
@@ -290,7 +290,7 @@ public abstract class AbstractMultiTenantService<T extends MultiTenant> extends 
 	 */
 	public List<Map<String,Object>> queryListByMapWithSign(Map<String,Object> params,String tenantid){
 		checkQueryMapTenantidWithSign(params,tenantid);
-		return this.multiTenantMapper.queryListByMap(params);
+		return super.queryListByMap(params);
 	}
 
 	/**
@@ -311,10 +311,10 @@ public abstract class AbstractMultiTenantService<T extends MultiTenant> extends 
 	 * @return 数据对象
 	 */
 	public T findUniqueWithSign(String name, Object value,String tenantid) {
-		Map<String,Object> queryParams = new HashMap<>();
+		Map<String,Object> queryParams = new HashMap<>(2);
 		queryParams.put(name, value);
 		checkQueryMapTenantidWithSign(queryParams,tenantid);
-		List<T> listData = this.queryList(queryParams);
+		List<T> listData = super.queryList(queryParams);
 		if(listData!=null && listData.size()==1) {
 			return listData.get(0);
 		}else {
@@ -357,29 +357,10 @@ public abstract class AbstractMultiTenantService<T extends MultiTenant> extends 
 	 * @return 保存后的对象实体
 	 */
 	public T insertWithSign(T entity) {
-		if(entity != null) {
-			//ID为空的情况下，生成生成主键
-			if(entity.getId()==null || StrUtil.isBlankIfStr(entity.getId())) {
-				genAndSetEntityId(entity);
-			}
-			String now = DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss SSS");
-			entity.setCreateTime(now);
-			entity.setCreateUser(InvocationInfoProxy.getUserid());
-			entity.setLastModified(now);
-			entity.setLastModifyUser(InvocationInfoProxy.getUserid());
-			entity.setTs(now);
-
-			if(entity.getClass().getAnnotation(CodingEntity.class)!=null) {
-				CodingUtil.inst().buildCoding(entity);
-			}
-			if(entity.getTenantid()==null){
-				throw new RuntimeException("新增保存数据出错，对象为空!");
-			}
-			this.multiTenantMapper.insert(entity);
-			log.info("新增保存数据：\r\n"+ JSON.toJSONString(entity));
-			return entity;
+		if(entity != null && entity.getTenantid()!=null) {
+			return super.insert(entity);
 		}else {
-			throw new RuntimeException("新增保存数据出错，对象为空!");
+			throw new RuntimeException("新增保存数据出错，租户id为空!");
 		}
 	}
 
@@ -390,21 +371,13 @@ public abstract class AbstractMultiTenantService<T extends MultiTenant> extends 
 	 */
 	public T updateWithSign(T entity) {
 		if(entity!=null) {
-			String now = DateUtils.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss SSS");
-			entity.setLastModified(now);
-			entity.setLastModifyUser(InvocationInfoProxy.getUserid());
 			T t=findByIdWithSign(entity.getId(),entity.getTenantid());
 			if(t==null){
 				throw new RuntimeException("更新保存数据出错，对象为空!");
 			}else if(!t.getTenantid().equals(entity.getTenantid())){
 				throw new RuntimeException("更新保存数据出错，租户不一致为空!");
 			}
-			int count = multiTenantMapper.update(entity);
-			if(count != 1) {
-				log.error("更新保存数据出错，更新记录数="+count+"\r\n"+JSON.toJSONString(entity));
-				throw new RuntimeException("更新保存数据出错，更新记录数="+count);
-			}
-			return entity;
+			return super.update(entity);
 		}else {
 			log.error("更新保存数据出错，输入参数对象为空!");
 			throw new RuntimeException("更新保存数据出错，输入参数对象为空!");
@@ -447,25 +420,6 @@ public abstract class AbstractMultiTenantService<T extends MultiTenant> extends 
 			count += this.deleteWithSign(entity);
 		}
 		return count;
-	}
-	/**
-	 * 生成并设置ID
-	 * @param entity
-	 */
-	protected void genAndSetEntityId(T entity) {
-		//ID为空的情况下，生成生成主键
-		if(entity.getId()==null || StrUtil.isBlankIfStr(entity.getId())) {
-			Serializable id         = GeneratorManager.generateID(entity);
-			Field[]      fieldArray = EntityUtil.getEntityFields(entity.getClass());
-			for(Field curField : fieldArray){
-				if(curField.getAnnotation(Id.class)!=null) {
-					ReflectUtil.setFieldValue(entity, curField.getName(), id);
-					return;
-				}
-			}
-			log.error("设置id出错，未找到Id Field：" + entity.getClass());
-			throw new RuntimeException("设置id出错，未找到@Id Field，请检查类定义");
-		}
 	}
 
 	/**

@@ -4,7 +4,7 @@ package com.yonyou.iuap.baseservice.multitenant.controller;
 import cn.hutool.core.util.StrUtil;
 import com.yonyou.iuap.base.web.BaseController;
 import com.yonyou.iuap.baseservice.multitenant.entity.MultiTenant;
-import com.yonyou.iuap.baseservice.multitenant.service.AbstractMultiTenantService;
+import com.yonyou.iuap.baseservice.multitenant.service.GenericMultiTenantService;
 import com.yonyou.iuap.mvc.constants.RequestStatusEnum;
 import com.yonyou.iuap.mvc.type.JsonResponse;
 import com.yonyou.iuap.mvc.type.SearchParams;
@@ -27,11 +27,11 @@ import java.util.Map;
  * @author jhb
  * 2018年8月8日
  */
-public abstract   class AbstractMultiTenantWithSignController<T extends MultiTenant> extends BaseController {
+public abstract   class GenericMultiTenantWithSignController<T extends MultiTenant> extends BaseController {
 
-    private AbstractMultiTenantService multiTenantService;
+    private GenericMultiTenantService multiTenantService;
 
-    public void setMultiTenantService(AbstractMultiTenantService multiTenantService) {
+    public void setMultiTenantService(GenericMultiTenantService multiTenantService) {
         this.multiTenantService = multiTenantService;
     }
 

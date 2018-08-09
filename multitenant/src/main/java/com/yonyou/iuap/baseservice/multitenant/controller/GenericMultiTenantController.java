@@ -3,7 +3,7 @@ package com.yonyou.iuap.baseservice.multitenant.controller;
 
 import com.yonyou.iuap.baseservice.controller.GenericController;
 import com.yonyou.iuap.baseservice.multitenant.entity.MultiTenant;
-import com.yonyou.iuap.baseservice.multitenant.service.AbstractMultiTenantService;
+import com.yonyou.iuap.baseservice.multitenant.service.GenericMultiTenantService;
 
 
 /**
@@ -11,11 +11,11 @@ import com.yonyou.iuap.baseservice.multitenant.service.AbstractMultiTenantServic
  * @author jhb
  * 2018年8月8日
  */
-public abstract   class AbstractMultiTenantController<T extends MultiTenant> extends GenericController<T> {
+public abstract   class GenericMultiTenantController<T extends MultiTenant> extends GenericController<T> {
 
-    private AbstractMultiTenantService multiTenantService;
+    private GenericMultiTenantService multiTenantService;
 
-    public void setMultiTenantService(AbstractMultiTenantService multiTenantService) {
+    public void setMultiTenantService(GenericMultiTenantService multiTenantService) {
         this.multiTenantService = multiTenantService;
         super.setService(multiTenantService);
     }

@@ -10,6 +10,6 @@ import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericMapper;
  * @author jhb
  * 2018年8月8日
  */
-public interface IMultiTenantMapper<T extends MultiTenant> extends GenericMapper<T> {
+public interface GenericMultiTenantMapper<T extends MultiTenant> extends GenericMapper<T> {
 
 }
