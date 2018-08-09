@@ -35,16 +35,16 @@ public abstract   class GenericMultiTenantWithSignController<T extends MultiTena
         this.multiTenantService = multiTenantService;
     }
 
-    @RequestMapping(value = "/list")
+    @RequestMapping(value = "/listByTenant")
     @ResponseBody
-    public Object list(PageRequest pageRequest, SearchParams searchParams,String tenantid) {
+    public Object list(PageRequest pageRequest, SearchParams searchParams,String tenantid) throws Exception {
         Page<T>             page = this.multiTenantService.selectAllByPageWithSign(pageRequest, searchParams,tenantid);
         Map<String, Object> map  = new HashMap<>(1);
         map.put("data", page);
         return this.buildMapSuccess(map);
     }
 
-    @RequestMapping(value = "/get")
+    @RequestMapping(value = "/getByTenant")
     @ResponseBody
     public Object get(PageRequest pageRequest, SearchParams searchParams,String tenantid) {
         String id = MapUtils.getString(searchParams.getSearchMap(), "id");
@@ -61,7 +61,7 @@ public abstract   class GenericMultiTenantWithSignController<T extends MultiTena
     }
 
 
-    @RequestMapping(value = "/save")
+    @RequestMapping(value = "/saveByTenant")
     @ResponseBody
     public Object save(@RequestBody T entity) {
         JsonResponse jsonResp;
@@ -74,7 +74,7 @@ public abstract   class GenericMultiTenantWithSignController<T extends MultiTena
         return jsonResp;
     }
 
-    @RequestMapping(value = "/saveBatch")
+    @RequestMapping(value = "/saveBatchByTenant")
     @ResponseBody
     public Object saveBatch(@RequestBody List<T> listData) {
         this.multiTenantService.saveBatchWithSign(listData);
@@ -82,14 +82,14 @@ public abstract   class GenericMultiTenantWithSignController<T extends MultiTena
     }
 
 
-    @RequestMapping(value = "/delete")
+    @RequestMapping(value = "/deleteByTenant")
     @ResponseBody
     public Object delete(@RequestBody T entity, HttpServletRequest request, HttpServletResponse response) throws Exception {
         this.multiTenantService.deleteWithSign(entity);
         return super.buildSuccess();
     }
 
-    @RequestMapping(value = "/deleteBatch")
+    @RequestMapping(value = "/deleteBatchByTenant")
     @ResponseBody
     public Object deleteBatch(@RequestBody List<T> listData, HttpServletRequest request, HttpServletResponse response) throws Exception {
         this.multiTenantService.deleteBatchWithSign(listData);
