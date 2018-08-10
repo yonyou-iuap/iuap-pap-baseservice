@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.yonyou.iuap.base.web.BaseController;
 import com.yonyou.iuap.baseservice.bpm.entity.BpmSimpleModel;
 import com.yonyou.iuap.baseservice.controller.GenericExController;
 import com.yonyou.iuap.mvc.type.JsonResponse;
@@ -37,7 +38,7 @@ import yonyou.bpm.rest.request.AssignInfo;
  *
  * @update  将依赖sdk的rest接口转移到GenericBpmSdkController by Leon
  */
-public  class GenericBpmController<T extends BpmSimpleModel> extends GenericExController<T>
+public  class GenericBpmController<T extends BpmSimpleModel> extends BaseController
 		 {
 	 /**
 	  * 提交申请
@@ -143,7 +144,6 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends GenericExCo
 
 	public void setService(GenericBpmService<T> bpmService) {
 		this.service = bpmService;
-		super.setService(bpmService);
 	}
 
 

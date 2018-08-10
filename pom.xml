@@ -104,6 +104,7 @@
         <module>association</module>
         <module>print</module>
 		<module>multitenant</module>
+        <module>i18n</module>
         <!--<module>iuap-mybatis-maven-plugin</module>-->
   </modules>
 	<distributionManagement>
