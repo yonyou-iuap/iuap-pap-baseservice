@@ -167,11 +167,7 @@ public abstract class GenericMultiTenantService<T extends MultiTenant> extends G
 	@Override
 	public T insert(T entity) {
 		if(entity != null) {
-			if(entity.getTenantid()==null){
-				entity.setTenantid(InvocationInfoProxy.getTenantid());
-			}else if(!entity.getTenantid().equals(InvocationInfoProxy.getTenantid())){
-				throw new RuntimeException("新增保存数据出错，租户不一致!");
-			}
+			entity.setTenantid(InvocationInfoProxy.getTenantid());
 			return insertWithSign(entity);
 		}else {
 			throw new RuntimeException("新增保存数据出错，对象为空!");
@@ -185,16 +181,8 @@ public abstract class GenericMultiTenantService<T extends MultiTenant> extends G
 	 */
 	@Override
 	public T update(T entity) {
-		if(entity!=null) {
-			if(entity.getTenantid()!=null&&!entity.getTenantid().equals(InvocationInfoProxy.getTenantid())){
-				log.error("更新保存数据出错，输入参数对象为空!");
-				throw new RuntimeException("更新保存数据出错，租户id不一致为空!");
-			}
-			return updateWithSign(entity);
-		}else {
-			log.error("更新保存数据出错，输入参数对象为空!");
-			throw new RuntimeException("更新保存数据出错，输入参数对象为空!");
-		}
+		entity.setTenantid(InvocationInfoProxy.getTenantid());
+		return updateWithSign(entity);
 	}
 
 	/**
