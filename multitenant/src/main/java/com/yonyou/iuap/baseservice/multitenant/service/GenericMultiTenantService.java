@@ -416,7 +416,8 @@ public abstract class GenericMultiTenantService<T extends MultiTenant> extends G
 	 * @param tenantid
 	 */
 	private void checkQueryMapTenantidWithSign(Map<String, Object> searchMap,String tenantid){
-		if(StringUtils.isEmpty(String.valueOf(searchMap.get("tenantid")))){
+		String tenantidInMap=String.valueOf(searchMap.get("tenantid"));
+		if(StringUtils.isEmpty(tenantidInMap)|| "null".equals(tenantidInMap)){
 			searchMap.put("tenantid",StringUtils.isEmpty(tenantid)?tenantid:InvocationInfoProxy.getTenantid());
 		}
 	}
