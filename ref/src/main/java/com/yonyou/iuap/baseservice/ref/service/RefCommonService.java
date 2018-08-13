@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.yonyou.iuap.baseservice.entity.Model;
+import com.yonyou.iuap.baseservice.persistence.support.QueryFeatureExtension;
+import com.yonyou.iuap.mvc.type.SearchParams;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +35,7 @@ import cn.hutool.core.util.ReflectUtil;
  * @Date 2018-07-11
  */
 @Service
-public  class RefCommonService {
+public  class RefCommonService<T extends Model>  implements QueryFeatureExtension<T>{
     private static Logger log= LoggerFactory.getLogger(RefCommonService.class);
 
 
@@ -181,4 +184,13 @@ public  class RefCommonService {
         return list;
     }
 
+    @Override
+    public SearchParams prepareQueryParam(SearchParams searchParams) {
+        return searchParams;
+    }
+
+    @Override
+    public List<T> afterListQuery(List<T> list) {
+        return this.fillListWithRef(list);
+    }
 }

@@ -105,6 +105,7 @@
         <module>print</module>
 		<module>multitenant</module>
         <module>i18n</module>
+        <module>intg</module>
         <!--<module>iuap-mybatis-maven-plugin</module>-->
   </modules>
 	<distributionManagement>

@@ -1,0 +1,254 @@
+package com.yonyou.iuap.baseservice.intg.service;
+
+import com.yonyou.iuap.baseservice.entity.Model;
+import com.yonyou.iuap.baseservice.intg.support.ServiceFeature;
+import com.yonyou.iuap.baseservice.intg.support.ServiceFeatureHolder;
+import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericMapper;
+import com.yonyou.iuap.baseservice.service.GenericService;
+import com.yonyou.iuap.baseservice.persistence.support.QueryFeatureExtension;
+import com.yonyou.iuap.mvc.type.SearchParams;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import static com.yonyou.iuap.baseservice.intg.support.ServiceFeature.*;
+
+/**
+ * 特性集成服务,用于GenericService所有服务接口集成多种组件特性
+ * 默认支持
+ *      <p>ATTACHMENT-附件,
+ *      <p>MULTI_TENANT-多租户,
+ *      <p>REFERENCE-参照,
+ *      <p>LOGICAL_DEL-逻辑删除
+ * @param <T>
+ */
+public class GenericIntegrateService<T extends Model> extends GenericService<T> {
+    private static Logger log = LoggerFactory.getLogger(GenericIntegrateService.class);
+
+
+    /**
+     * 查询前置条件处理
+     * @param searchParams
+     * @return
+     */
+    private SearchParams  prepareFeatSearchParam(SearchParams searchParams){
+
+        for (ServiceFeature feat:feats){
+           QueryFeatureExtension instance = ServiceFeatureHolder.inst().getQueryExtension(feat);
+           if (instance==null){
+                log.warn("配置有错误,特性{}加载失败", feat);
+           }else{
+               searchParams= instance.prepareQueryParam(searchParams);
+           }
+        }
+        return searchParams;
+    }
+
+    /**
+     * 查询后续处理
+     * @param list
+     * @return
+     */
+    private List fillListFeatAfterQuery(List list){
+
+        for (ServiceFeature feat:feats){
+            QueryFeatureExtension instance = ServiceFeatureHolder.inst().getQueryExtension(feat);
+            if (instance==null){
+                log.warn("配置有错误,特性{}加载失败", feat);
+            }else{
+                list= instance.afterListQuery(list);
+            }
+        }
+        return list;
+    }
+
+
+    /**
+     * 分页查询
+     * @param pageRequest
+     * @param searchParams
+     * @return
+     */
+    @Override
+    public Page<T> selectAllByPage(PageRequest pageRequest, SearchParams searchParams) {
+
+        searchParams=prepareFeatSearchParam(searchParams);
+        Page<T> page=super.selectAllByPage(pageRequest, searchParams);
+        fillListFeatAfterQuery(page.getContent());
+        return page;
+    }
+
+    /**
+     * 查询所有数据
+     * @return
+     */
+    @Override
+    public List<T> findAll(){
+        SearchParams searchParams=prepareFeatSearchParam(new SearchParams());
+        return   fillListFeatAfterQuery(super.queryList(searchParams.getSearchMap()));
+    }
+
+    /**
+     * 根据参数查询List
+     * @param queryParams
+     * @return
+     */
+    @Override
+    public List<T> queryList(Map<String,Object> queryParams){
+        SearchParams searchParams= new SearchParams();
+        searchParams.setSearchMap(queryParams);
+        searchParams=prepareFeatSearchParam(searchParams);
+        return   fillListFeatAfterQuery(super.queryList(searchParams.getSearchMap()));
+    }
+
+    /**
+     * 根据字段名查询List
+     * @param name
+     * @param value
+     * @return
+     */
+    @Override
+    public List<T> queryList(String name, Object value){
+        SearchParams searchParams= new SearchParams();
+        searchParams.addCondition(name,value);
+        searchParams=prepareFeatSearchParam(searchParams);
+        return fillListFeatAfterQuery(super.queryList(searchParams.getSearchMap()));
+    }
+
+    /**
+     * 根据参数查询List【返回值为List<Map>】
+     * @param params
+     * @return
+     */
+    @Override
+    public List<Map<String,Object>> queryListByMap(Map<String,Object> params){
+
+//        return super.queryListByMap(params);
+        SearchParams searchParams= new SearchParams();
+        searchParams.setSearchMap(params);
+        searchParams=prepareFeatSearchParam(searchParams);
+        List<Map<String,Object> >list=super.queryListByMap(searchParams.getSearchMap());
+        return   fillListFeatAfterQuery(list);
+    }
+
+    /**
+     * 根据ID查询数据
+     * @param id
+     * @return
+     */
+    @Override
+    public T findById(Serializable id) {
+       return  this.findUnique("id",id);
+    }
+
+    /**
+     * 查询唯一数据
+     * @param name
+     * @param value
+     * @return
+     */
+    @Override
+    public T findUnique(String name, Object value) {
+        SearchParams searchParams= new SearchParams();
+        searchParams.addCondition(name,value);
+        searchParams=prepareFeatSearchParam(searchParams);
+        List<T>listData=super.queryList(searchParams.getSearchMap());
+        if(listData!=null && listData.size()==1) {
+            return listData.get(0);
+        }else {
+            throw new RuntimeException("检索数据不唯一, "+name + ":" + value);
+        }
+    }
+
+    /**
+     * 保存数据
+     * @param entity
+     * @return
+     */
+    @Override
+    public T save(T entity) {
+       return super.save(entity);
+    }
+
+    /**
+     * 批量保存
+     * @param listEntity
+     */
+    @Override
+    public void saveBatch(List<T> listEntity){
+        super.saveBatch(listEntity);
+    }
+
+    /**
+     * 新增保存数据
+     * @param entity
+     * @return
+     */
+    @Override
+    public T insert(T entity) {
+        return super.insert(entity);
+    }
+
+    /**
+     * 更新保存数据
+     * @param entity
+     * @return
+     */
+    @Override
+    public T update(T entity) {
+        return super.update(entity);
+    }
+
+    /**
+     * 删除数据
+     */
+    @Override
+    public int deleteBatch(List<T> list) {
+
+        return super.deleteBatch(list);
+    }
+
+    /**
+     * 删除数据
+     * @param entity
+     * @return
+     */
+    @Override
+    public int delete(T entity) {
+        return super.delete(entity);
+    }
+
+    /**
+     * 根据id删除数据
+     * @param id
+     * @return
+     */
+    @Override
+    public int delete(Serializable id) {
+      return super.delete(id);
+    }
+
+
+
+
+    /***************************************************/
+    protected GenericMapper<T> genericMapper;
+
+    protected ServiceFeature[] feats = new ServiceFeature[]{ATTACHMENT,MULTI_TENANT,LOGICAL_DEL,REFERENCE};//默认四特性都支持
+
+    public void setFeats(ServiceFeature[] feats) {
+        this.feats = feats;
+    }
+
+    public void setGenericMapper(GenericMapper<T> mapper) {
+        this.genericMapper = mapper;
+        super.setGenericMapper(mapper);
+    }
+
+
+}
