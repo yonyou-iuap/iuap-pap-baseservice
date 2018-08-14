@@ -27,7 +27,7 @@ import java.util.Map;
  * 2018年8月8日
  *
  */
-public class GenericMultiTenantService<T extends MultiTenant> extends GenericService<T> implements QueryFeatureExtension<T> {
+public class GenericMultiTenantService<T extends MultiTenant> extends GenericService<T>  {
 
 	protected Logger log = LoggerFactory.getLogger(GenericMultiTenantService.class);
 
@@ -412,15 +412,5 @@ public class GenericMultiTenantService<T extends MultiTenant> extends GenericSer
 		}
 	}
 
-    @Override
-    public SearchParams prepareQueryParam(SearchParams searchParams) {
-        Map<String,Object> searchMap=searchParams.getSearchMap();
-        checkQueryMapTenantidWithSign(searchMap,InvocationInfoProxy.getTenantid());
-        return searchParams;
-    }
 
-    @Override
-    public List<T> afterListQuery(List<T> list) {
-        return list;
-    }
 }

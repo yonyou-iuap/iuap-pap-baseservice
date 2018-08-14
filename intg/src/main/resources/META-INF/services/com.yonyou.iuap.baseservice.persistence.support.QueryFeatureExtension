@@ -1,4 +1,4 @@
 com.yonyou.iuap.baseservice.attachment.service.GenericAtService
 com.yonyou.iuap.baseservice.multitenant.service.GenericMultiTenantService
-com.yonyou.iuap.baseservice.intg.service.GenericDrService
+com.yonyou.iuap.baseservice.intg.service.DrCommonService
 com.yonyou.iuap.baseservice.ref.service.RefCommonService

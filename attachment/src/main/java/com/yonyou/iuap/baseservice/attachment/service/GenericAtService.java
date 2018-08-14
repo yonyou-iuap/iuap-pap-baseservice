@@ -16,13 +16,14 @@ import com.yonyou.iuap.mvc.type.SearchParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import java.io.Serializable;
 import java.util.*;
 
-public class GenericAtService<T extends Attachmentable> extends GenericService<T> implements QueryFeatureExtension<T> {
+public class GenericAtService<T extends Attachmentable> extends GenericService<T>   {
 
     private Logger log = LoggerFactory.getLogger(GenericAtService.class);
 
@@ -91,20 +92,4 @@ public class GenericAtService<T extends Attachmentable> extends GenericService<T
         return page;
     }
 
-
-    @Override
-    public SearchParams prepareQueryParam(SearchParams searchParams) {
-        return searchParams;
-    }
-
-    @Override
-    public List<T> afterListQuery(List<T> list) {
-        for(T entity : list){
-            Map params = new HashMap<>();
-            params.put("refId",entity.getId()   );
-            List<AttachmentEntity> attachments = atMapper.queryList(params);
-            entity.setAttachment(attachments);
-        }
-        return list;
-    }
 }

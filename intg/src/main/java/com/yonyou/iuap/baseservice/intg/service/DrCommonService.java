@@ -4,10 +4,11 @@ import com.yonyou.iuap.baseservice.entity.LogicDel;
 import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.persistence.support.QueryFeatureExtension;
 import com.yonyou.iuap.mvc.type.SearchParams;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-
-public class GenericDrService<T extends Model> implements QueryFeatureExtension<T> {
+@Service
+public class DrCommonService<T extends Model> implements QueryFeatureExtension<T> {
     @Override
     public SearchParams prepareQueryParam(SearchParams searchParams) {
         searchParams.addCondition("dr",LogicDel.NORMAL);

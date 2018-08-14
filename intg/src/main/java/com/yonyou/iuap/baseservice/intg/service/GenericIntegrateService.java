@@ -9,6 +9,7 @@ import com.yonyou.iuap.baseservice.persistence.support.QueryFeatureExtension;
 import com.yonyou.iuap.mvc.type.SearchParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
@@ -39,7 +40,7 @@ public class GenericIntegrateService<T extends Model> extends GenericService<T> 
     private SearchParams  prepareFeatSearchParam(SearchParams searchParams){
 
         for (ServiceFeature feat:feats){
-           QueryFeatureExtension instance = ServiceFeatureHolder.inst().getQueryExtension(feat);
+           QueryFeatureExtension instance = ServiceFeatureHolder.getQueryExtension(feat.name());
            if (instance==null){
                 log.warn("配置有错误,特性{}加载失败", feat);
            }else{
@@ -57,7 +58,7 @@ public class GenericIntegrateService<T extends Model> extends GenericService<T> 
     private List fillListFeatAfterQuery(List list){
 
         for (ServiceFeature feat:feats){
-            QueryFeatureExtension instance = ServiceFeatureHolder.inst().getQueryExtension(feat);
+            QueryFeatureExtension instance = ServiceFeatureHolder.getQueryExtension(feat.name());
             if (instance==null){
                 log.warn("配置有错误,特性{}加载失败", feat);
             }else{
@@ -237,6 +238,7 @@ public class GenericIntegrateService<T extends Model> extends GenericService<T> 
 
 
     /***************************************************/
+
     protected GenericMapper<T> genericMapper;
 
     protected ServiceFeature[] feats = new ServiceFeature[]{ATTACHMENT,MULTI_TENANT,LOGICAL_DEL,REFERENCE};//默认四特性都支持

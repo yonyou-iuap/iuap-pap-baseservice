@@ -67,9 +67,9 @@ public abstract class GenericAssoService<T extends Model> extends GenericIntegra
     }
 
     /************************************************************/
-    private Map<Class ,GenericService> subServices = new HashMap<>();
+    private Map<Class ,GenericIntegrateService> subServices = new HashMap<>();
 
-    public void setSubService(Class entityClass, GenericService subService) {
+    public void setSubService(Class entityClass, GenericIntegrateService subService) {
         subServices.put(entityClass,subService);
     }
 
