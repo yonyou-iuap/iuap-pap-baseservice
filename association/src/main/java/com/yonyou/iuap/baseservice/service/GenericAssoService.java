@@ -6,6 +6,7 @@ import com.alibaba.fastjson.parser.Feature;
 import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.entity.annotation.Associative;
 import com.yonyou.iuap.baseservice.intg.service.GenericIntegrateService;
+import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericMapper;
 import com.yonyou.iuap.baseservice.vo.GenericAssoVo;
 import com.yonyou.iuap.mvc.type.SearchParams;
 import org.apache.commons.collections.MapUtils;
@@ -67,9 +68,9 @@ public abstract class GenericAssoService<T extends Model> extends GenericIntegra
     }
 
     /************************************************************/
-    private Map<Class ,GenericIntegrateService> subServices = new HashMap<>();
+    private Map<Class ,GenericService> subServices = new HashMap<>();
 
-    public void setSubService(Class entityClass, GenericIntegrateService subService) {
+    public void setSubService(Class entityClass, GenericService subService) {
         subServices.put(entityClass,subService);
     }
 
