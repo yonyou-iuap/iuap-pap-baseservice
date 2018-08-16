@@ -1,38 +1,29 @@
 package com.yonyou.iuap.baseservice.attachment.service;
 
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.yonyou.iuap.baseservice.attachment.entity.AttachmentEntity;
 import com.yonyou.iuap.baseservice.attachment.entity.Attachmentable;
 import com.yonyou.iuap.baseservice.attachment.dao.mapper.AttachmentMapper;
-import com.yonyou.iuap.baseservice.entity.RefParamVO;
-import com.yonyou.iuap.baseservice.entity.annotation.Reference;
 import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericExMapper;
 import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericMapper;
-import com.yonyou.iuap.baseservice.persistence.utils.RefXMLParse;
-import com.yonyou.iuap.baseservice.ref.dao.mapper.RefCommonMapper;
 import com.yonyou.iuap.baseservice.ref.service.RefCommonService;
-import com.yonyou.iuap.baseservice.service.GenericExService;
 import com.yonyou.iuap.baseservice.service.GenericService;
+import com.yonyou.iuap.baseservice.persistence.support.QueryFeatureExtension;
 import com.yonyou.iuap.baseservice.support.generator.GeneratorManager;
 import com.yonyou.iuap.context.InvocationInfoProxy;
 import com.yonyou.iuap.mvc.type.SearchParams;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
 import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.*;
 
-public class GenericAtService<T extends Attachmentable> extends GenericExService<T> {
+public class GenericAtService<T extends Attachmentable> extends GenericService<T>   {
 
     private Logger log = LoggerFactory.getLogger(GenericAtService.class);
 
@@ -41,11 +32,11 @@ public class GenericAtService<T extends Attachmentable> extends GenericExService
     @Autowired
     private RefCommonService rfService;
 
-	protected GenericExMapper mapper;
+	protected GenericMapper mapper;
 
 	public void setMapper(GenericExMapper mapper) {
 		this.mapper = mapper;
-		super.setIbatisMapperEx(mapper);
+		super.setGenericMapper(mapper);
 	}
 
 	private List<AttachmentEntity> getRefId(String id) {
@@ -100,8 +91,5 @@ public class GenericAtService<T extends Attachmentable> extends GenericExService
         }
         return page;
     }
-
-
-
 
 }

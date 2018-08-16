@@ -1,30 +1,20 @@
 package com.yonyou.iuap.baseservice.multitenant.service;
 
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
-import com.alibaba.fastjson.JSON;
 import com.yonyou.iuap.baseservice.entity.Model;
-import com.yonyou.iuap.baseservice.entity.annotation.CodingEntity;
 import com.yonyou.iuap.baseservice.multitenant.dao.mapper.GenericMultiTenantMapper;
 import com.yonyou.iuap.baseservice.multitenant.entity.MultiTenant;
-import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.EntityUtil;
 import com.yonyou.iuap.baseservice.service.GenericService;
-import com.yonyou.iuap.baseservice.service.util.CodingUtil;
-import com.yonyou.iuap.baseservice.support.generator.GeneratorManager;
+import com.yonyou.iuap.baseservice.persistence.support.QueryFeatureExtension;
 import com.yonyou.iuap.context.InvocationInfoProxy;
 import com.yonyou.iuap.mvc.type.SearchParams;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-import javax.persistence.Id;
 import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +27,7 @@ import java.util.Map;
  * 2018年8月8日
  *
  */
-public abstract class GenericMultiTenantService<T extends MultiTenant> extends GenericService<T> {
+public class GenericMultiTenantService<T extends MultiTenant> extends GenericService<T>  {
 
 	protected Logger log = LoggerFactory.getLogger(GenericMultiTenantService.class);
 
@@ -421,5 +411,6 @@ public abstract class GenericMultiTenantService<T extends MultiTenant> extends G
 			searchMap.put("tenantid",StringUtils.isEmpty(tenantid)?tenantid:InvocationInfoProxy.getTenantid());
 		}
 	}
+
 
 }

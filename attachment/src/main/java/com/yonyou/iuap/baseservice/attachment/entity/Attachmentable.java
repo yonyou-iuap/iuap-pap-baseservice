@@ -5,7 +5,7 @@ import com.yonyou.iuap.baseservice.entity.Model;
 
 import java.util.List;
 
-public interface Attachmentable extends   Model, LogicDel {
+public interface Attachmentable extends   Model {
 
     public List<AttachmentEntity> getAttachment() ;
 
