@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -79,10 +80,11 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 			entity.setProcessDefineCode(processDefineCode);
 
 
-			Participant[] copyUserParticipants=null;
+			List<Participant> copyUserParticipants=null;
 			try {
 				//抄送人
-				copyUserParticipants = jsonResultService.toObject(data.get("copyusers").toString(), Participant[].class);
+				copyUserParticipants = evalParticipant((List<Map>)data.get("copyusers"));
+				logger.debug("抄送信息对象化：{}",JSONObject.toJSONString(copyUserParticipants));
 			}catch (Exception e){
 				logger.error("暂无指派抄送信息，可忽略。");
 			}
@@ -93,8 +95,19 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 		}
 
 	}
-	 
-	 /** 指派提交 */
+
+	private List<Participant> evalParticipant(List<Map> copyusers) {
+		List<Participant> participants=new ArrayList<>();
+		for(Map map:copyusers){
+			Participant participant=new Participant();
+			participant.setId(map.get("id").toString());
+			participant.setType(map.get("type").toString());
+			participants.add(participant);
+		}
+		return participants;
+	}
+
+	/** 指派提交 */
 		@RequestMapping(value = "/assignSubmit", method = RequestMethod.POST)
 		@ResponseBody
 		public Object assignSubmit(@RequestBody Map<String, Object> data,HttpServletRequest request) {
@@ -116,10 +129,11 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 				entity.setProcessDefineCode(processDefineCode);
 
 
-                Participant[] copyUserParticipants=null;
+                List<Participant> copyUserParticipants=null;
                 try {
-                    //抄送人
-                    copyUserParticipants = jsonResultService.toObject(data.get("copyusers").toString(), Participant[].class);
+					//抄送人
+					copyUserParticipants = evalParticipant((List<Map>)data.get("copyusers"));
+					logger.debug("抄送信息对象化：{}",JSONObject.toJSONString(copyUserParticipants));
                 }catch (Exception e){
                     logger.error("暂无指派抄送信息，可忽略。");
                 }

@@ -307,9 +307,9 @@ public abstract class GenericBpmService<T extends BpmSimpleModel> extends Generi
      * @param assignInfo 指派信息
      * @return
      */
-    public void assignSubmitEntity(T entity, String processDefineCode, AssignInfo assignInfo, Participant[] copyUsers) {
+    public void assignSubmitEntity(T entity, String processDefineCode, AssignInfo assignInfo, List<Participant> copyUsers) {
         BPMFormJSON bpmform = buildBPMFormJSON(processDefineCode, entity);
-        if(copyUsers!=null && copyUsers.length>0)bpmform.setCopyUsers(Arrays.asList(copyUsers));
+        if(copyUsers!=null && copyUsers.size()>0)bpmform.setCopyUsers(copyUsers);
         JSONObject resultJsonObject = bpmSubmitBasicService.assignSubmit(bpmform, assignInfo);
         if (isSuccess(resultJsonObject)) {
             entity.setBpmState(1);// 从未提交状态改为已提交状态;
