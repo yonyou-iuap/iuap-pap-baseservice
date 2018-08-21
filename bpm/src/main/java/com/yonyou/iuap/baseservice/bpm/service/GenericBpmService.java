@@ -4,13 +4,11 @@ import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.yonyou.iuap.baseservice.bpm.entity.BpmSimpleModel;
 import com.yonyou.iuap.baseservice.bpm.utils.BpmExUtil;
 import com.yonyou.iuap.baseservice.service.GenericExService;
 import com.yonyou.iuap.bpm.pojo.BPMFormJSON;
 import com.yonyou.iuap.bpm.service.BPMSubmitBasicService;
-import com.yonyou.iuap.bpm.service.TenantLimit;
 import com.yonyou.iuap.bpm.util.BpmRestVarType;
 import com.yonyou.iuap.context.InvocationInfoProxy;
 import com.yonyou.iuap.persistence.vo.pub.BusinessException;
@@ -18,19 +16,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import yonyou.bpm.rest.BpmRest;
-import yonyou.bpm.rest.BpmRests;
-import yonyou.bpm.rest.RuntimeService;
-import yonyou.bpm.rest.exception.RestException;
-import yonyou.bpm.rest.param.BaseParam;
 import yonyou.bpm.rest.request.AssignInfo;
+import yonyou.bpm.rest.request.Participant;
 import yonyou.bpm.rest.request.RestVariable;
-import yonyou.bpm.rest.request.runtime.ProcessInstanceStartParam;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -145,7 +139,6 @@ public abstract class GenericBpmService<T extends BpmSimpleModel> extends Generi
      * 设置BPMFormJSON
      *
      * @param processDefineCode
-     * @param ygdemo
      * @return
      * @throws
      */
@@ -156,7 +149,6 @@ public abstract class GenericBpmService<T extends BpmSimpleModel> extends Generi
      * 设置BPMFormJSON
      *
      * @param processDefineCode
-     * @param ygdemo
      * @return
      * @throws
      */
@@ -263,10 +255,34 @@ public abstract class GenericBpmService<T extends BpmSimpleModel> extends Generi
 		}
 		return null;
 	}
-	
+
+    public Object submit(List<T> list, String processDefineCode,Participant[] copyUsers) {
+        for(int i = 0 ; i < list.size() ;i++){
+            T entity = list.get(i);
+            BPMFormJSON bpmform = buildBPMFormJSON(processDefineCode, entity);
+            if(copyUsers!=null && copyUsers.length>0)bpmform.setCopyUsers(Arrays.asList(copyUsers));
+            JSONObject resultJsonObject = bpmSubmitBasicService.submit(bpmform);
+            //判断是否是提交指派
+            if (resultJsonObject.getBoolean("assignAble") != null && resultJsonObject.getBoolean("assignAble")) {
+                return resultJsonObject;
+            }
+
+            if (isSuccess(resultJsonObject)) {
+                entity.setBpmState(1);// 从未提交状态改为已提交状态;
+//	            //修改DB表数据
+                save(entity);
+            } else if (isFail(resultJsonObject)) {
+                String msg = resultJsonObject.get("msg").toString();
+                throw new BusinessException("提交启动流程实例发生错误，请联系管理员！错误原因：" + msg);
+            }
+            return resultJsonObject;
+        }
+        return null;
+    }
+
 	/**
      * 指派提交启动流程
-     * @param obj 实体对象
+     * @param entity 实体对象
      * @param processDefineCode 流程定义Key
      * @param assignInfo 指派信息
      * @return
@@ -283,7 +299,27 @@ public abstract class GenericBpmService<T extends BpmSimpleModel> extends Generi
             throw new BusinessException("提交启动流程实例发生错误，请联系管理员！错误原因：" + msg);
         }
     }
-    
+
+    /**
+     * 指派提交启动流程
+     * @param entity 实体对象
+     * @param processDefineCode 流程定义Key
+     * @param assignInfo 指派信息
+     * @return
+     */
+    public void assignSubmitEntity(T entity, String processDefineCode, AssignInfo assignInfo, List<Participant> copyUsers) {
+        BPMFormJSON bpmform = buildBPMFormJSON(processDefineCode, entity);
+        if(copyUsers!=null && copyUsers.size()>0)bpmform.setCopyUsers(copyUsers);
+        JSONObject resultJsonObject = bpmSubmitBasicService.assignSubmit(bpmform, assignInfo);
+        if (isSuccess(resultJsonObject)) {
+            entity.setBpmState(1);// 从未提交状态改为已提交状态;
+            //修改DB表数据
+            save(entity);
+        } else if (isFail(resultJsonObject)) {
+            String msg = resultJsonObject.get("msg").toString();
+            throw new BusinessException("提交启动流程实例发生错误，请联系管理员！错误原因：" + msg);
+        }
+    }
 
 	/**
 	 * 工单申请撤回
