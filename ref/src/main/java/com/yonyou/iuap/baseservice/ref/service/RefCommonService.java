@@ -50,28 +50,19 @@ public  class RefCommonService<T extends Model>  implements QueryFeatureExtensio
         return result;
     }
 
-    public Page<Map<String,Object>> getGridRefData(PageRequest pageRequest, String tablename, String idfield, String codefield, String namefield,
-                                                   Map<String, String> condition, List<String> extColumns, String likefilter) {
-
-        Page<Map<String,Object>> result = mapper.gridrefselectAllByPage(pageRequest,tablename,idfield,codefield,namefield, extColumns,condition,likefilter).getPage();
-
-        return result;
-    }
-
     public Page<Map<String, Object>> getTreeRefData(PageRequest pageRequest,
                                                     String tablename, String idfield, Map<String, String> condition,List<String> extColumns) {
 
         Page<Map<String,Object>> result = mapper.treerefselectAllByPage(pageRequest,tablename,idfield, extColumns,condition).getPage();
         return result;
     }
-
-    public Page<Map<String, Object>> getTableRefData(PageRequest pageRequest,
-                                                     String tablename, String idfield, String codefield,
-                                                     String namefield, Map<String, String> condition,
-                                                     List<String> extColumns, String likefilter) {
-
-        Page<Map<String,Object>> result = mapper.tablerefselectAllByPage(pageRequest,tablename,idfield,codefield,namefield, extColumns,condition,likefilter).getPage();
-        return result;
+    
+    public Page<Map<String, Object>> getCheckboxData(PageRequest pageRequest,
+            String tablename, String idfield,
+            String codefield, String namefield, Map<String, String> condition,List<String> extColumns) {
+    	
+    	Page<Map<String,Object>> result = mapper.selectRefCheck(pageRequest,tablename,idfield,codefield,namefield, extColumns,condition).getPage();
+    	return result;
     }
 
     public Page<Map<String, Object>> selectRefTree(PageRequest pageRequest,
