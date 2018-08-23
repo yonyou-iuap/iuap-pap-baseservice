@@ -86,7 +86,7 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 				copyUserParticipants = evalParticipant((List<Map>)data.get("copyusers"));
 				logger.debug("抄送信息对象化：{}",JSONObject.toJSONString(copyUserParticipants));
 			}catch (Exception e){
-				logger.error("暂无指派抄送信息，可忽略。");
+				logger.error("暂无指派抄送信息，可忽略。错误：{}",e.getMessage());
 			}
 			service.assignSubmitEntity(entity, processDefineCode, assignInfo, copyUserParticipants);
 			return super.buildSuccess(entity);
@@ -97,6 +97,7 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 	}
 
 	private List<Participant> evalParticipant(List<Map> copyusers) {
+		logger.debug("抄送集合数据：{}",JSONObject.toJSONString(copyusers));
 		List<Participant> participants=new ArrayList<>();
 		for(Map map:copyusers){
 			Participant participant=new Participant();
@@ -104,6 +105,7 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 			participant.setType(map.get("type").toString());
 			participants.add(participant);
 		}
+		logger.debug("抄送对象数据：{}",JSONObject.toJSONString(participants));
 		return participants;
 	}
 
