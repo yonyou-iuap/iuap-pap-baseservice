@@ -49,9 +49,9 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 		this.service = bpmService;
 	}
 
-
 	/**
-	 * 说明：？？？？
+	 * 说明：原始方法中可以提交多个单据，遍历循环启动多个流程实例
+	 * 更新：现有实现，传入流程单据列表，service实现中也只提交第一条流程单据，产生一个流程实例
 	 * @param list
 	 * @param request
 	 * @param response
@@ -68,7 +68,6 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 		 }catch(Exception exp) {
 			 return this.buildGlobalError(exp.getMessage());
 		 }
-
 	 }
 
 	/**
@@ -164,9 +163,14 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 		 return super.buildSuccess(unsubmitJson);
 	 }
 
-	 /**
-	  * 回调:审批通过
-	  */
+
+	/**
+	 * 回调:审批通过
+	 * @param params
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
 	 @RequestMapping(value={"/doApprove"}, method={RequestMethod.POST})
 	 @ResponseBody
 	 public Object callbackApprove(@RequestBody Map<String, Object> params, HttpServletRequest request) throws Exception {
@@ -177,9 +181,9 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 		 String busiId = hisProc.get("businessKey").toString();
 		 T entity=service.findById(busiId);
 		 if (endTime != null && endTime != JSONNull.getInstance() && !"".equals(endTime)) {
-			 entity.setBpmState(BpmExUtil.BPM_STATE_FINISH);		//已办结
+			 entity.setBpmState(BpmExUtil.BPM_STATE_FINISH);//已办结
 		 }else {
-			 entity.setBpmState(BpmExUtil.BPM_STATE_RUNNING);	//审批中
+			 entity.setBpmState(BpmExUtil.BPM_STATE_RUNNING);//审批中
 		 }
 		 T result = service.save(entity);
 		 return buildSuccess(result);
@@ -187,9 +191,9 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 
 
 	 /**
-	  * 驳回到制单人回调
+	  * 回调：驳回到制单人
 	  * @param params
-	  * @return
+	  * @return null
 	  * @throws Exception
 	  */
 	 @RequestMapping(value = {"/doRejectMarkerBill"}, method = {RequestMethod.POST})
