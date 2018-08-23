@@ -5,9 +5,10 @@ import com.yonyou.iuap.baseservice.bpm.utils.BpmExUtil;
 import com.yonyou.iuap.baseservice.persistence.support.SaveFeatureExtension;
 
 public class BpmCommonService<T extends BpmSimpleModel> implements SaveFeatureExtension<T> {
+
     @Override
     public T prepareEntityBeforeSave(T entity) {
-        if ( entity.getId()==null){
+        if ( entity.getId()==null || entity.getBpmState() == null){
             entity.setBpmState(BpmExUtil.BPM_STATE_NOTSTART);
         }
         return entity;

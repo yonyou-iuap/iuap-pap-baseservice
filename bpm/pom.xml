@@ -18,12 +18,6 @@
 	</properties>
 
 	<dependencies>
-
-        <dependency>
-            <groupId>com.yonyou.iuap</groupId>
-            <artifactId>iuap-file</artifactId>
-            <version>3.1.1-RELEASE</version>
-        </dependency>
         <dependency>
             <groupId>com.yonyou.iuap.pap.bpm</groupId>
             <artifactId>ubpm-rest-sdk</artifactId>
