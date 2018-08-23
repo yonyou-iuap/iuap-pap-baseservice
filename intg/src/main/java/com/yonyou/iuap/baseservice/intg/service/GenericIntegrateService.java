@@ -15,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import java.io.Serializable;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +36,28 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
     private static Logger log = LoggerFactory.getLogger(GenericIntegrateService.class);
     private static final String LOG_TEMPLATE="特性组件{}的未实现{}扩展" ;
 
+
+    /**
+     * 在执行查询方法前，仅能通过泛型来拿到实体的真实类型
+     * @return
+     */
+    private Class  getModelClass(){
+        Type superclassType = this.getClass().getGenericSuperclass();
+        if (!ParameterizedType.class.isAssignableFrom(superclassType.getClass())) {
+            log.info("泛型解析失败，无法解析数据权限");
+            return Model.class ;
+        }
+        Type[] t = ((ParameterizedType) superclassType).getActualTypeArguments();
+        if (null!=t&& t.length>0){
+            return (Class) t[0];
+        }else
+        {
+            return Model.class ;
+        }
+    }
+
+
+
     /***************************************************/
     /**
      * 查询前置条件处理
@@ -47,7 +71,7 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
            if (instance==null){
                 log.info(LOG_TEMPLATE, feat,QueryFeatureExtension.class);
            }else{
-               searchParams= instance.prepareQueryParam(searchParams);
+               searchParams= instance.prepareQueryParam(searchParams,getModelClass());
            }
         }
         return searchParams;

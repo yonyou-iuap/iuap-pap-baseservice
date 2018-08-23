@@ -16,7 +16,7 @@ import java.util.Map;
 @Service
 public class DrCommonService<T extends Model& LogicDel> implements QueryFeatureExtension<T>, SaveFeatureExtension<T>, DeleteFeatureExtension<T> {
     @Override
-    public SearchParams prepareQueryParam(SearchParams searchParams) {
+    public SearchParams prepareQueryParam(SearchParams searchParams,Class modelClass) {
         searchParams.addCondition("dr", LogicDel.NORMAL);
         return searchParams;
     }
