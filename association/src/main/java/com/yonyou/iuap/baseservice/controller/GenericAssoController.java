@@ -1,14 +1,8 @@
 package com.yonyou.iuap.baseservice.controller;
 
-import cn.hutool.core.util.ReflectUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.parser.Feature;
 import com.yonyou.iuap.base.web.BaseController;
 import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.entity.annotation.Associative;
-import com.yonyou.iuap.baseservice.entity.annotation.Reference;
-import com.yonyou.iuap.baseservice.ref.service.RefCommonService;
 import com.yonyou.iuap.baseservice.service.GenericAssoService;
 import com.yonyou.iuap.baseservice.service.GenericService;
 import com.yonyou.iuap.baseservice.vo.GenericAssoVo;
@@ -18,7 +12,6 @@ import com.yonyou.iuap.mvc.type.SearchParams;
 import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -27,8 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.util.*;
 
 /**
  * 说明：基础Controller——仅提供主子表关联特性,单表增删改查请参照GenericExController,GenericController

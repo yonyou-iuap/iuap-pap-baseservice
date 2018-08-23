@@ -185,7 +185,7 @@ public  class RefCommonService<T extends Model>  implements QueryFeatureExtensio
     }
 
     @Override
-    public SearchParams prepareQueryParam(SearchParams searchParams) {
+    public SearchParams prepareQueryParam(SearchParams searchParams,Class modelClass) {
         return searchParams;
     }
 

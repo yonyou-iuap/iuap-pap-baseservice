@@ -17,7 +17,7 @@ import java.util.Map;
 public class MultenCommonService<T extends MultiTenant> implements QueryFeatureExtension<T>,SaveFeatureExtension<T> ,DeleteFeatureExtension<T> {
 
     @Override
-    public SearchParams prepareQueryParam(SearchParams searchParams) {
+    public SearchParams prepareQueryParam(SearchParams searchParams,Class modelClass) {
         Map<String,Object> searchMap=searchParams.getSearchMap();
         String tenantidInMap=String.valueOf(searchMap.get("tenantid"));
         if(StringUtils.isEmpty(tenantidInMap)|| "null".equals(tenantidInMap)){
