@@ -59,7 +59,6 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
      * @return
      */
     private List fillListFeatAfterQuery(List list){
-
         for (ServiceFeature feat:feats){
             QueryFeatureExtension instance = ServiceFeatureHolder.getQueryExtension(feat.name());
             if (instance==null){
@@ -344,9 +343,10 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
 
     protected ServiceFeature[] feats = new ServiceFeature[]{ATTACHMENT,MULTI_TENANT,LOGICAL_DEL,REFERENCE};//默认四特性都支持
 
-    protected abstract void setFeats(ServiceFeature[] feats);
+    protected abstract ServiceFeature[] getFeats();
 
     public void setGenericMapper(GenericMapper<T> mapper) {
+        this.feats=getFeats();
         this.genericMapper = mapper;
         super.setGenericMapper(mapper);
     }

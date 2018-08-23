@@ -144,48 +144,11 @@ public abstract class GenericBpmService<T extends BpmSimpleModel> extends Generi
      */
      public abstract  BPMFormJSON buildBPMFormJSON(String processDefineCode, T entity);
 
-    
-	/**
-     * 设置BPMFormJSON
-     *
-     * @param processDefineCode
-     * @return
-     * @throws
-     */
-    public BPMFormJSON buildBPMFormJSON2(String processDefineCode, T entity) {
-        try {
-        	BPMFormJSON bpmform = new BPMFormJSON();
-        	bpmform.setProcessDefinitionKey(processDefineCode);
-            String userName = InvocationInfoProxy.getUsername();
-            try {
-                userName = URLDecoder.decode(userName,"utf-8");
-            } catch (UnsupportedEncodingException e) {
-                userName =InvocationInfoProxy.getUsername();
-            }
-            //title
-            String title = userName + "提交的【工单】,单号 是" + entity.getBpmBillCode() + ", 请审批";
-            bpmform.setTitle(title);
-            
-            // 单据id
-            bpmform.setFormId(entity.getId().toString());
-            // 单据号
-            bpmform.setBillNo(entity.getBpmBillCode());
-            // 制单人
-            bpmform.setBillMarker(InvocationInfoProxy.getUserid());
-            // 其他变量
-            bpmform.setOtherVariables(buildEntityVars(entity));
-            // 单据url
-            bpmform.setFormUrl("/iuap_pap_quickstart/pages/workorder/workorder.js");	// 单据url
-            // 流程实例名称
-            bpmform.setProcessInstanceName(title);										// 流程实例名称
-            // 流程审批后，执行的业务处理类(controller对应URI前缀)
-            bpmform.setServiceClass("/iuap_pap_quickstart/sany_order");// 流程审批后，执行的业务处理类(controller对应URI前缀)
 
-            return bpmform;
-        } catch (Exception ex) {
-            throw new RuntimeException(ex.getMessage());
-        }
-    }
+
+
+
+
     private boolean isSuccess(JSONObject resultJsonObject) {
         return resultJsonObject.get("flag").equals("success");
     }
@@ -305,15 +268,16 @@ public abstract class GenericBpmService<T extends BpmSimpleModel> extends Generi
      * @param entity 实体对象
      * @param processDefineCode 流程定义Key
      * @param assignInfo 指派信息
+     * @param copyUsers 抄送人员信息
      * @return
      */
     public void assignSubmitEntity(T entity, String processDefineCode, AssignInfo assignInfo, List<Participant> copyUsers) {
         BPMFormJSON bpmform = buildBPMFormJSON(processDefineCode, entity);
-        if(copyUsers!=null && copyUsers.size()>0)bpmform.setCopyUsers(copyUsers);
+        if(copyUsers!=null && copyUsers.size()>0)
+            bpmform.setCopyUsers(copyUsers);
         JSONObject resultJsonObject = bpmSubmitBasicService.assignSubmit(bpmform, assignInfo);
         if (isSuccess(resultJsonObject)) {
-            entity.setBpmState(1);// 从未提交状态改为已提交状态;
-            //修改DB表数据
+            entity.setBpmState(1);// 修改业务对象流程状态字段，从未提交改为提交。
             save(entity);
         } else if (isFail(resultJsonObject)) {
             String msg = resultJsonObject.get("msg").toString();
@@ -331,28 +295,11 @@ public abstract class GenericBpmService<T extends BpmSimpleModel> extends Generi
         if (result.get("success") != null ) {
             entity=findById(entity.getId().toString());
             entity.setBpmState(BpmExUtil.BPM_STATE_NOTSTART);// 从已提交状态改为未提交状态;
-            //修改DB表数据
             save(entity);
         }
         return result;
 
 	}
-
-
-    @Override
-    public T insert(T entity) {
-        if(entity.getBpmState()==null ) {
-            entity.setBpmState(BpmExUtil.BPM_STATE_NOTSTART);//默认为0
-        }
-        return super.insert(entity);
-    }
-    @Override
-    public T save(T entity) {
-        if(entity.getBpmState()==null ) {
-            entity.setBpmState(BpmExUtil.BPM_STATE_NOTSTART);//默认为0
-        }
-        return super.save(entity);
-    }
 
     /**
      * 驳回到制单人

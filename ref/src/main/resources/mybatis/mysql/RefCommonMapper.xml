@@ -20,28 +20,6 @@
 
 			</where>
     </select>
-    
-    
-	<select id="gridrefselectAllByPage" resultType="java.util.HashMap">
-			Select ${idfield} as id
-			<if test="extcols != null">
-				<foreach collection="extcols" item="item" index="index">
-					, ${item}
-				</foreach>
-			</if>
-				from ${tablename}
-			<where> 
-				dr = 0 
-			<foreach collection="condmap.keys" item="k">   
-			    <if test="null != condmap[k]">    
-			      and ${k} = #{condmap[${k}]}  
-			    </if>  
-			</foreach>
-			<if test="likefilter != null and likefilter != ''">
-				 and ( ${likefilter} )	
-			</if>
-			</where>
-	</select>
 	
 	<select id="tablerefselectAllByPage" resultType="java.util.HashMap">
 			Select ${idfield} as id
@@ -63,6 +41,26 @@
 			</where>
 	</select>
 	
+	<!-- 获取单多选 -->
+	<select id="selectRefCheck" resultType="java.util.HashMap">
+			Select ${idfield} as refpk,${codefield} as refcode , ${namefield} as refname
+			<if test="extcols != null">
+				<foreach collection="extcols" item="item" index="index">
+					, ${item}
+				</foreach>
+			</if>
+				from ${tablename}
+			<where> 
+				1 = 1 
+			<foreach collection="condmap.keys" item="k">   
+			    <if test="null != condmap[k]">    
+			      and ${k} = #{condmap[${k}]}  
+			    </if>  
+			</foreach>
+			</where>
+	</select>
+	
+	<!-- 获取表格 -->
 	<select id="treerefselectAllByPage" resultType="java.util.HashMap">
 			Select ${idfield} as id
 			<if test="extcols != null">
@@ -72,7 +70,7 @@
 			</if>
 				from ${tablename}
 			<where> 
-				dr = 0 
+				1 = 1 
 			<foreach collection="condmap.keys" item="k">   
 			    <if test="null != condmap[k]">    
 			      and ${k} = #{condmap[${k}]}  

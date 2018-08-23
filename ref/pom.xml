@@ -16,7 +16,7 @@
         <dependency>
             <groupId>com.yonyou.iuap.pap</groupId>
             <artifactId>eiap-plus-common</artifactId>
-            <version>RELEASE</version>
+            <version>${eiap.module.version}</version>
             <scope>compile</scope>
         </dependency>
 
