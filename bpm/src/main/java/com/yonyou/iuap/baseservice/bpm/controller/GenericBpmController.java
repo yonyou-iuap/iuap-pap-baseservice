@@ -39,9 +39,24 @@ import java.util.Map;
 public  class GenericBpmController<T extends BpmSimpleModel> extends BaseController {
 
     private Logger logger= LoggerFactory.getLogger(this.getClass());
-	 /**
-	  * 提交申请
-	  */
+
+	@Autowired
+	private JsonResultService jsonResultService;
+
+	private GenericBpmService<T> service;
+
+	public void setService(GenericBpmService<T> bpmService) {
+		this.service = bpmService;
+	}
+
+	/**
+	 * 说明：原始方法中可以提交多个单据，遍历循环启动多个流程实例
+	 * 更新：现有实现，传入流程单据列表，service实现中也只提交第一条流程单据，产生一个流程实例
+	 * @param list
+	 * @param request
+	 * @param response
+	 * @return
+	 */
 	 @RequestMapping(value = "/submit", method = RequestMethod.POST)
 	 @ResponseBody
 	 public Object submit(@RequestBody List<T> list, HttpServletRequest request, HttpServletResponse response) {
@@ -53,7 +68,6 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 		 }catch(Exception exp) {
 			 return this.buildGlobalError(exp.getMessage());
 		 }
-
 	 }
 
 	/**
@@ -96,53 +110,48 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 
 	}
 
-	private List<Participant> evalParticipant(List<Map> copyusers) {
-		List<Participant> participants=new ArrayList<>();
-		for(Map map:copyusers){
-			Participant participant=new Participant();
-			participant.setId(map.get("id").toString());
-			participant.setType(map.get("type").toString());
-			participants.add(participant);
-		}
-		return participants;
-	}
-
-	/** 指派提交 */
-		@RequestMapping(value = "/assignSubmit", method = RequestMethod.POST)
-		@ResponseBody
-		public Object assignSubmit(@RequestBody Map<String, Object> data,HttpServletRequest request) {
-			try { 
-				Type superclassType = this.getClass().getGenericSuperclass();
-			    if (!ParameterizedType.class.isAssignableFrom(superclassType.getClass())) {
-			        return null;
-			    }
-			    Type[] t = ((ParameterizedType) superclassType).getActualTypeArguments();
-				
-				String processDefineCode = data.get("processDefineCode").toString();
-				Object map = data.get("obj");
-				String mj=  JSONObject.toJSONString(map);
-				
-				T entity = (T) JSON.parseObject(mj,t[0], Feature.IgnoreNotMatch);
-				
-				String aj=  JSONObject.toJSONString(data.get("assignInfo"));
-				AssignInfo assignInfo = jsonResultService.toObject(aj, AssignInfo.class);
-				entity.setProcessDefineCode(processDefineCode);
 
 
-                List<Participant> copyUserParticipants=null;
-                try {
-					//抄送人
-					copyUserParticipants = evalParticipant((List<Map>)data.get("copyusers"));
-					logger.debug("抄送信息对象化：{}",JSONObject.toJSONString(copyUserParticipants));
-                }catch (Exception e){
-                    logger.error("暂无指派抄送信息，可忽略。");
-                }
-				service.assignSubmitEntity(entity, processDefineCode, assignInfo, copyUserParticipants);
-				return super.buildSuccess(entity);
-			} catch (Exception e) {
-				return super.buildGlobalError(e.getMessage());
+	/**
+	 *
+	 * @param data
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/assignSubmit", method = RequestMethod.POST)
+	@ResponseBody
+	public Object assignSubmit(@RequestBody Map<String, Object> data,HttpServletRequest request) {
+		try {
+			Type superclassType = this.getClass().getGenericSuperclass();
+			if (!ParameterizedType.class.isAssignableFrom(superclassType.getClass())) {
+				return null;
 			}
+			Type[] t = ((ParameterizedType) superclassType).getActualTypeArguments();
+
+			String processDefineCode = data.get("processDefineCode").toString();
+			Object map = data.get("obj");
+			String mj=  JSONObject.toJSONString(map);
+
+			T entity = (T) JSON.parseObject(mj,t[0], Feature.IgnoreNotMatch);
+
+			String aj=  JSONObject.toJSONString(data.get("assignInfo"));
+			AssignInfo assignInfo = jsonResultService.toObject(aj, AssignInfo.class);
+			entity.setProcessDefineCode(processDefineCode);
+
+			List<Participant> copyUserParticipants=null;
+			try {
+				//抄送人
+				copyUserParticipants = evalParticipant((List<Map>)data.get("copyusers"));
+				logger.debug("抄送信息对象化：{}",JSONObject.toJSONString(copyUserParticipants));
+			}catch (Exception e){
+				logger.error("暂无指派抄送信息，可忽略。错误信息：{}",e.getMessage());
+			}
+			service.assignSubmitEntity(entity, processDefineCode, assignInfo, copyUserParticipants);
+			return super.buildSuccess(entity);
+		} catch (Exception e) {
+			return super.buildGlobalError(e.getMessage());
 		}
+	}
 
 	 /**
 	  * 撤回申请
@@ -154,9 +163,14 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 		 return super.buildSuccess(unsubmitJson);
 	 }
 
-	 /**
-	  * 回调:审批通过
-	  */
+
+	/**
+	 * 回调:审批通过
+	 * @param params
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
 	 @RequestMapping(value={"/doApprove"}, method={RequestMethod.POST})
 	 @ResponseBody
 	 public Object callbackApprove(@RequestBody Map<String, Object> params, HttpServletRequest request) throws Exception {
@@ -167,9 +181,9 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 		 String busiId = hisProc.get("businessKey").toString();
 		 T entity=service.findById(busiId);
 		 if (endTime != null && endTime != JSONNull.getInstance() && !"".equals(endTime)) {
-			 entity.setBpmState(BpmExUtil.BPM_STATE_FINISH);		//已办结
+			 entity.setBpmState(BpmExUtil.BPM_STATE_FINISH);//已办结
 		 }else {
-			 entity.setBpmState(BpmExUtil.BPM_STATE_RUNNING);	//审批中
+			 entity.setBpmState(BpmExUtil.BPM_STATE_RUNNING);//审批中
 		 }
 		 T result = service.save(entity);
 		 return buildSuccess(result);
@@ -177,9 +191,9 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 
 
 	 /**
-	  * 驳回到制单人回调
+	  * 回调：驳回到制单人
 	  * @param params
-	  * @return
+	  * @return null
 	  * @throws Exception
 	  */
 	 @RequestMapping(value = {"/doRejectMarkerBill"}, method = {RequestMethod.POST})
@@ -190,26 +204,22 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 		 return null;
 	 }
 
-
-
-
-
-
-
-
-
-
-			 /************************************************************/
-	private GenericBpmService<T> service;
-
-	public void setService(GenericBpmService<T> bpmService) {
-		this.service = bpmService;
+	/**
+	 * 构造抄送人员participant列表
+	 * @param copyusers
+	 * @return
+	 */
+	private List<Participant> evalParticipant(List<Map> copyusers) {
+		logger.debug("抄送集合数据：{}",JSONObject.toJSONString(copyusers));
+		List<Participant> participants=new ArrayList<>();
+		for(Map map:copyusers){
+			Participant participant=new Participant();
+			participant.setId(map.get("id").toString());
+			participant.setType(map.get("type").toString());
+			participants.add(participant);
+		}
+		logger.debug("抄送对象数据：{}",JSONObject.toJSONString(participants));
+		return participants;
 	}
-
-
-	@Autowired
-	private JsonResultService jsonResultService;
-
-
 
 }

@@ -52,6 +52,14 @@ class GenericBpmSdkController<T extends BpmModel> extends GenericExController<T>
         }
     }
 
+
+    /**
+     * 流程撤回操作
+     * @param entity
+     * @param request
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/doRevoke")
     @ResponseBody
     public Object doRevoke(@RequestBody T entity, HttpServletRequest request) throws Exception {
@@ -97,7 +105,7 @@ class GenericBpmSdkController<T extends BpmModel> extends GenericExController<T>
         if (result != null) {
             buildSuccess(result);
         }
-        return buildGlobalError("流程终止失败");
+        return buildGlobalError("流程中止失败");
     }
 
     @RequestMapping(value = {"/doRejectMarkerBill"}, method = {RequestMethod.POST})
