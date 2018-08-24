@@ -486,7 +486,7 @@ public final class RefCommonController  {
                 }
             }
 
-            RefParamVO refParamVO = RefXMLParse.getInstance().getMSConfig(refCode);
+            RefParamVO refParamVO = RefXMLParse.getInstance().getFilterConfig(refCode);
             String idfield = StringUtils.isBlank(refParamVO.getIdfield()) ? "id"
                     : refParamVO.getIdfield();
             String tableName = refParamVO.getTablename();

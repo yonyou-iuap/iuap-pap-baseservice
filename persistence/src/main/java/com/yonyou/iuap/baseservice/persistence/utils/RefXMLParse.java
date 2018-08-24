@@ -205,7 +205,7 @@ public class RefXMLParse {
 	}
 	
 	
-	//根据refCode获取表名和字段 --树表
+	//根据refCode获取表名和字段 --树
 	public RefParamVO getMSConfigTree(String refCode) {
 		// 得到根节点
 		Element root = refConfigDocument.getRootElement();
@@ -260,4 +260,187 @@ public class RefXMLParse {
 		}	
 		return null;
 	}
+	
+	//参照回显查询
+		public RefParamVO getFilterConfig(String refCode) {
+			// 得到根节点
+			Element root = refConfigDocument.getRootElement();
+			List<Element> RefViewModelVOs = root.elements("RefViewModelVO");
+			String refType = null;
+			for(Element refviewmodel:RefViewModelVOs){
+				refType = refviewmodel.attributeValue("reftype");
+				if(refType == null){
+					if(refCode.equals(refviewmodel.attributeValue("code"))){
+						List<Element> ele = refviewmodel.elements("table");
+						Element tableE = null;
+						if(ele.size() == 1){
+							tableE = ele.get(0);
+						}else{
+							//xml结构错误
+						}
+						
+						RefParamVO refParamVO = new RefParamVO();
+						//解析ref.xml表名
+						String tableName = tableE.attributeValue("name");
+						refParamVO.setTablename(tableName);
+						//解析参照模型是否是标准模型
+						String isBasic = tableE.attributeValue("isBasicTable");
+						if(isBasic != null){
+							refParamVO.setIsBasic(isBasic);
+						}
+						
+						Map<String,String> map = new HashMap<String,String>();
+						List<String> list = new ArrayList<String>();
+						
+						List<Element> showele = tableE.elements();
+						for(Element showe : showele){
+							String code = showe.attributeValue("code");
+							String name = showe.getText();
+							if("pidfield".equals(code)){
+								if(!"".equals(name)){
+									refParamVO.setPidfield(name);
+									list.add(name);
+								}
+							}else if("idfield".equals(code)){
+								if(!"".equals(name)){
+									refParamVO.setIdfield(name);
+								}	
+							}else if("ts".equals(code)){
+								if(!"".equals(name)){
+									refParamVO.setTs(name);
+								}	
+							}else if("dr".equals(code)){
+								if(!"".equals(name)){
+									String[] sArray = name.split(",");
+									refParamVO.setDr(sArray[0]);
+									refParamVO.setDrValue(sArray[1]);
+								}	
+							}else{
+								map.put(code,name);
+								list.add(code);
+							}
+						}
+						refParamVO.setShowcol(map);
+						refParamVO.setExtcol(list);
+						return refParamVO;
+					}
+				}else if(refType != null && "1".equals(refType) ){
+					if(refCode.equals(refviewmodel.attributeValue("code"))){
+						List<Element> ele = refviewmodel.elements("tableTree");
+						Element tableE = null;
+						if(ele.size() == 1){
+							tableE = ele.get(0);
+						}else{
+							//xml结构错误
+						}
+						
+						RefParamVO refParamVO = new RefParamVO();
+						String tableName = tableE.attributeValue("name");				
+						refParamVO.setTablename(tableName);
+						//解析参照模型是否是标准模型
+						String isBasic = tableE.attributeValue("isBasicTable");
+						if(isBasic != null && "false".equals(isBasic)){
+							refParamVO.setIsBasic(isBasic);
+						}
+						
+						Map<String,String> map = new HashMap<String,String>();
+						List<String> list = new ArrayList<String>();
+						List<Element> showele = tableE.elements();
+						for(Element showe : showele){
+							String code = showe.attributeValue("code");
+							String name = showe.getText();
+							if("pidfield".equals(code)){
+								refParamVO.setPidfield(name);
+								list.add(name);
+							}else if("idfield".equals(code)){
+								refParamVO.setIdfield(name);
+								list.add(name);
+							}else if("codefield".equals(code)){
+								refParamVO.setCodefield(name);
+								list.add(name);
+							}else if("namefield".equals(code)){
+								refParamVO.setNamefield(name);
+								list.add(name);
+							}else if("ts".equals(code)){
+								if(!"".equals(name)){
+									refParamVO.setTs(name);
+								}	
+							}else if("dr".equals(code)){
+								if(!"".equals(name)){
+									String[] sArray = name.split("|");
+									refParamVO.setDr(sArray[0]);
+									refParamVO.setDrValue(sArray[1]);
+								}	
+							}
+						}
+						refParamVO.setExtcol(list);
+						return refParamVO;
+					}
+				}else if(refType != null && "4".equals(refType)){
+					if(refCode.equals(refviewmodel.attributeValue("code"))){
+						List<Element> ele = refviewmodel.elements("table");
+						Element tableE = null;
+						if(ele.size() == 1){
+							tableE = ele.get(0);
+						}else{
+							//xml结构错误
+						}
+						
+						RefParamVO refParamVO = new RefParamVO();
+						//解析ref.xml表名
+						String tableName = tableE.attributeValue("name");
+						refParamVO.setTablename(tableName);
+						//解析参照模型是否是标准模型
+						String isBasic = tableE.attributeValue("isBasicTable");
+						if(isBasic != null){
+							refParamVO.setIsBasic(isBasic);
+						}
+						
+						Map<String,String> map = new HashMap<String,String>();
+						List<String> list = new ArrayList<String>();
+						
+						List<Element> showele = tableE.elements();
+						for(Element showe : showele){
+							String code = showe.attributeValue("code");
+							String name = showe.getText();
+							if("refcode".equals(code)){
+								if(!"".equals(name)){
+									refParamVO.setCodefield(name);
+									list.add(name);
+								}
+							}else if("idfield".equals(code)){
+								if(!"".equals(name)){
+									refParamVO.setIdfield(name);
+									list.add(name);
+								}	
+							}else if("refname".equals(code)){
+								if(!"".equals(name)){
+									refParamVO.setNamefield(name);
+									list.add(name);
+								}	
+							}else if("ts".equals(code)){
+								if(!"".equals(name)){
+									refParamVO.setTs(name);
+								}	
+							}else if("dr".equals(code)){
+								if(!"".equals(name)){
+									String[] sArray = name.split(",");
+									refParamVO.setDr(sArray[0]);
+									refParamVO.setDrValue(sArray[1]);
+								}	
+							}else{
+								map.put(code,name);
+								list.add(code);
+							}
+						}
+						refParamVO.setShowcol(map);
+						refParamVO.setExtcol(list);
+						return refParamVO;
+					}
+				}
+				
+			}
+			return null;
+		}
+	
 }
