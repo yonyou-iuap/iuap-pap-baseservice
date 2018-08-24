@@ -35,16 +35,22 @@ public class DpCommonService<T extends Model>  implements QueryFeatureExtension<
         for (Field f :fields){
             DataAccess annotaton= f.getAnnotation(DataAccess.class);
             if (annotaton!=null){
-                List<DataPermission> dataPerms
-                        = AuthRbacClient.getInstance().queryDataPerms(tenantId, sysId, userId, annotaton.code());
-                if (null!=dataPerms && dataPerms.size()>0){
-                    String[] ids=new String[dataPerms.size()];
-                    Set<String> idSet= new HashSet<>();
-                    for (int i = 0; i <dataPerms.size() ; i++) {
-                         ids[i]=dataPerms.get(i).getResourceId();
-                        idSet.add( dataPerms.get(i).getResourceId());
+
+                try {
+                    List<DataPermission> dataPerms
+                            = AuthRbacClient.getInstance().queryDataPerms(tenantId, sysId, userId, annotaton.code());
+                    if (null!=dataPerms && dataPerms.size()>0){
+                        String[] ids=new String[dataPerms.size()];
+                        Set<String> idSet= new HashSet<>();
+                        for (int i = 0; i <dataPerms.size() ; i++) {
+                             ids[i]=dataPerms.get(i).getResourceId();
+                            idSet.add( dataPerms.get(i).getResourceId());
+                        }
+                        searchParams.addCondition(f.getName()+"_Dp", ids);
                     }
-                    searchParams.addCondition(f.getName()+"_Dp", ids);
+                } catch (Exception e) {
+                    log.error("query permission fail！",e);
+                    return searchParams;
                 }
             }
         }
