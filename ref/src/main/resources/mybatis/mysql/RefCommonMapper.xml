@@ -43,7 +43,7 @@
 	
 	<!-- 获取单多选 -->
 	<select id="selectRefCheck" resultType="java.util.HashMap">
-			Select ${idfield} as refpk,${codefield} as refcode , ${namefield} as refname
+			Select ${idfield} as id,${codefield} as refcode , ${namefield} as refname
 			<if test="extcols != null">
 				<foreach collection="extcols" item="item" index="index">
 					, ${item}

@@ -420,7 +420,12 @@ public final class RefCommonController  {
     		for (Map<String, Object> entity : headVOs) {
     			Map<String, String> refDataMap = new HashMap<String, String>();
     			for (String key : entity.keySet()) {
-    				refDataMap.put(key.toLowerCase(), convertor.convertToJsonType(entity.get(key)).toString());
+    				if(key.equalsIgnoreCase("id")){
+                        refDataMap.put("refpk", entity.get(key).toString());
+                        refDataMap.put(key.toLowerCase(), entity.get(key).toString());
+                    }else{
+                    	refDataMap.put(key.toLowerCase(), convertor.convertToJsonType(entity.get(key)).toString());
+                    }
     			}
     			results.add(refDataMap);
     		}
