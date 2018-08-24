@@ -196,6 +196,14 @@ public abstract class GenericBpmService<T extends BpmSimpleModel> extends Generi
 		return this.getTitle(entity);
 	}
 
+
+    /**
+     * 批量提交流程单据
+     * @update 2018年08月23日说明：循环第一条记录并提交，后续不处理
+     * @param list 流程单据列表
+     * @param processDefineCode 流程定义code
+     * @return
+     */
     public Object submit(List<T> list, String processDefineCode) {
 		for(int i = 0 ; i < list.size() ;i++){
 			T entity = list.get(i);
@@ -306,7 +314,7 @@ public abstract class GenericBpmService<T extends BpmSimpleModel> extends Generi
      * @param billId  单据ID
      */
     public void doRejectMarkerBill(String billId) {
-       T entity=findById(billId);
+        T entity=findById(billId);
         entity.setBpmState(BpmExUtil.BPM_STATE_NOTSTART);// 从已提交状态改为未提交状态;
         //修改DB表数据
         save(entity);

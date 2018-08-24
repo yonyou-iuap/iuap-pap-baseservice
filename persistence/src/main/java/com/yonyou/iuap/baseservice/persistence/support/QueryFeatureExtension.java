@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface QueryFeatureExtension<T extends Model > {
 
-    SearchParams prepareQueryParam(  SearchParams searchParams);
+    SearchParams prepareQueryParam(  SearchParams searchParams,Class modelClass);
 
     List<T> afterListQuery(List<T> list);
 }

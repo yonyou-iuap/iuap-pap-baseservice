@@ -25,7 +25,7 @@ public class AtCommonService<T extends Attachmentable> implements QueryFeatureEx
     @Autowired
     private AttachmentMapper atMapper;
     @Override
-    public SearchParams prepareQueryParam(SearchParams searchParams) {
+    public SearchParams prepareQueryParam(SearchParams searchParams,Class modelClass) {
         return searchParams;
     }
 
