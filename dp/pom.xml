@@ -36,11 +36,5 @@
             <version>${pap.module.version}</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>com.yonyou.iuap.pap.authrbac</groupId>
-            <artifactId>iuap-authrbac-common</artifactId>
-            <version>${eiap.module.version}</version>
-            <scope>compile</scope>
-        </dependency>
     </dependencies>
 </project>
