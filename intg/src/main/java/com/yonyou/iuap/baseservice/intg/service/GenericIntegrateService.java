@@ -185,6 +185,7 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
         searchParams.addCondition(name,value);
         searchParams=prepareFeatSearchParam(searchParams);
         List<T>listData=super.queryList(searchParams.getSearchMap());
+        listData=fillListFeatAfterQuery(listData);
         if(listData!=null && listData.size()==1) {
             return listData.get(0);
         }else {
