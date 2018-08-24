@@ -3,6 +3,7 @@ package com.yonyou.iuap.baseservice.controller;
 import com.yonyou.iuap.base.web.BaseController;
 import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.entity.annotation.Associative;
+import com.yonyou.iuap.baseservice.intg.service.GenericIntegrateService;
 import com.yonyou.iuap.baseservice.service.GenericAssoService;
 import com.yonyou.iuap.baseservice.service.GenericService;
 import com.yonyou.iuap.baseservice.vo.GenericAssoVo;
@@ -80,7 +81,7 @@ public abstract  class GenericAssoController<T extends Model> extends BaseContro
         this.service = genericService;
     }
 
-    protected void setSubService(Class entityClass, GenericService subService) {
+    protected void setSubService(Class entityClass, GenericIntegrateService subService) {
         service.setSubService( entityClass,subService  );
     }
 
