@@ -76,8 +76,6 @@ public  class RefCommonService<T extends Model>  implements QueryFeatureExtensio
     /**
      * 参照数据加载,根据 @See  com.yonyou.iuap.baseservice.entity.annotation.Reference
      * 中定义的参照参数,将参照数据中检索出来的值写到对应的entity属性中,以便前端展示
-     *
-     * TODO 将此服务应用到更多的基类selecByAllPage方法中,可考虑通过切面来完成
      * @param list 未装填参照的原始list
      * @return 重新装填后的结果
      */
@@ -180,6 +178,11 @@ public  class RefCommonService<T extends Model>  implements QueryFeatureExtensio
         return searchParams;
     }
 
+    /**
+     * 通过特性集成，实现了在查询时与其他模块的任意组合
+     * @param list 未装填参照的原始list
+     * @return 重新装填后的结果
+     */
     @Override
     public List<T> afterListQuery(List<T> list) {
         return this.fillListWithRef(list);
