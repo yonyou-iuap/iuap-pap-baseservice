@@ -112,7 +112,7 @@ public  class RefCommonService<T extends Model>  implements QueryFeatureExtensio
              */
 
             for (Field field : refCache.keySet()) {
-                RefParamVO params = RefXMLParse.getInstance().getMSConfig(refCache.get(field).code());
+                RefParamVO params = RefXMLParse.getInstance().getFilterConfig(refCache.get(field).code());
                 if (params==null){
                     log.warn("参照配置错误:"+refCache.get(field).code()+"不存在");
                     continue;
