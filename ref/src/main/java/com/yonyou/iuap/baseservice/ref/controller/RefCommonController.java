@@ -87,6 +87,87 @@ public final class RefCommonController  {
     public List<Map<String, String>> matchPKRefJSON(RefViewModelVO arg0) {
         return null;
     }
+    
+    /**
+     * 通过pk查询所有数据,String pk数组入参
+     * @param arg0
+     * @return
+     */
+    @RequestMapping(
+    		value = {"/getCommonRefData"},
+    		method = {RequestMethod.POST}
+    		)
+    @ResponseBody
+    public Map<String, Object> commonRefsearch(@RequestBody RefViewModelVO refModel) {
+    	//前台传过来的refType来做请求参数过滤
+        String transmitParam = refModel.getTransmitParam();
+        String refType = transmitParam;
+
+        //构建表体，其中list中为要查询的字段，必须和表头设置的相同，并且必须为表中的字段值
+        RefParamVO refParamVO = RefXMLParse.getInstance().getCheckboxMSConfig(refModel.getRefCode());
+
+        Map<String, Object> mapList = new HashMap<String, Object>();
+        List<Map<String, String>> results = new ArrayList<Map<String, String>>();
+        try {
+            //获取当前页
+            int pageNum = refModel.getRefClientPageInfo().getCurrPageIndex();
+            //每页显示的数量
+            int pageSize = 10;
+            //拼装分页请求对象
+            PageRequest request = null;
+
+            Map<String, String> conditions = new HashMap<String,String>();
+            
+            String basic = refParamVO.getIsBasic();
+            if(basic != null && "false".equals(basic)){//需要业务自己传递orderby字段
+            	String ts = refParamVO.getTs();
+            	request = buildPageRequest(pageNum, pageSize, ts);
+            	conditions.put(refParamVO.getDr(),refParamVO.getDrValue());
+            }else if(basic != null && "true".equals(basic)){//orderby ts
+            	request = buildPageRequest(pageNum, pageSize, "auto");
+            	conditions.put("dr", "0");
+            }else{//不加orderby过滤
+            	request = buildPageRequest(pageNum, pageSize, null);
+            }
+            
+            refModel.getRefClientPageInfo().setPageSize(pageSize);
+
+            //获取查询条件 --如果content
+            String content = refModel.getContent();
+            
+            if(content != null && !"".equals(content)){
+                //对参照所有列进行模糊查询
+                for(String extcol : refParamVO.getExtcol()){
+                    conditions.put(extcol, content);
+                }
+            }
+
+            String idfield = StringUtils.isBlank(refParamVO.getIdfield()) ? "id"
+                    : refParamVO.getIdfield();
+            String codefield = StringUtils.isBlank(refParamVO.getIdfield()) ? "refcode"
+            		: refParamVO.getCodefield();
+            String namefield = StringUtils.isBlank(refParamVO.getIdfield()) ? "refname"
+            		: refParamVO.getNamefield();
+
+            Page<Map<String, Object>> headpage = this.service.getCheckboxData(
+                    request, refParamVO.getTablename(), idfield,codefield,namefield, conditions, refParamVO.getExtcol());
+
+            //总页数
+            refModel.getRefClientPageInfo().setPageCount(headpage.getTotalPages());
+
+            List<Map<String, Object>> headVOs = headpage.getContent();
+
+            if (CollectionUtils.isNotEmpty(headVOs)) {
+                results = buildRtnValsOfCheckboxRef(headVOs);
+            }
+            
+            mapList.put("dataList", results);
+            mapList.put("refViewModel", refModel);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return mapList;
+    }
 
     /**
      * 模糊查询,content 入参
@@ -326,6 +407,31 @@ public final class RefCommonController  {
         }
         return results;
     }
+    
+    /**
+     * 过滤完的数据组装--单选多选
+     *
+     */
+    private List<Map<String, String>> buildRtnValsOfCheckboxRef(
+    		List<Map<String, Object>> headVOs) {
+    	List<Map<String, String>> results = new ArrayList<Map<String, String>>();
+    	if ((headVOs != null) && (!headVOs.isEmpty())) {
+    		ValueConvertor convertor = new ValueConvertor();
+    		for (Map<String, Object> entity : headVOs) {
+    			Map<String, String> refDataMap = new HashMap<String, String>();
+    			for (String key : entity.keySet()) {
+    				if(key.equalsIgnoreCase("id")){
+                        refDataMap.put("refpk", entity.get(key).toString());
+                        refDataMap.put(key.toLowerCase(), entity.get(key).toString());
+                    }else{
+                    	refDataMap.put(key.toLowerCase(), convertor.convertToJsonType(entity.get(key)).toString());
+                    }
+    			}
+    			results.add(refDataMap);
+    		}
+    	}
+    	return results;
+    }
     /**
      * 过滤完的数据组装--树
      *
@@ -385,7 +491,7 @@ public final class RefCommonController  {
                 }
             }
 
-            RefParamVO refParamVO = RefXMLParse.getInstance().getMSConfig(refCode);
+            RefParamVO refParamVO = RefXMLParse.getInstance().getFilterConfig(refCode);
             String idfield = StringUtils.isBlank(refParamVO.getIdfield()) ? "id"
                     : refParamVO.getIdfield();
             String tableName = refParamVO.getTablename();

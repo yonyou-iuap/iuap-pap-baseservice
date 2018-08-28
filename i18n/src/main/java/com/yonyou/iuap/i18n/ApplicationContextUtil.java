@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
  * @author wenfa
  *
  */
-@Component
 public class ApplicationContextUtil implements ApplicationContextAware {
 
 	private static ApplicationContext context ;

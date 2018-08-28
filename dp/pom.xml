@@ -10,24 +10,31 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.yonyou.iuap.baseservice</groupId>
-    <name>iuap-pap-baseservice-ref</name>
-    <artifactId>iuap-pap-baseservice-ref</artifactId>
+    <artifactId>iuap-pap-baseservice-dp</artifactId>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
     <dependencies>
         <dependency>
-            <groupId>com.yonyou.iuap.pap</groupId>
-            <artifactId>eiap-plus-common</artifactId>
-            <version>${eiap.module.version}</version>
-            <scope>compile</scope>
+            <groupId>com.yonyou.iuap.pap.authrbac</groupId>
+            <artifactId>iuap-authrbac-sdk</artifactId>
+            <version>3.5.1-RELEASE</version>
         </dependency>
-
         <dependency>
             <groupId>com.yonyou.iuap.baseservice</groupId>
             <artifactId>iuap-pap-baseservice-persistence</artifactId>
             <version>${pap.module.version}</version>
             <scope>compile</scope>
         </dependency>
-
     </dependencies>
-
-
 </project>

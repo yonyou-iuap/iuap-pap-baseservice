@@ -249,8 +249,8 @@ public abstract class GenericService<T extends Model>{
 //				    return;
 //		    	}
 //		    }
-		    log.error("设置id出错，未找到Id Field：" + entity.getClass());
-		    throw new RuntimeException("设置id出错，未找到@Id Field，请检查类定义");
+//		    log.error("设置id出错，未找到Id Field：" + entity.getClass());
+//		    throw new RuntimeException("设置id出错，未找到@Id Field，请检查类定义");
 		}
 	}
 
