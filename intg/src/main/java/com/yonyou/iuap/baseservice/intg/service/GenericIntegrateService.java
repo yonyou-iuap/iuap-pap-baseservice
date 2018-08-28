@@ -366,7 +366,7 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
 
     protected GenericMapper<T> genericMapper;
 
-    protected ServiceFeature[] feats = new ServiceFeature[]{ATTACHMENT,MULTI_TENANT,LOGICAL_DEL,REFERENCE};//默认四特性都支持
+    protected ServiceFeature[] feats = new ServiceFeature[]{ATTACHMENT,MULTI_TENANT,LOGICAL_DEL,REFERENCE};
 
     protected abstract ServiceFeature[] getFeats();
 
