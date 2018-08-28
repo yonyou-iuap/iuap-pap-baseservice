@@ -1,4 +1,4 @@
-package com.yonyou.iuap.i18n;
+package com.yonyou.iuap.i18n.utils;
 
 import java.util.Locale;
 

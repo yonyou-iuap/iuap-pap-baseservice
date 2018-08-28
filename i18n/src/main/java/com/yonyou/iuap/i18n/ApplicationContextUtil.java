@@ -3,7 +3,6 @@ package com.yonyou.iuap.i18n;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Component;
 
 /**
  * 使用框架上下文，主要获取资源文件
