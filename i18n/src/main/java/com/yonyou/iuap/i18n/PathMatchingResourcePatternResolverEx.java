@@ -24,11 +24,19 @@ import java.util.jar.JarFile;
  */
 public class PathMatchingResourcePatternResolverEx extends PathMatchingResourcePatternResolver {
 
-    static Log logger = LogFactory.getLog(PathMatchingResourcePatternResolverEx.class);
+    private static Log logger = LogFactory.getLog(PathMatchingResourcePatternResolverEx.class);
 
     private DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
 
-
+    /**
+     * 获取所有相关资源
+     *
+     * @param pex
+     * @param jarNamePex
+     * @param regex
+     * @return
+     * @throws IOException
+     */
     public Resource[] getResourcesEx(String pex, String jarNamePex, String regex) throws IOException {
         return findPathMatchingResources(pex, null, regex);
     }
@@ -42,18 +50,22 @@ public class PathMatchingResourcePatternResolverEx extends PathMatchingResourceP
      * @throws IOException
      */
     protected Resource[] findPathMatchingResources(String pex, String jarNamePex, String regex) throws IOException {
+
         if ((jarNamePex == null) || ("".equals(jarNamePex))) jarNamePex = "*";
+
         String classRootDirPath = determineRootDir("");
-        logger.info("classRootDirPath" + classRootDirPath);
+
         String libRootDirPath = determineRootDir("");
-        logger.info("libRootDirPath" + libRootDirPath);
+
         Set resultLib = new HashSet();
         Resource[] classRootDirResources = getResources(pex);
 
         resultLib.addAll(doFindMatchingFileSystemResources(new File(libRootDirPath), jarNamePex));
+
         Resource[] libRootDirResources = (Resource[]) resultLib.toArray(new Resource[resultLib.size()]);
+
         Set result = new HashSet();
-        logger.info("classRootDirResources.length=" + classRootDirResources.length);
+
         for (int i = 0; i < classRootDirResources.length; i++) {
             File fileName = classRootDirResources[i].getFile();
             String path = null;
@@ -61,16 +73,14 @@ public class PathMatchingResourcePatternResolverEx extends PathMatchingResourceP
                 path = fileName.getAbsolutePath();
             } else
                 path = fileName.getParent();
-            logger.info(doFindMatchingFileSystemResources(new File(path), regex));
             try {
                 result.addAll(doFindMatchingFileSystemResources(new File(path), regex));
-            } catch (Exception localException) {
+            } catch (Exception e) {
             }
         }
 
-        logger.info("libRootDirResources.length" + libRootDirResources.length);
+        // 加载jar文件中的资源文件
         for (int i = 0; i < libRootDirResources.length; i++) {
-            logger.info("加载jar文件中的资源文件" + libRootDirResources[i].getURI().toString());
             try {
                 if (libRootDirResources[i].getURI().toString().lastIndexOf(".jar") > 0) {
                     result.addAll(doFindPathMatchingJarResources(libRootDirResources[i], regex));
@@ -78,7 +88,6 @@ public class PathMatchingResourcePatternResolverEx extends PathMatchingResourceP
             } catch (Exception localException1) {
             }
         }
-
 
         return (Resource[]) result.toArray(new Resource[result.size()]);
     }
