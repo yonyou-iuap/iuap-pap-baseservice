@@ -197,7 +197,6 @@ public abstract class GenericService<T extends Model>{
 
 	/**
 	 * 删除数据
-	 * @param entity
 	 * @return
 	 */
 	public int deleteBatch(List<T> list) {
@@ -242,15 +241,16 @@ public abstract class GenericService<T extends Model>{
 		//ID为空的情况下，生成生成主键
 		if(entity.getId()==null || StrUtil.isBlankIfStr(entity.getId())) {
 		    Serializable id = GeneratorManager.generateID(entity);
-		    Field[] fieldArray = EntityUtil.getEntityFields(entity.getClass());
-		    for(Field curField : fieldArray){
-		    	if(curField.getAnnotation(Id.class)!=null) {
-				    ReflectUtil.setFieldValue(entity, curField.getName(), id);
-				    return;
-		    	}
-		    }
-		    log.error("设置id出错，未找到Id Field：" + entity.getClass());
-		    throw new RuntimeException("设置id出错，未找到@Id Field，请检查类定义");
+            entity.setId(id);
+//		    Field[] fieldArray = EntityUtil.getEntityFields(entity.getClass());
+//		    for(Field curField : fieldArray){
+//		    	if(curField.getAnnotation(Id.class)!=null) {
+//				    ReflectUtil.setFieldValue(entity, curField.getName(), id);
+//				    return;
+//		    	}
+//		    }
+//		    log.error("设置id出错，未找到Id Field：" + entity.getClass());
+//		    throw new RuntimeException("设置id出错，未找到@Id Field，请检查类定义");
 		}
 	}
 

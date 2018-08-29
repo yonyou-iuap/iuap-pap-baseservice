@@ -1,10 +1,14 @@
+
 package com.yonyou.iuap.baseservice.ref.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.yonyou.iuap.baseservice.entity.RefParamVO;
+import com.yonyou.iuap.baseservice.persistence.utils.RefXMLParse;
+import com.yonyou.iuap.baseservice.ref.entity.RefUITypeEnum;
+import com.yonyou.iuap.baseservice.ref.entity.RefViewModelVO;
+import com.yonyou.iuap.baseservice.ref.service.RefCommonService;
+import com.yonyou.iuap.baseservice.ref.utils.ValueConvertor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -19,24 +23,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.yonyou.iuap.baseservice.entity.RefParamVO;
-import com.yonyou.iuap.baseservice.persistence.utils.RefXMLParse;
-import com.yonyou.iuap.baseservice.ref.service.RefCommonService;
-import com.yonyou.iuap.baseservice.ref.utils.ValueConvertor;
-import com.yonyou.iuap.ref.model.RefViewModelVO;
-import com.yonyou.iuap.ref.sdk.refmodel.model.AbstractTreeGridRefModel;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 说明：参照基础controller,所有参照都通过平台回调到这个地址取数据
  * @WARN 需要平台的REF_REFINFO表中有相应的配置数据,例如 23    common_ref	通用树表参照	common_ref		/iuap_pap_quickstart/common/				AAAzpkAAGAAAev+AAA
  * @author leon
  * 2018年7月11日
+ * @update 2018-7-25 移除了对平台uitemplate_common的依赖
  */
 @Controller
 @RequestMapping(value = "/common")
-public final class RefCommonController extends AbstractTreeGridRefModel {
+public final class RefCommonController  {
 	
 	private Logger log = LoggerFactory.getLogger(RefCommonController.class);
 
@@ -44,11 +45,14 @@ public final class RefCommonController extends AbstractTreeGridRefModel {
      * 获取表头信息
      * @see com.yonyou.iuap.ref.sdk.refmodel.model.AbstractTreeGridRefModel#getRefModelInfo(com.yonyou.iuap.ref.model.RefViewModelVO)
      */
-    @Override
+    @RequestMapping(
+            value = {"/getRefModelInfo"},
+            method = {RequestMethod.POST}
+    )
     @ResponseBody
     public RefViewModelVO getRefModelInfo(@RequestBody RefViewModelVO refViewModel) {
-
-        RefViewModelVO refModel = super.getRefModelInfo(refViewModel);
+        refViewModel.setRefUIType(RefUITypeEnum.RefGridTree);
+        RefViewModelVO refModel =  refViewModel;
         RefParamVO refParamVO = RefXMLParse.getInstance().getMSConfig(refViewModel.getRefCode());
 
         Map<String,String> showcolMap = refParamVO.getShowcol();
@@ -76,9 +80,93 @@ public final class RefCommonController extends AbstractTreeGridRefModel {
      * @param arg0
      * @return
      */
-    @Override
+    @RequestMapping(
+            value = {"/matchPKRefJSON"},
+            method = {RequestMethod.POST}
+    )
+    @ResponseBody
     public List<Map<String, String>> matchPKRefJSON(RefViewModelVO arg0) {
         return null;
+    }
+    
+    /**
+     * 通过pk查询所有数据,String pk数组入参
+     * @return
+     */
+    @RequestMapping(
+    		value = {"/getCommonRefData"},
+    		method = {RequestMethod.POST}
+    		)
+    @ResponseBody
+    public Map<String, Object> commonRefsearch(@RequestBody RefViewModelVO refModel) {
+    	//前台传过来的refType来做请求参数过滤
+        String transmitParam = refModel.getTransmitParam();
+        String refType = transmitParam;
+
+        //构建表体，其中list中为要查询的字段，必须和表头设置的相同，并且必须为表中的字段值
+        RefParamVO refParamVO = RefXMLParse.getInstance().getCheckboxMSConfig(refModel.getRefCode());
+
+        Map<String, Object> mapList = new HashMap<String, Object>();
+        List<Map<String, String>> results = new ArrayList<Map<String, String>>();
+        try {
+            //获取当前页
+            int pageNum = refModel.getRefClientPageInfo().getCurrPageIndex();
+            //每页显示的数量
+            int pageSize = 10;
+            //拼装分页请求对象
+            PageRequest request = null;
+
+            Map<String, String> conditions = new HashMap<String,String>();
+            
+            String basic = refParamVO.getIsBasic();
+            if(basic != null && "false".equals(basic)){//需要业务自己传递orderby字段
+            	String ts = refParamVO.getTs();
+            	request = buildPageRequest(pageNum, pageSize, ts);
+            	conditions.put(refParamVO.getDr(),refParamVO.getDrValue());
+            }else if(basic != null && "true".equals(basic)){//orderby ts
+            	request = buildPageRequest(pageNum, pageSize, "auto");
+            	conditions.put("dr", "0");
+            }else{//不加orderby过滤
+            	request = buildPageRequest(pageNum, pageSize, null);
+            }
+            
+            refModel.getRefClientPageInfo().setPageSize(pageSize);
+
+            //获取查询条件 --如果content
+            String content = refModel.getContent();
+            
+            if(content != null && !"".equals(content)){
+                //对参照所有列进行模糊查询
+                for(String extcol : refParamVO.getExtcol()){
+                    conditions.put(extcol, content);
+                }
+            }
+
+            String idfield = StringUtils.isBlank(refParamVO.getIdfield()) ? "id"
+                    : refParamVO.getIdfield();
+            String codefield = StringUtils.isBlank(refParamVO.getIdfield()) ? "refcode"
+            		: refParamVO.getCodefield();
+            String namefield = StringUtils.isBlank(refParamVO.getIdfield()) ? "refname"
+            		: refParamVO.getNamefield();
+
+            Page<Map<String, Object>> headpage = this.service.getCheckboxData(
+                    request, refParamVO.getTablename(), idfield,codefield,namefield, conditions, refParamVO.getExtcol());
+
+            //总页数
+            refModel.getRefClientPageInfo().setPageCount(headpage.getTotalPages());
+
+            List<Map<String, Object>> headVOs = headpage.getContent();
+
+            if (CollectionUtils.isNotEmpty(headVOs)) {
+                results = buildRtnValsOfCheckboxRef(headVOs);
+            }
+            
+            mapList.put("dataList", results);
+            mapList.put("refViewModel", refModel);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return mapList;
     }
 
     /**
@@ -86,7 +174,11 @@ public final class RefCommonController extends AbstractTreeGridRefModel {
      * @param arg0
      * @return
      */
-    @Override
+    @RequestMapping(
+            value = {"/filterRefJSON"},
+            method = {RequestMethod.POST}
+    )
+    @ResponseBody
     public List<Map<String, String>> filterRefJSON(RefViewModelVO arg0) {
         //
         return null;
@@ -97,7 +189,11 @@ public final class RefCommonController extends AbstractTreeGridRefModel {
      * @param arg0
      * @return
      */
-    @Override
+    @RequestMapping(
+            value = {"/matchBlurRefJSON"},
+            method = {RequestMethod.POST}
+    )
+    @ResponseBody
     public List<Map<String, String>> matchBlurRefJSON(RefViewModelVO arg0) {
         //
         return null;
@@ -108,18 +204,24 @@ public final class RefCommonController extends AbstractTreeGridRefModel {
      * @param arg0
      * @return
      */
-    @Override
+    @RequestMapping(
+            value = {"/blobRefClassSearch"},
+            method = {RequestMethod.POST}
+    )
+    @ResponseBody
     public List<Map<String, String>> blobRefClassSearch(RefViewModelVO arg0) {
         //
         return null;
     }
 
-
     /*
      * 树
      * @see com.yonyou.iuap.ref.sdk.refmodel.model.AbstractTreeGridRefModel#blobRefTree(com.yonyou.iuap.ref.model.RefViewModelVO)
      */
-    @Override
+    @RequestMapping(
+            value = {"/blobRefTree"},
+            method = {RequestMethod.POST}
+    )
     @ResponseBody
     public Map<String, Object> blobRefTree(@RequestBody RefViewModelVO refModel) {
 
@@ -130,7 +232,7 @@ public final class RefCommonController extends AbstractTreeGridRefModel {
         List<Map<String, String>> results = new ArrayList<Map<String, String>>();
         try {
             int pageNum = refModel.getRefClientPageInfo().getCurrPageIndex();
-            int pageSize = 10000;
+            int pageSize = refModel.getRefClientPageInfo().getPageSize();
             PageRequest request = null;
             Map<String, String> conditions = new HashMap<String, String>();
             
@@ -177,7 +279,10 @@ public final class RefCommonController extends AbstractTreeGridRefModel {
      * 获取表体信息
      * @see com.yonyou.iuap.ref.sdk.refmodel.model.AbstractTreeGridRefModel#blobRefSearch(com.yonyou.iuap.ref.model.RefViewModelVO)
      */
-    @Override
+    @RequestMapping(
+            value = {"/blobRefSearch"},
+            method = {RequestMethod.POST}
+    )
     @ResponseBody
     public Map<String, Object> blobRefSearch(@RequestBody RefViewModelVO refModel) {
 
@@ -280,8 +385,6 @@ public final class RefCommonController extends AbstractTreeGridRefModel {
     /**
      * 过滤完的数据组装--表格
      *
-     * @param peoplelist
-     * @return
      */
     private List<Map<String, String>> buildRtnValsOfRef(
             List<Map<String, Object>> headVOs) {
@@ -304,10 +407,34 @@ public final class RefCommonController extends AbstractTreeGridRefModel {
         }
         return results;
     }
+    
+    /**
+     * 过滤完的数据组装--单选多选
+     *
+     */
+    private List<Map<String, String>> buildRtnValsOfCheckboxRef(
+    		List<Map<String, Object>> headVOs) {
+    	List<Map<String, String>> results = new ArrayList<Map<String, String>>();
+    	if ((headVOs != null) && (!headVOs.isEmpty())) {
+    		ValueConvertor convertor = new ValueConvertor();
+    		for (Map<String, Object> entity : headVOs) {
+    			Map<String, String> refDataMap = new HashMap<String, String>();
+    			for (String key : entity.keySet()) {
+    				if(key.equalsIgnoreCase("id")){
+                        refDataMap.put("refpk", entity.get(key).toString());
+                        refDataMap.put(key.toLowerCase(), entity.get(key).toString());
+                    }else{
+                    	refDataMap.put(key.toLowerCase(), convertor.convertToJsonType(entity.get(key)).toString());
+                    }
+    			}
+    			results.add(refDataMap);
+    		}
+    	}
+    	return results;
+    }
     /**
      * 过滤完的数据组装--树
      *
-     * @param peoplelist
      * @return
      */
     private List<Map<String, String>> buildRtnValsOfRefTree(
@@ -364,7 +491,7 @@ public final class RefCommonController extends AbstractTreeGridRefModel {
                 }
             }
 
-            RefParamVO refParamVO = RefXMLParse.getInstance().getMSConfig(refCode);
+            RefParamVO refParamVO = RefXMLParse.getInstance().getFilterConfig(refCode);
             String idfield = StringUtils.isBlank(refParamVO.getIdfield()) ? "id"
                     : refParamVO.getIdfield();
             String tableName = refParamVO.getTablename();

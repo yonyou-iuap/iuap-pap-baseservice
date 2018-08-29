@@ -37,4 +37,30 @@
 			</table>
 	
 	</RefViewModelVO>
+
+    <RefViewModelVO code="common_ref_tree" reftype="1" name="common_ref_tree" path="/iuap-saas-billcode-service/pub_bcr_me_ref/"  group="custom" >
+        <!-- 树参照（包括单树和树表的树） -->
+        <!-- name是数据库表名称 -->
+        <tableTree name="EXAMPLE_ORGANIZATION">
+            <!-- 树没有参照表头 必须有id,code,name,pid -->
+            <!-- code是固定的，value是业务对应的表字段 -->
+            <idfield code="idfield">ID</idfield>
+            <codefield code="codefield">INSTIT_CODE</codefield>
+            <namefield code="namefield">INSTIT_NAME</namefield>
+            <pidfield code="pidfield">PARENT_ID</pidfield>
+        </tableTree>
+    </RefViewModelVO>
+
+    <RefViewModelVO code="checkbox_ref" reftype="4" name="checkbox_ref" path="org.demo.ref" group="pap">
+        <!-- 单选多选 -->
+        <!-- name是数据库表名称 -->
+        <table name="EXAMPLE_CONTACTS">
+            <!-- 转换：如果是树表的表 需要有pid字段  将业务的pid字段映射到pidfield，code和value均为页面表字段 -->
+            <!-- 转换：如果是单表的表 可能没有pid字段  可以不传 -->
+            <showcol code="idfield">ID</showcol>
+            <!-- 业务需要展示的字段，code是字段名称 value是显示的值 -->
+            <showcol code="refcode">peocode</showcol>
+            <showcol code="refname">peoname</showcol>
+        </table>
+    </RefViewModelVO>
 </root>

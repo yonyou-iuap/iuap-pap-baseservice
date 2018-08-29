@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.yonyou.iuap</groupId>
 		<artifactId>iuap-pap-baseservice</artifactId>
-		<version>3.5.1-SNAPSHOT</version>
+		<version>3.5.2-RELEASE</version>
 	</parent>
 	
 	<groupId>com.yonyou.iuap.baseservice</groupId>
@@ -18,17 +18,16 @@
 	</properties>
 
 	<dependencies>
-
         <dependency>
-            <groupId>com.yonyou.iuap</groupId>
-            <artifactId>iuap-file</artifactId>
-            <version>3.2.0-SNAPSHOT</version>
+            <groupId>com.yonyou.iuap.pap.bpm</groupId>
+            <artifactId>ubpm-rest-sdk</artifactId>
+            <version>3.6.0-SNAPSHOT</version>
         </dependency>
-		<dependency>
-			<groupId>com.yonyou.iuap.pap</groupId>
-			<artifactId>eiap-plus-common</artifactId>
-			<version>${eiap.module.version}</version>
-		</dependency>
+        <dependency>
+            <groupId>com.yonyou.iuap.pap</groupId>
+            <artifactId>eiap-plus-common</artifactId>
+            <version>3.6.0-SNAPSHOT</version>
+        </dependency>
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
