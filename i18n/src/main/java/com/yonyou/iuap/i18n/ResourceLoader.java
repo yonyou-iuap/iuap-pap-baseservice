@@ -26,7 +26,9 @@ import java.util.Set;
  * @author wenfa
  */
 public class ResourceLoader {
+
     protected String dir;
+
     private String fileEncoding;
     private PropertiesPersister propertiesPersister = new DefaultPropertiesPersister();
 
@@ -35,7 +37,6 @@ public class ResourceLoader {
     public static final String Prop_FILE_EXTENSION = ".properties";
     public static final String CONFIG_LOCATION_DELIMITERS = ",; \t\n";
     protected ResourcePatternResolver pathMatchingResourcePatternResolver = new PathMatchingResourcePatternResolver();
-    protected final Log logger = LogFactory.getLog(getClass());
 
 
     protected Set resolveResources() {
@@ -70,10 +71,6 @@ public class ResourceLoader {
             while (iterator.hasNext()) {
 
                 Resource location = (Resource) iterator.next();
-                if (this.logger.isInfoEnabled()) {
-
-                    this.logger.info("Loading properties file from " + location);
-                }
 
                 InputStream is = null;
                 try {
@@ -92,14 +89,6 @@ public class ResourceLoader {
                     }
                 } catch (IOException ex) {
 
-                    if (this.ignoreResourceNotFound) {
-
-                        if (this.logger.isWarnEnabled()) {
-
-                            this.logger.warn("Could not load properties from " + location + ": " + ex.getMessage());
-                        }
-                    } else
-                        throw ex;
                 } finally {
 
                     if (is != null)

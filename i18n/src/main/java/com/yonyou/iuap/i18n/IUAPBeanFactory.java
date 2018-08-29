@@ -10,6 +10,7 @@ import org.springframework.context.ApplicationContext;
  *
  */
 public class IUAPBeanFactory {
+
     private static ApplicationContext context;
 
     public static Object getBean(String beanName) {

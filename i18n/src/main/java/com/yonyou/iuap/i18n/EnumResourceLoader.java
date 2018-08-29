@@ -32,16 +32,16 @@ public class EnumResourceLoader extends ResourceLoader implements InitializingBe
         this.isInitialized = false;
     }
 
+    /**
+     * 加载枚举定义文件
+     */
     private synchronized void init() {
         if (this.isInitialized)
             return;
-        this.logger.debug("开始加载枚举定义文件!");
         try {
             loadEnums();
             this.isInitialized = true;
-            this.logger.debug("加载枚举定义文件结束!");
         } catch (Throwable e) {
-            this.logger.debug("加载枚举定义文件时发生错误！", e);
         }
     }
 
@@ -80,7 +80,6 @@ public class EnumResourceLoader extends ResourceLoader implements InitializingBe
                 this.enumsHash.put(enumName, enums);
                 this.valuesHash.put(enumName, descs);
             } else {
-                this.logger.warn("Can't override enum[" + enumName + "]");
             }
 
             if (!this.keyValue.containsKey(enumName))

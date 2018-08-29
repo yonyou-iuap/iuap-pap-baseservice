@@ -282,11 +282,10 @@ public class ResourceFileUtil {
 	}
 
 	public static void main(String[] args) {
-//	    init("D:\\workspace\\EGP_TE_CGJY_biaozhun\\conf\\i18n");
 
 //	    init("D:\\workspace\\iuap_apportal\\iweb_apportal\\workbench\\wbalone\\target\\workbench\\locales");
 
-	    init("D:\\workspace\\iuap_apportal\\iweb_apportal\\workbench\\wbalone\\target\\workbench\\WEB-INF\\i18n");
+	    init("/Users/yanyong/workspace/java/yonyou/iweb_apportal/workbench/wbalone/target/workbench/locales");
 
 //	    System.out.println(_this.fileDescs);
 	    
