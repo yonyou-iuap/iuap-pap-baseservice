@@ -15,18 +15,18 @@ import java.util.Set;
  * @author bill
  *
  */
-public class MethodUtils {
+	public class MethodUtils {
 
-	static String GET_PREFIX = "get";
-	static String SET_PREFIX = "set";
-	private static Set<String> languagesSerial= new HashSet<>();
-	static {
-	 	languagesSerial.add("2");
-		languagesSerial.add("3");
-		languagesSerial.add("4");
-		languagesSerial.add("5");
-		languagesSerial.add("6");
-	}
+		static String GET_PREFIX = "get";
+		static String SET_PREFIX = "set";
+		private static Set<String> languagesSerial= new HashSet<>();
+		static {
+			languagesSerial.add("2");
+			languagesSerial.add("3");
+			languagesSerial.add("4");
+			languagesSerial.add("5");
+			languagesSerial.add("6");
+		}
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MethodUtils.class);
 	
