@@ -31,6 +31,7 @@ public class MessageSourceUtil {
 
 	// 默认英文，通过U_locale转换而来
 	private static Locale locale = Locale.ENGLISH;
+
 	// 该值默认美国英语，取值于cookie
 	private static String u_locale = "en_US";
 	
@@ -65,6 +66,11 @@ public class MessageSourceUtil {
 		init();
 		return messageSource.getMessage(id, null, id, locale);
 
+	}
+
+	public static String getMessage(String id, String defaultMessage) {
+		init();
+		return messageSource.getMessage(id, null, defaultMessage, locale);
 	}
 
 	public static String getMessage(String id, Object[] param) {

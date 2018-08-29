@@ -39,32 +39,23 @@ import java.util.Set;
 	 * @return
 	 */
 	public static String getDataBySerial(Object obj, String prop, String serial){
-		try{
-			String methodName = getterMethodName(prop);
-			if(!languagesSerial.contains(serial)){
-				serial="";
-			}
-			Method method = obj.getClass().getMethod(methodName + serial);
-			Object value  = method.invoke(obj);
 
-			Method methodDefault = obj.getClass().getMethod(methodName );
-			Object valueDefault  = methodDefault.invoke(obj);
-
-			String returnValue=String.valueOf(value==null?valueDefault:value);
-			if("null".equals(returnValue)){
-				return "";
-			}else{
-				return returnValue;
-			}
-		}catch(NoSuchMethodException e){
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+		if(!languagesSerial.contains(serial)){
+			serial="";
 		}
 
-		return "";
+		Object value = getter(obj, prop + serial);
+
+		if(value == null){
+			value = getter(obj, prop);
+		}
+
+		if(value == null){
+			return "";
+		}else{
+			return String.valueOf(value);
+		}
+
 	}
 	
 	
