@@ -28,7 +28,7 @@ public class DrCommonService<T extends Model& LogicDel> implements QueryFeatureE
 
     @Override
     public T prepareEntityBeforeSave(T entity) {
-        if (entity.getId() == null) {
+        if (entity.getId() == null||entity.getDr()==null) {
             entity.setDr( LogicDel.NORMAL);
 //            ReflectUtil.setFieldValue(entity, "dr", LogicDel.NORMAL);
         }
