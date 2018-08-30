@@ -90,7 +90,10 @@ public final class RefCommonController  {
     
     /**
      * 通过pk查询所有数据,String pk数组入参
+<<<<<<< HEAD
      * @param arg0
+=======
+>>>>>>> 2d95e1d4da970f4f5dc676a14147a7cc95bbb375
      * @return
      */
     @RequestMapping(
@@ -510,6 +513,5 @@ public final class RefCommonController  {
 	/************************************************************/
     @Autowired
 	private RefCommonService service;
-
 
 }

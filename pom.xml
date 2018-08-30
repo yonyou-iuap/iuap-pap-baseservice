@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.yonyou.iuap</groupId>
 	<artifactId>iuap-pap-baseservice</artifactId>
-	<version>3.5.1-SNAPSHOT</version>
+	<version>3.5.2-RELEASE</version>
 	<packaging>pom</packaging>
 
 	  <properties>
@@ -11,7 +11,7 @@
 	    <java.version>1.7</java.version>
 	    <iuap.module.version>3.1.0-RELEASE</iuap.module.version>
 	    <eiap.module.version>3.6.0-SNAPSHOT</eiap.module.version>
-	    <pap.module.version>3.5.1-SNAPSHOT</pap.module.version>
+	    <pap.module.version>3.5.2-RELEASE</pap.module.version>
 	    <spring.verison>4.0.5.RELEASE</spring.verison>
 	  </properties>
 
@@ -113,12 +113,12 @@
 		<snapshotRepository>
 			<id>iUAP-Snapshots</id>
 			<name>iUAP-Snapshots</name>
-			<url> http://maven.yonyou.com/nexus/content/repositories/iUAP-Snapshots/</url>
+			<url> http://maven.yonyoucloud.com/nexus/content/repositories/iUAP-Snapshots/</url>
 		</snapshotRepository>
 		<repository>
 			<id>iUAP-Stagings</id>
 			<name>iUAP-Stagings</name>
-			<url>http://maven.yonyou.com/nexus/content/repositories/iUAP-Stagings/</url>
+			<url>http://maven.yonyoucloud.com/nexus/content/repositories/iUAP-Stagings/</url>
 		</repository>
 	</distributionManagement>
 
