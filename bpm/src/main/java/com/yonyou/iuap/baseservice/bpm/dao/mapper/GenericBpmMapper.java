@@ -2,7 +2,7 @@ package com.yonyou.iuap.baseservice.bpm.dao.mapper;
 
 
 import com.yonyou.iuap.baseservice.bpm.entity.BpmModel;
-import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericExMapper;
+import com.yonyou.iuap.baseservice.bpm.entity.BpmSimpleModel;
 import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericMapper;
 
 /**
@@ -13,6 +13,6 @@ import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericMapper;
  * @author houlf
  * 2018年6月13日
  */
-public interface GenericBpmMapper<T extends BpmModel> extends GenericMapper<T> {
+public interface GenericBpmMapper<T extends BpmSimpleModel> extends GenericMapper<T> {
 
 }

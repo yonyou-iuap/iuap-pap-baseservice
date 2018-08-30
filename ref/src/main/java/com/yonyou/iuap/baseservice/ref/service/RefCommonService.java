@@ -10,7 +10,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.yonyou.iuap.baseservice.entity.Model;
+import com.yonyou.iuap.baseservice.persistence.support.QueryFeatureExtension;
+import com.yonyou.iuap.mvc.type.SearchParams;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,7 +35,9 @@ import cn.hutool.core.util.ReflectUtil;
  * @Date 2018-07-11
  */
 @Service
-public  class RefCommonService {
+public  class RefCommonService<T extends Model>  implements QueryFeatureExtension<T>{
+    private static Logger log= LoggerFactory.getLogger(RefCommonService.class);
+
 
     @Autowired
     RefCommonMapper mapper;
@@ -43,28 +50,19 @@ public  class RefCommonService {
         return result;
     }
 
-    public Page<Map<String,Object>> getGridRefData(PageRequest pageRequest, String tablename, String idfield, String codefield, String namefield,
-                                                   Map<String, String> condition, List<String> extColumns, String likefilter) {
-
-        Page<Map<String,Object>> result = mapper.gridrefselectAllByPage(pageRequest,tablename,idfield,codefield,namefield, extColumns,condition,likefilter).getPage();
-
-        return result;
-    }
-
     public Page<Map<String, Object>> getTreeRefData(PageRequest pageRequest,
                                                     String tablename, String idfield, Map<String, String> condition,List<String> extColumns) {
 
         Page<Map<String,Object>> result = mapper.treerefselectAllByPage(pageRequest,tablename,idfield, extColumns,condition).getPage();
         return result;
     }
-
-    public Page<Map<String, Object>> getTableRefData(PageRequest pageRequest,
-                                                     String tablename, String idfield, String codefield,
-                                                     String namefield, Map<String, String> condition,
-                                                     List<String> extColumns, String likefilter) {
-
-        Page<Map<String,Object>> result = mapper.tablerefselectAllByPage(pageRequest,tablename,idfield,codefield,namefield, extColumns,condition,likefilter).getPage();
-        return result;
+    
+    public Page<Map<String, Object>> getCheckboxData(PageRequest pageRequest,
+            String tablename, String idfield,
+            String codefield, String namefield, Map<String, String> condition,List<String> extColumns) {
+    	
+    	Page<Map<String,Object>> result = mapper.selectRefCheck(pageRequest,tablename,idfield,codefield,namefield, extColumns,condition).getPage();
+    	return result;
     }
 
     public Page<Map<String, Object>> selectRefTree(PageRequest pageRequest,
@@ -78,8 +76,6 @@ public  class RefCommonService {
     /**
      * 参照数据加载,根据 @See  com.yonyou.iuap.baseservice.entity.annotation.Reference
      * 中定义的参照参数,将参照数据中检索出来的值写到对应的entity属性中,以便前端展示
-     *
-     * TODO 将此服务应用到更多的基类selecByAllPage方法中,可考虑通过切面来完成
      * @param list 未装填参照的原始list
      * @return 重新装填后的结果
      */
@@ -116,7 +112,11 @@ public  class RefCommonService {
              */
 
             for (Field field : refCache.keySet()) {
-                RefParamVO params = RefXMLParse.getInstance().getMSConfig(refCache.get(field).code());
+                RefParamVO params = RefXMLParse.getInstance().getFilterConfig(refCache.get(field).code());
+                if (params==null){
+                    log.warn("参照配置错误:"+refCache.get(field).code()+"不存在");
+                    continue;
+                }
                 String idfield = StringUtils.isBlank(params.getIdfield()) ? "id"
                         : params.getIdfield();
                 List<String> setList = new ArrayList<>(idCache.get(field));
@@ -173,4 +173,18 @@ public  class RefCommonService {
         return list;
     }
 
+    @Override
+    public SearchParams prepareQueryParam(SearchParams searchParams,Class modelClass) {
+        return searchParams;
+    }
+
+    /**
+     * 通过特性集成，实现了在查询时与其他模块的任意组合
+     * @param list 未装填参照的原始list
+     * @return 重新装填后的结果
+     */
+    @Override
+    public List<T> afterListQuery(List<T> list) {
+        return this.fillListWithRef(list);
+    }
 }

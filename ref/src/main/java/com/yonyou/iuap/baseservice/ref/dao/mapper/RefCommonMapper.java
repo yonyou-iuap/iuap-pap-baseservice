@@ -18,50 +18,7 @@ import java.util.Map;
 public interface RefCommonMapper {
 
 	/**
-	 * 列表型参照数据查询
-	 * @param pageRequest
-	 * @param tablename
-	 * @param idfield
-	 * @param codefield
-	 * @param namefield
-	 * @param extcols
-	 * @param condmap
-	 * @return
-	 */
-	PageResult<Map<String,Object>> gridrefselectAllByPage(
-            @Param("page") PageRequest pageRequest,
-            @Param("tablename") String tablename,
-            @Param("idfield") String idfield,
-            @Param("codefield") String codefield,
-            @Param("namefield") String namefield,
-            @Param("extcols") List<String> extcols,
-            @Param("condmap") Map<String, String> condmap,
-            @Param("likefilter") String likefilter);
-
-	/**
-	 * 列表型参照数据查询(不加默认的dr条件)
-	 * @param pageRequest
-	 * @param tablename
-	 * @param idfield
-	 * @param codefield
-	 * @param namefield
-	 * @param extcols
-	 * @param condmap
-	 * @return
-	 */
-	PageResult<Map<String,Object>> tablerefselectAllByPage(
-            @Param("page") PageRequest pageRequest,
-            @Param("tablename") String tablename,
-            @Param("idfield") String idfield,
-            @Param("codefield") String codefield,
-            @Param("namefield") String namefield,
-            @Param("extcols") List<String> extcols,
-            @Param("condmap") Map<String, String> condmap,
-            @Param("likefilter") String likefilter);
-
-
-	/**
-	 * 树表型参照--表的数据查询
+	 * 表型参照(包括树表和单表)--表的数据查询
 	 * @param pageRequest
 	 * @param tablename
 	 * @param idfield
@@ -106,6 +63,25 @@ public interface RefCommonMapper {
             @Param("namefield") String namefield,
             @Param("extcols") List<String> extcols,
             @Param("condmap") Map<String, String> condmap);
+	
+	
+	/**
+	 * 单选多选型参照
+	 * @param pageRequest
+	 * @param tablename
+	 * @param idfield
+	 * @param codefield
+	 * @param namefield
+	 * @return
+	 */
+	PageResult<Map<String,Object>> selectRefCheck(
+			@Param("page") PageRequest pageRequest,
+			@Param("tablename") String tablename,
+			@Param("idfield") String idfield,
+			@Param("codefield") String codefield,
+			@Param("namefield") String namefield,
+			@Param("extcols") List<String> extcols,
+			@Param("condmap") Map<String, String> condmap);
 
 
 }

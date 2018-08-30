@@ -5,7 +5,7 @@ import com.yonyou.iuap.file.FileManager;
 import com.yonyou.iuap.file.client.FastdfsClient;
 import com.yonyou.iuap.file.utils.BucketPermission;
 import com.yonyou.iuap.utils.PropertyUtil;
-import com.yonyou.uap.wb.utils.JsonResponse;
+import com.yonyou.iuap.wb.utils.JsonResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.MultiValueMap;

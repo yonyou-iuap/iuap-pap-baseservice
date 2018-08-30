@@ -22,6 +22,7 @@ import cn.hutool.core.util.StrUtil;
  */
 public class RangeMatcher implements Matcher{
 	
+	private static String SPLIT_SIGN = "::";
 	private Logger log = LoggerFactory.getLogger(RangeMatcher.class);
 
 	@Override
@@ -68,7 +69,7 @@ public class RangeMatcher implements Matcher{
 			}
 			strb.append("}");
 		} else {
-			String[] format = condition.format().split(":");
+			String[] format = condition.format().split(SPLIT_SIGN);
 			Formatter formatter = FormatterHolder.get(format[0]);
 			if(formatter == null) {
 				log.error("未找到条件formatter:"+condition.format()+", 已注册的条件formatter:");
@@ -99,7 +100,7 @@ public class RangeMatcher implements Matcher{
 			}
 			strb.append("}");
 		} else {
-			String[] format = condition.format().split(":");
+			String[] format = condition.format().split(SPLIT_SIGN);
 			Formatter formatter = FormatterHolder.get(format[0]);
 			if(formatter == null) {
 				log.error("未找到条件formatter:"+condition.format()+", 已注册的条件formatter:");

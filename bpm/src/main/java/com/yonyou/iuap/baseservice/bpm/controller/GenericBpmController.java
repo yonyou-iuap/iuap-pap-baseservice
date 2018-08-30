@@ -1,25 +1,31 @@
 package com.yonyou.iuap.baseservice.bpm.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.yonyou.iuap.base.utils.RestUtils;
-import com.yonyou.iuap.baseservice.bpm.entity.BpmModel;
+import com.alibaba.fastjson.parser.Feature;
+import com.yonyou.iuap.base.web.BaseController;
+import com.yonyou.iuap.baseservice.bpm.entity.BpmSimpleModel;
 import com.yonyou.iuap.baseservice.bpm.service.GenericBpmService;
 import com.yonyou.iuap.baseservice.bpm.utils.BpmExUtil;
-import com.yonyou.iuap.baseservice.controller.GenericController;
-import com.yonyou.iuap.mvc.constants.RequestStatusEnum;
+import com.yonyou.iuap.bpm.service.JsonResultService;
 import com.yonyou.iuap.mvc.type.JsonResponse;
 import com.yonyou.iuap.persistence.vo.pub.BusinessException;
-import iuap.uitemplate.base.util.PropertyUtil;
 import net.sf.json.JSONNull;
-import org.springframework.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import yonyou.bpm.rest.request.AssignInfo;
+import yonyou.bpm.rest.request.Participant;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -28,188 +34,143 @@ import java.util.Map;
  * @author Aton
  * 2018年6月13日
  *
- * @modified by Leon
+ * @update  将依赖sdk的rest接口转移到GenericBpmSdkController by Leon
  */
-public  class GenericBpmController<T extends BpmModel> extends GenericController<T>
-		 {
+public  class GenericBpmController<T extends BpmSimpleModel> extends BaseController {
 
+    private Logger logger= LoggerFactory.getLogger(this.getClass());
 
-	@RequestMapping(value = "/doStart")
-	@ResponseBody
-	public Object doStart(@RequestBody T entity, HttpServletRequest request) throws Exception {
-		try {
-			String processDefCode = this.getAllocatedProcess(request);
-			entity.setProcessDefineCode(processDefCode);
-			this.service.doStartProcess(entity);
-			return this.buildSuccess("流程已启动！");
-		}catch(Exception exp) {
-			return this.buildGlobalError(exp.getMessage());
-		}
-	}
-	@RequestMapping(value = "/doSubmit")
-	@ResponseBody
-	public Object doSubmit(@RequestBody T entity, HttpServletRequest request) throws Exception {
-		try {
-//			String processDefCode = this.getAllocatedProcess(request);
-//			String comment=request.getParameter("comment");
-			this.service.doSubmit(entity,entity.getComment());
-			return this.buildSuccess("流程已提交！");
-		}catch(Exception exp) {
-			return this.buildGlobalError(exp.getMessage());
-		}
+	@Autowired
+	private JsonResultService jsonResultService;
+
+	private GenericBpmService<T> service;
+
+	public void setService(GenericBpmService<T> bpmService) {
+		this.service = bpmService;
 	}
 
-	@RequestMapping(value = "/doRevoke")
-	@ResponseBody
-	public Object doRevoke(@RequestBody T entity, HttpServletRequest request) throws Exception {
-		this.service.doRevoke(entity);
-		return this.buildSuccess("流程已撤回！");
-	}
-
-    @RequestMapping(value = "/doTaskApprove")
-    @ResponseBody
-	public Object doApproveAction(@RequestBody Map<String, Object> params, HttpServletRequest request) 
-			throws Exception {
-		Object approvetype = params.get("approvetype");
-        Object comment = params.get("comment");     if (comment==null){ comment="no coomment";}
-        Object bpmNode = params.get("historicProcessInstanceNode");
-        if (bpmNode==null){
-            throw new  BusinessException("入参historicProcessInstanceNode为空");
-        }
-        String busiId =
-            ((Map)bpmNode).get("businessKey")==null ?  null:((Map)bpmNode).get("businessKey").toString();
-        JsonResponse response ;
-        boolean isSuccess ;
-		if(approvetype!=null && approvetype.toString().equals("agree")) {
-            isSuccess=this.service.doApprove(busiId  ,true,comment.toString() );	//审批通过
-		}else {
-            isSuccess=this.service.doApprove(busiId,false,comment.toString() );	//审批拒绝
-		}
-		if (isSuccess){
-            response=this.buildSuccess();
-        }else{
-            response=this.buildGlobalError("流程审批失败");
-        }
-		return response;
-	}
-
-	@RequestMapping(value = {"/doTermination"},	method = {RequestMethod.POST}	)
-	@ResponseBody
-	public JsonResponse doTerminationAction(Map<String, Object> params) throws Exception {
-		String entityID=String.valueOf(params.get("id"));
-		Object result = service.doSuspendProcess(entityID);
-		if (result!=null){
-			buildSuccess(result);
-		}
-		return buildGlobalError("流程终止失败");
-	}
-
-	@RequestMapping(value = {"/doRejectMarkerBill"},method = {RequestMethod.POST})
-	@ResponseBody
-	public JsonResponse doRejectMarkerBillAction(Map<String, Object> params) throws Exception {
-		String busiId = String.valueOf( params.get("billId"));
-		String comment = String.valueOf( params.get("comment"));
-		service.doRejectToInitial(busiId,comment);
-		return null;
-	}
-
-	@RequestMapping(value = "/doRejectBill")
-    @ResponseBody
-	public JsonResponse doRejectMarkerBillAction(@RequestBody T entity,HttpServletRequest request)
-			  {
-        String comment=request.getParameter("comment");
-        Object result = this.service.doReject(entity, comment);
-		return buildSuccess(result);
-	}
-    @RequestMapping(value = "/doSuspend")
-    @ResponseBody
-	public JsonResponse doSuspendAction(@RequestBody T entity)
-			  {
-			      Object result =  this.service.doSuspendProcess(entity.getId().toString())    ;
-		return  buildSuccess(result);
-	}
-
-
-	@RequestMapping(value = "/doListTasks")
-	@ResponseBody
-	public JsonResponse doListHistoryTasks(@RequestBody T entity) throws Exception
-	{
-		ArrayNode result =
-				service.doQueryHistoryTasks(entity.getProcessInstanceId());
-		return  buildSuccess(result);
-	}
 	/**
-	 * 提交前校验流程是都在平台资源分配时挂在到指定流程上
+	 * 说明：原始方法中可以提交多个单据，遍历循环启动多个流程实例
+	 * 更新：现有实现，传入流程单据列表，service实现中也只提交第一条流程单据，产生一个流程实例
+	 * @param list
 	 * @param request
+	 * @param response
 	 * @return
 	 */
-	private String getAllocatedProcess(HttpServletRequest request) {
-		String checkUrl = PropertyUtil.getProperty("bpmrest.checkUrl");
-		JSONObject result = RestUtils.getInstance().doGetWithSign(checkUrl, request, JSONObject.class);
-		if(BpmExUtil.inst().isSuccess4CheckSubmit(result)) {
-			Object detailMsg = result.get("detailMsg");
-			if(detailMsg!=null) {
-				Object jsonData = ((JSONObject)detailMsg).get("data");
-				if(jsonData!=null) {
-					return ((JSONObject)jsonData).getString("res_code");
-				}
-			}
-		}
-		throw new BusinessException("流程提交出错【资源分配中未分配流程】");
-	}
-
-	@RequestMapping(value = "/doDelegate", method = RequestMethod.POST)
-	@ResponseBody
-	public JsonResponse delegate(@RequestBody Map<String, String> params, HttpServletRequest request, HttpServletResponse response) {
-		//參數
-		String taskId = params.get("taskId");
-		String delegateUser= params.get("userId");
-		String comment = params.get("comment");if (comment==null){ comment="";}
-		if (delegateUser==null){ throw new  BusinessException("入参userId为空"); }
-		if (taskId==null){	throw new  BusinessException("入参taskId为空");	}
-
-		boolean isSuccess = service.doDelegateTask(taskId, delegateUser, comment);
-//			NotifyService.instance().taskNotify() //TODO 消息发送暂时先不做
-		if (isSuccess) {
-			return buildSuccess("流程改派成功");
-		}
-		return buildError(null,"流程改派失败",RequestStatusEnum.FAIL_GLOBAL);
-	}
-
-	 /**
-	  * 回调后-提交申请
-	  */
 	 @RequestMapping(value = "/submit", method = RequestMethod.POST)
 	 @ResponseBody
-	 public Object callbackSubmit(@RequestBody List<T> list, HttpServletRequest request, HttpServletResponse response) {
+	 public Object submit(@RequestBody List<T> list, HttpServletRequest request, HttpServletResponse response) {
 		 String processDefineCode = request.getParameter("processDefineCode");
 		 if (processDefineCode==null){ throw new BusinessException("入参流程定义为空"); }
 		 try{
-			String result= service.batchSubmit(list,processDefineCode);
-			return buildSuccess(result);
+			Object result= service.submit(list,processDefineCode);
+			return super.buildSuccess(result);
 		 }catch(Exception exp) {
 			 return this.buildGlobalError(exp.getMessage());
 		 }
-
 	 }
 
+	/**
+	 * 提交【支持抄送、指派】
+	 */
+	@RequestMapping(value = "/startBpm", method = RequestMethod.POST)
+	@ResponseBody
+	public Object startBpm(@RequestBody Map<String, Object> data, HttpServletRequest request, HttpServletResponse response) {
+		try {
+			Type superclassType = this.getClass().getGenericSuperclass();
+			if (!ParameterizedType.class.isAssignableFrom(superclassType.getClass())) {
+				return null;
+			}
+			Type[] t = ((ParameterizedType) superclassType).getActualTypeArguments();
+
+			String processDefineCode = data.get("processDefineCode").toString();
+			Object map = data.get("obj");
+			String mj=  JSONObject.toJSONString(map);
+
+			T entity = (T) JSON.parseObject(mj,t[0], Feature.IgnoreNotMatch);
+
+			String aj=  JSONObject.toJSONString(data.get("assignInfo"));
+			AssignInfo assignInfo = jsonResultService.toObject(aj, AssignInfo.class);
+			entity.setProcessDefineCode(processDefineCode);
+
+
+			List<Participant> copyUserParticipants=null;
+			try {
+				//抄送人
+				copyUserParticipants = evalParticipant((List<Map>)data.get("copyusers"));
+				logger.debug("抄送信息对象化：{}",JSONObject.toJSONString(copyUserParticipants));
+			}catch (Exception e){
+				logger.error("暂无指派抄送信息，可忽略。");
+			}
+			service.assignSubmitEntity(entity, processDefineCode, assignInfo, copyUserParticipants);
+			return super.buildSuccess(entity);
+		} catch (Exception e) {
+			return super.buildGlobalError(e.getMessage());
+		}
+
+	}
+
+
+
+	/**
+	 *
+	 * @param data
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/assignSubmit", method = RequestMethod.POST)
+	@ResponseBody
+	public Object assignSubmit(@RequestBody Map<String, Object> data,HttpServletRequest request) {
+		try {
+			Type superclassType = this.getClass().getGenericSuperclass();
+			if (!ParameterizedType.class.isAssignableFrom(superclassType.getClass())) {
+				return null;
+			}
+			Type[] t = ((ParameterizedType) superclassType).getActualTypeArguments();
+
+			String processDefineCode = data.get("processDefineCode").toString();
+			Object map = data.get("obj");
+			String mj=  JSONObject.toJSONString(map);
+
+			T entity = (T) JSON.parseObject(mj,t[0], Feature.IgnoreNotMatch);
+
+			String aj=  JSONObject.toJSONString(data.get("assignInfo"));
+			AssignInfo assignInfo = jsonResultService.toObject(aj, AssignInfo.class);
+			entity.setProcessDefineCode(processDefineCode);
+
+			List<Participant> copyUserParticipants=null;
+			try {
+				//抄送人
+				copyUserParticipants = evalParticipant((List<Map>)data.get("copyusers"));
+				logger.debug("抄送信息对象化：{}",JSONObject.toJSONString(copyUserParticipants));
+			}catch (Exception e){
+				logger.error("暂无指派抄送信息，可忽略。错误信息：{}",e.getMessage());
+			}
+			service.assignSubmitEntity(entity, processDefineCode, assignInfo, copyUserParticipants);
+			return super.buildSuccess(entity);
+		} catch (Exception e) {
+			return super.buildGlobalError(e.getMessage());
+		}
+	}
+
 	 /**
-	  * 回调:撤回申请
+	  * 撤回申请
 	  */
 	 @RequestMapping(value = "/recall", method = RequestMethod.POST)
 	 @ResponseBody
-	 public Object callbakRecall(@RequestBody List<T> list, HttpServletRequest request, HttpServletResponse response) {
-		 String resultMsg = service.batchRecall(list);
-		 if(StringUtils.isEmpty(resultMsg)) {
-			 return this.buildSuccess("工单撤回操作成功!");
-		 }else {
-			 return this.buildGlobalError(resultMsg);
-		 }
+	 public Object recall(@RequestBody List<T> list, HttpServletRequest request, HttpServletResponse response) {
+		 Object unsubmitJson = service.batchRecall(list);
+		 return super.buildSuccess(unsubmitJson);
 	 }
 
-	 /**
-	  * 回调:审批通过
-	  */
+
+	/**
+	 * 回调:审批通过
+	 * @param params
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
 	 @RequestMapping(value={"/doApprove"}, method={RequestMethod.POST})
 	 @ResponseBody
 	 public Object callbackApprove(@RequestBody Map<String, Object> params, HttpServletRequest request) throws Exception {
@@ -220,23 +181,45 @@ public  class GenericBpmController<T extends BpmModel> extends GenericController
 		 String busiId = hisProc.get("businessKey").toString();
 		 T entity=service.findById(busiId);
 		 if (endTime != null && endTime != JSONNull.getInstance() && !"".equals(endTime)) {
-			 entity.setBpmState(BpmExUtil.BPM_STATE_FINISH);		//已办结
+			 entity.setBpmState(BpmExUtil.BPM_STATE_FINISH);//已办结
 		 }else {
-			 entity.setBpmState(BpmExUtil.BPM_STATE_RUNNING);	//审批中
+			 entity.setBpmState(BpmExUtil.BPM_STATE_RUNNING);//审批中
 		 }
 		 T result = service.save(entity);
 		 return buildSuccess(result);
 	 }
-			 /************************************************************/
-	private GenericBpmService<T> service;
 
-	public void setService(GenericBpmService<T> bpmService) {
-		this.service = bpmService;
-		super.setService(bpmService);
+
+	 /**
+	  * 回调：驳回到制单人
+	  * @param params
+	  * @return null
+	  * @throws Exception
+	  */
+	 @RequestMapping(value = {"/doRejectMarkerBill"}, method = {RequestMethod.POST})
+	 @ResponseBody
+	 public JsonResponse doRejectMarkerBillAction(@RequestBody Map<String, Object> params) throws Exception {
+		 String billId = String.valueOf(params.get("billId"));
+		 service.doRejectMarkerBill(billId);
+		 return null;
+	 }
+
+	/**
+	 * 构造抄送人员participant列表
+	 * @param copyusers
+	 * @return
+	 */
+	private List<Participant> evalParticipant(List<Map> copyusers) {
+		logger.debug("抄送集合数据：{}",JSONObject.toJSONString(copyusers));
+		List<Participant> participants=new ArrayList<>();
+		for(Map map:copyusers){
+			Participant participant=new Participant();
+			participant.setId(map.get("id").toString());
+			participant.setType(map.get("type").toString());
+			participants.add(participant);
+		}
+		logger.debug("抄送对象数据：{}",JSONObject.toJSONString(participants));
+		return participants;
 	}
-
-
-
-
 
 }
