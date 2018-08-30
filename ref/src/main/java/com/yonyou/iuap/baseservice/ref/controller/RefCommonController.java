@@ -4,10 +4,11 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.yonyou.iuap.baseservice.entity.RefParamVO;
 import com.yonyou.iuap.baseservice.persistence.utils.RefXMLParse;
-import com.yonyou.iuap.baseservice.ref.entity.RefUITypeEnum;
-import com.yonyou.iuap.baseservice.ref.entity.RefViewModelVO;
 import com.yonyou.iuap.baseservice.ref.service.RefCommonService;
 import com.yonyou.iuap.baseservice.ref.utils.ValueConvertor;
+import com.yonyou.iuap.ref.model.RefUITypeEnum;
+import com.yonyou.iuap.ref.model.RefVertion;
+import com.yonyou.iuap.ref.model.RefViewModelVO;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -51,6 +52,7 @@ public final class RefCommonController  {
     @ResponseBody
     public RefViewModelVO getRefModelInfo(@RequestBody RefViewModelVO refViewModel) {
         refViewModel.setRefUIType(RefUITypeEnum.RefGridTree);
+        refViewModel.setRefVertion(RefVertion.NewRef);
         RefViewModelVO refModel =  refViewModel;
         RefParamVO refParamVO = RefXMLParse.getInstance().getMSConfig(refViewModel.getRefCode());
 
@@ -90,7 +92,6 @@ public final class RefCommonController  {
     
     /**
      * 通过pk查询所有数据,String pk数组入参
-     * @param arg0
      * @return
      */
     @RequestMapping(
