@@ -3,7 +3,9 @@ package com.yonyou.iuap.baseservice.bpm.service;
 import com.yonyou.iuap.baseservice.bpm.entity.BpmSimpleModel;
 import com.yonyou.iuap.baseservice.bpm.utils.BpmExUtil;
 import com.yonyou.iuap.baseservice.persistence.support.SaveFeatureExtension;
+import org.springframework.stereotype.Service;
 
+@Service
 public class BpmCommonService<T extends BpmSimpleModel> implements SaveFeatureExtension<T> {
 
     @Override
