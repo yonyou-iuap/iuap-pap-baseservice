@@ -2,6 +2,7 @@ package com.yonyou.iuap.baseservice.ref.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
 import com.yonyou.iuap.baseservice.entity.RefParamVO;
 import com.yonyou.iuap.baseservice.persistence.utils.RefXMLParse;
 import com.yonyou.iuap.baseservice.ref.service.RefCommonService;
@@ -23,10 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 说明：参照基础controller,所有参照都通过平台回调到这个地址取数据
@@ -34,6 +32,7 @@ import java.util.Map;
  * @author leon
  * 2018年7月11日
  * @update 2018-7-25 移除了对平台uitemplate_common的依赖
+ * @update 2018-8-31 加入了对平台uitemplate_common的依赖
  */
 @Controller
 @RequestMapping(value = "/common")
@@ -78,7 +77,9 @@ public final class RefCommonController  {
 
     /**
      * 通过pk查询所有数据,String pk数组入参
-     * @param arg0
+     * @param vo 仅使用
+     *         vo.getId();
+     *         vo.getRefCode();
      * @return
      */
     @RequestMapping(
@@ -86,8 +87,21 @@ public final class RefCommonController  {
             method = {RequestMethod.POST}
     )
     @ResponseBody
-    public List<Map<String, String>> matchPKRefJSON(RefViewModelVO arg0) {
-        return null;
+    public List<Map<String, String>> matchPKRefJSON(RefViewModelVO vo) {
+        if (vo.getRefCode()==null){
+            log.info("matchPKRefJSON 接口入参的refcode为空,返回空结果");
+            return  new ArrayList<>();
+        }
+        if (vo.getId()==null){
+            log.info("matchPKRefJSON 接口入参的id为空,返回空结果");
+            return  new ArrayList<>();
+        }
+        Map<String,String> params = new HashMap<>();
+        params.put("refCode",vo.getRefCode());
+        params.put("id",vo.getId());
+        List<Map<String,String>> list= new ArrayList<>()  ;
+        list.add(params);
+        return  filterRef(list);
     }
     
     /**
@@ -504,8 +518,6 @@ public final class RefCommonController  {
         }
         return (new ArrayList<Map<String,String>>());
     }
-
-
 
 
 	/************************************************************/
