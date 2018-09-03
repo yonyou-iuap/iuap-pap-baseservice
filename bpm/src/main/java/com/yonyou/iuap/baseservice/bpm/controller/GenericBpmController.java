@@ -191,15 +191,22 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 	}
 
 
-
+	/***
+	 * 流程终止回调默认实现
+	 * @param params
+	 * @return
+	 * @throws Exception
+	 */
 	@ResponseBody
 	public JsonResponse doTerminationAction(@RequestBody Map<String, Object> params) throws Exception {
 		Object node = params.get("historicProcessInstanceNode");
-		if (node==null) throw new BusinessException("流程审批回调参数为空");
+		if (node==null) throw new BusinessException("流程终止回调参数为空");
 		Map hisProc = (Map)node;
 		String busiId = hisProc.get("businessKey").toString();
-		service.doRejectMarkerBill(busiId);
-		return buildSuccess();
+		T entity=service.findById(busiId);
+		entity.setBpmState(BpmExUtil.BPM_STATE_FINISH);//已办结
+		T result = service.save(entity);
+		return buildSuccess(result);
 	}
 
 
