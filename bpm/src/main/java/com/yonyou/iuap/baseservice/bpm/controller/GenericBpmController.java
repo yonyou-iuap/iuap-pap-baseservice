@@ -8,6 +8,7 @@ import com.yonyou.iuap.baseservice.bpm.entity.BpmSimpleModel;
 import com.yonyou.iuap.baseservice.bpm.service.GenericBpmService;
 import com.yonyou.iuap.baseservice.bpm.utils.BpmExUtil;
 import com.yonyou.iuap.bpm.service.JsonResultService;
+import com.yonyou.iuap.bpm.web.IBPMBusinessProcessController;
 import com.yonyou.iuap.mvc.type.JsonResponse;
 import com.yonyou.iuap.persistence.vo.pub.BusinessException;
 import net.sf.json.JSONNull;
@@ -36,9 +37,9 @@ import java.util.Map;
  *
  * @update  将依赖sdk的rest接口转移到GenericBpmSdkController by Leon
  */
-public  class GenericBpmController<T extends BpmSimpleModel> extends BaseController {
+public  class GenericBpmController<T extends BpmSimpleModel> extends BaseController implements IBPMBusinessProcessController {
 
-    private Logger logger= LoggerFactory.getLogger(this.getClass());
+	private Logger logger= LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
 	private JsonResultService jsonResultService;
@@ -57,18 +58,18 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 	 * @param response
 	 * @return
 	 */
-	 @RequestMapping(value = "/submit", method = RequestMethod.POST)
-	 @ResponseBody
-	 public Object submit(@RequestBody List<T> list, HttpServletRequest request, HttpServletResponse response) {
-		 String processDefineCode = request.getParameter("processDefineCode");
-		 if (processDefineCode==null){ throw new BusinessException("入参流程定义为空"); }
-		 try{
+	@RequestMapping(value = "/submit", method = RequestMethod.POST)
+	@ResponseBody
+	public Object submit(@RequestBody List<T> list, HttpServletRequest request, HttpServletResponse response) {
+		String processDefineCode = request.getParameter("processDefineCode");
+		if (processDefineCode==null){ throw new BusinessException("入参流程定义为空"); }
+		try{
 			Object result= service.submit(list,processDefineCode);
 			return super.buildSuccess(result);
-		 }catch(Exception exp) {
-			 return this.buildGlobalError(exp.getMessage());
-		 }
-	 }
+		}catch(Exception exp) {
+			return this.buildGlobalError(exp.getMessage());
+		}
+	}
 
 	/**
 	 * 提交【支持抄送、指派】
@@ -153,15 +154,15 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 		}
 	}
 
-	 /**
-	  * 撤回申请
-	  */
-	 @RequestMapping(value = "/recall", method = RequestMethod.POST)
-	 @ResponseBody
-	 public Object recall(@RequestBody List<T> list, HttpServletRequest request, HttpServletResponse response) {
-		 Object unsubmitJson = service.batchRecall(list);
-		 return super.buildSuccess(unsubmitJson);
-	 }
+	/**
+	 * 撤回申请
+	 */
+	@RequestMapping(value = "/recall", method = RequestMethod.POST)
+	@ResponseBody
+	public Object recall(@RequestBody List<T> list, HttpServletRequest request, HttpServletResponse response) {
+		Object unsubmitJson = service.batchRecall(list);
+		return super.buildSuccess(unsubmitJson);
+	}
 
 
 	/**
@@ -171,38 +172,92 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 	 * @return
 	 * @throws Exception
 	 */
-	 @RequestMapping(value={"/doApprove"}, method={RequestMethod.POST})
-	 @ResponseBody
-	 public Object callbackApprove(@RequestBody Map<String, Object> params, HttpServletRequest request) throws Exception {
-		 Object node = params.get("historicProcessInstanceNode");
-		 if (node==null) throw new BusinessException("流程审批回调参数为空");
-		 Map hisProc = (Map)node;
-		 Object endTime = hisProc.get("endTime");
-		 String busiId = hisProc.get("businessKey").toString();
-		 T entity=service.findById(busiId);
-		 if (endTime != null && endTime != JSONNull.getInstance() && !"".equals(endTime)) {
-			 entity.setBpmState(BpmExUtil.BPM_STATE_FINISH);//已办结
-		 }else {
-			 entity.setBpmState(BpmExUtil.BPM_STATE_RUNNING);//审批中
-		 }
-		 T result = service.save(entity);
-		 return buildSuccess(result);
-	 }
+	@RequestMapping(value={"/doApprove"}, method={RequestMethod.POST})
+	@ResponseBody
+	public Object doApproveAction(@RequestBody Map<String, Object> params, HttpServletRequest request) throws Exception {
+		Object node = params.get("historicProcessInstanceNode");
+		if (node==null) throw new BusinessException("流程审批回调参数为空");
+		Map hisProc = (Map)node;
+		Object endTime = hisProc.get("endTime");
+		String busiId = hisProc.get("businessKey").toString();
+		T entity=service.findById(busiId);
+		if (endTime != null && endTime != JSONNull.getInstance() && !"".equals(endTime)) {
+			entity.setBpmState(BpmExUtil.BPM_STATE_FINISH);//已办结
+		}else {
+			entity.setBpmState(BpmExUtil.BPM_STATE_RUNNING);//审批中
+		}
+		T result = service.save(entity);
+		return buildSuccess(result);
+	}
 
 
-	 /**
-	  * 回调：驳回到制单人
-	  * @param params
-	  * @return null
-	  * @throws Exception
-	  */
-	 @RequestMapping(value = {"/doRejectMarkerBill"}, method = {RequestMethod.POST})
-	 @ResponseBody
-	 public JsonResponse doRejectMarkerBillAction(@RequestBody Map<String, Object> params) throws Exception {
-		 String billId = String.valueOf(params.get("billId"));
-		 service.doRejectMarkerBill(billId);
-		 return null;
-	 }
+
+	@ResponseBody
+	public JsonResponse doTerminationAction(@RequestBody Map<String, Object> params) throws Exception {
+		Object node = params.get("historicProcessInstanceNode");
+		if (node==null) throw new BusinessException("流程审批回调参数为空");
+		Map hisProc = (Map)node;
+		String busiId = hisProc.get("businessKey").toString();
+		service.doRejectMarkerBill(busiId);
+		return buildSuccess();
+	}
+
+
+	/**
+	 * 回调：驳回到制单人
+	 * @param params
+	 * @return null
+	 * @throws Exception
+	 */
+	@RequestMapping(value = {"/doRejectMarkerBill"}, method = {RequestMethod.POST})
+	@ResponseBody
+	public JsonResponse doRejectMarkerBillAction(@RequestBody Map<String, Object> params) throws Exception {
+		String billId = String.valueOf(params.get("billId"));
+		service.doRejectMarkerBill(billId);
+		return buildSuccess();
+	}
+
+	@Override
+	public JsonResponse doReject(Map<String, Object> map) throws Exception {
+		logger.debug("doReject");
+		return buildSuccess();
+	}
+
+	@Override
+	public JsonResponse doAddSign(Map<String, Object> map) throws Exception {
+		logger.debug("doAddSign");
+		return buildSuccess();
+	}
+
+	@Override
+	public JsonResponse doDelegate(Map<String, Object> map) throws Exception {
+		logger.debug("doDelegate");
+		return buildSuccess();
+	}
+
+	@Override
+	public JsonResponse doAssign(Map<String, Object> map) throws Exception {
+		logger.debug("doAssign");
+		return buildSuccess();
+	}
+
+	@Override
+	public JsonResponse doWithdraw(Map<String, Object> map) throws Exception {
+		logger.debug("doWithdraw");
+		return buildSuccess();
+	}
+
+	@Override
+	public JsonResponse doSuspend(Map<String, Object> map) throws Exception {
+		logger.debug("doSuspend");
+		return buildSuccess();
+	}
+
+	@Override
+	public JsonResponse doActivate(Map<String, Object> map) throws Exception {
+		logger.debug("doActivate");
+		return buildSuccess();
+	}
 
 	/**
 	 * 构造抄送人员participant列表
