@@ -12,7 +12,7 @@ import com.yonyou.iuap.baseservice.ref.utils.ValueConvertor;
 import com.yonyou.iuap.ref.model.RefVertion;
 import com.yonyou.iuap.ref.model.RefViewModelVO;
 import com.yonyou.uap.ieop.security.datapermission.DataPermissionCenter;
-import com.yonyou.uap.wb.utils.JsonResponse;
+import com.yonyou.iuap.wb.utils.JsonResponse;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
