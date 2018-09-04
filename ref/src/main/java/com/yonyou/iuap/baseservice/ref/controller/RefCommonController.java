@@ -85,7 +85,20 @@ public final class RefCommonController  {
     @RequestMapping(value = {"/matchPKRefJSON"}, method = {RequestMethod.POST})
     @ResponseBody
     public List<Map<String, String>> matchPKRefJSON(RefViewModelVO arg0) {
-        return null;
+        if (vo.getRefCode()==null){
+            log.info("matchPKRefJSON 接口入参的refcode为空,返回空结果");
+            return  new ArrayList<>();
+        }
+        if (vo.getId()==null){
+            log.info("matchPKRefJSON 接口入参的id为空,返回空结果");
+            return  new ArrayList<>();
+        }
+        Map<String,String> params = new HashMap<>();
+        params.put("refCode",vo.getRefCode());
+        params.put("id",vo.getId());
+        List<Map<String,String>> list= new ArrayList<>()  ;
+        list.add(params);
+        return  filterRef(list);
     }
 
     /**
