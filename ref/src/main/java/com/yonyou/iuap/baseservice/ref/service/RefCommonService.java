@@ -105,6 +105,7 @@ public  class RefCommonService<T extends Model>  implements QueryFeatureExtensio
 
         Map<String, String> conditionQuoter = new HashMap<>();
 
+
         setCondition(refParamConfigTableTree,keyword,conditions,conditionQuoter,content);
 
         List<String> idList=null;
