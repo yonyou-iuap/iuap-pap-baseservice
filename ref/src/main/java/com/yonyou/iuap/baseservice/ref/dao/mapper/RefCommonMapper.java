@@ -37,7 +37,7 @@ public interface RefCommonMapper {
 			@Param("extcols") List<String> extcols,
 			@Param("keyword") String keyword,
 			@Param("condmap") Map<String, String> condmap,
-			@Param("condQu") Map<String, String> conditionQuoter,
+			@Param("condQu") Map<String, String> condQu,
 			@Param("condList") List<String> condList,
 			@Param("fidfield") String fidfield,
 			@Param("fidvalue") String fidvalue,
