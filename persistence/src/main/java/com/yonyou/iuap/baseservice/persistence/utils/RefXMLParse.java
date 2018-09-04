@@ -3,12 +3,13 @@ package com.yonyou.iuap.baseservice.persistence.utils;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+import com.yonyou.iuap.baseservice.entity.RefParamConfig;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -26,17 +27,22 @@ import com.yonyou.iuap.baseservice.entity.RefParamVO;
 public class RefXMLParse {
 
 	private static Logger logger = LoggerFactory.getLogger(RefXMLParse.class);
-	private static RefXMLParse refXMLParse;
-	private static Document refConfigDocument = null;
+	private static RefXMLParse refXMLParse=null;
+	private static volatile ConcurrentHashMap<String,RefParamVO> refParamVOs=new ConcurrentHashMap<>();
+	private static final String REF_DECUMENT_NAME="ref";
 	private RefXMLParse() {
 
 	}
 	
-	public static RefXMLParse getInstance() {
+	public static  RefXMLParse getInstance() {
 		if (refXMLParse == null) {
 			synchronized (RefXMLParse.class) {
-				// 获取发送者信息
-				refConfigDocument = getDocument("ref");
+				try {
+					initRefXml();
+				} catch (NoSuchFieldException | IllegalAccessException  |ClassNotFoundException e) {
+					logger.error(REF_DECUMENT_NAME+".xml，解析失败");
+					logger.error(e.getStackTrace().toString());
+				}
 			}
 			return new RefXMLParse();
 		} else {
@@ -44,22 +50,35 @@ public class RefXMLParse {
 		}
 	}
 
-	private static Document getDocument(String filePath) {
+	/**
+	 * 根据refcode获取配置信息
+	 * @param refCode 参照code
+	 * @return 参照配置信息
+	 */
+	public RefParamVO getReParamConfig(String refCode) {
+		return refParamVOs.get(refCode);
+	}
+
+	/**
+	 * 加载参照配置文件
+	 * @return xml对象
+	 */
+	private static Document getDocument() {
 		SAXReader reader = new SAXReader();
 		Document doc = null;
-		// 先从Java -D的变量中取值
-		String filePath_absolute = System.getProperty(filePath);
-		// 如果为空，再从java env的变量中取值
+		/* 先从Java -D的变量中取值*/
+		String filePath_absolute = System.getProperty(REF_DECUMENT_NAME);
+		/* 如果为空，再从java env的变量中取值 */
 		if (filePath_absolute == null) {
-			filePath_absolute = System.getenv().get(filePath);
+			filePath_absolute = System.getenv().get(REF_DECUMENT_NAME);
 		}
-        // 从默认路径中读取
+        /* 从默认路径中读取 */
 		if (filePath_absolute == null) {
 			try {
-				InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(filePath+".xml");
+				InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(REF_DECUMENT_NAME+".xml");
 				doc = reader.read(in);
 			} catch (DocumentException e) {
-				logger.error("指定文件路径：" + filePath + "不存在！", e);
+				logger.error("指定文件路径：" + REF_DECUMENT_NAME + "不存在！", e);
 			}
 			
 		} else{
@@ -67,382 +86,111 @@ public class RefXMLParse {
 				InputStream in = new FileInputStream(filePath_absolute);
 				doc = reader.read(in);
 			} catch (DocumentException e) {
-				logger.error("解析文件：" + filePath + "时出错！", e);
+				logger.error("解析文件：" + REF_DECUMENT_NAME + "时出错！", e);
 			} catch (FileNotFoundException e) {
-				logger.error("指定文件路径：" + filePath + "不存在！", e);
+				logger.error("指定文件路径：" + REF_DECUMENT_NAME + "不存在！", e);
 			}
 		}
 		return doc;
 	}
-	
-	//根据refCode获取表名和字段 --表格
-	public RefParamVO getMSConfig(String refCode) {
-		// 得到根节点
-		Element root = refConfigDocument.getRootElement();
-		List<Element> RefViewModelVOs = root.elements("RefViewModelVO");
-		for(Element refviewmodel:RefViewModelVOs){
-			if(refCode.equals(refviewmodel.attributeValue("code"))){
-				List<Element> ele = refviewmodel.elements("table");
-				Element tableE = null;
-				if(ele.size() == 1){
-					tableE = ele.get(0);
-				}else{
-					//xml结构错误
-				}
-				
-				RefParamVO refParamVO = new RefParamVO();
-				//解析ref.xml表名
-				String tableName = tableE.attributeValue("name");
-				refParamVO.setTablename(tableName);
-				//解析参照模型是否是标准模型
-				String isBasic = tableE.attributeValue("isBasicTable");
-				if(isBasic != null){
-					refParamVO.setIsBasic(isBasic);
-				}
-				
-				Map<String,String> map = new LinkedHashMap<String,String>();
-				List<String> list = new ArrayList<String>();
-				
-				List<Element> showele = tableE.elements();
-				for(Element showe : showele){
-					String code = showe.attributeValue("code");
-					String name = showe.getText();
-					if("pidfield".equals(code)){
-						if(!"".equals(name)){
-							refParamVO.setPidfield(name);
-							list.add(name);
-						}
-					}else if("idfield".equals(code)){
-						if(!"".equals(name)){
-							refParamVO.setIdfield(name);
-						}	
-					}else if("ts".equals(code)){
-						if(!"".equals(name)){
-							refParamVO.setTs(name);
-						}	
-					}else if("dr".equals(code)){
-						if(!"".equals(name)){
-							String[] sArray = name.split(",");
-							refParamVO.setDr(sArray[0]);
-							refParamVO.setDrValue(sArray[1]);
-						}	
-					}else{
-						map.put(code,name);
-						list.add(code);
-					}
-				}
-				refParamVO.setShowcol(map);
-				refParamVO.setExtcol(list);
-				return refParamVO;
+
+
+	/**
+	 * 解析ref xml配置文件
+	 * @throws NoSuchFieldException 属性不存在
+	 * @throws IllegalAccessException 属性不合法
+	 */
+	private static void initRefXml() throws NoSuchFieldException, IllegalAccessException, ClassNotFoundException {
+		Document document=getDocument();
+		Element   root            = document.getRootElement();
+		List<Element> refViewModelVOs = root.elements(RefXmlConstract.REF_VIEW_MODEL_VO);
+		for(Element refViewModelVOElement:refViewModelVOs) {
+			RefParamVO refParamVO=new RefParamVO();
+			String refType=refViewModelVOElement.attributeValue(RefXmlConstract.REF_TYPE);
+			String refname=refViewModelVOElement.attributeValue(RefXmlConstract.REF_NAME);
+			String voCode=refViewModelVOElement.attributeValue(RefXmlConstract.REF_VIEW_MODEL_VO_CODE);
+			if(StringUtils.isEmpty(refType)){
+				logger.error("参照类型不可为空，请设reftype值，例如：<RefViewModelVO code=\"***\" refType = \"1\">");
 			}
+			refParamVO.setReftype(refType);
+			refParamVO.setRefname(refname);
+			initParamConfig(refParamVO,refViewModelVOElement.element(RefXmlConstract.REF_TABLE_NODE),RefXmlConstract.REF_TABLE_NODE);
+			initParamConfig(refParamVO,refViewModelVOElement.element(RefXmlConstract.REF_TREE_NODE),RefXmlConstract.REF_TREE_NODE);
+			initThead(refParamVO,refViewModelVOElement.element(RefXmlConstract.REF_THEAD_NODE));
+			refParamVOs.put(voCode,refParamVO);
 		}
-		return null;
 	}
-	
-	//根据refCode获取表名和字段 --单选多选
-	public RefParamVO getCheckboxMSConfig(String refCode) {
-		// 得到根节点
-		Element root = refConfigDocument.getRootElement();
-		List<Element> RefViewModelVOs = root.elements("RefViewModelVO");
-		for(Element refviewmodel:RefViewModelVOs){
-			if(refCode.equals(refviewmodel.attributeValue("code"))){
-				List<Element> ele = refviewmodel.elements("table");
-				Element tableE = null;
-				if(ele.size() == 1){
-					tableE = ele.get(0);
-				}else{
-					//xml结构错误
-				}
-				
-				RefParamVO refParamVO = new RefParamVO();
-				//解析ref.xml表名
-				String tableName = tableE.attributeValue("name");
-				refParamVO.setTablename(tableName);
-				//解析参照模型是否是标准模型
-				String isBasic = tableE.attributeValue("isBasicTable");
-				if(isBasic != null){
-					refParamVO.setIsBasic(isBasic);
-				}
-				
-				Map<String,String> map = new HashMap<String,String>();
-				List<String> list = new ArrayList<String>();
-				
-				List<Element> showele = tableE.elements();
-				for(Element showe : showele){
-					String code = showe.attributeValue("code");
-					String name = showe.getText();
-					if("refcode".equals(code)){
-						if(!"".equals(name)){
-							refParamVO.setCodefield(name);
-						}
-					}else if("idfield".equals(code)){
-						if(!"".equals(name)){
-							refParamVO.setIdfield(name);
-						}	
-					}else if("refname".equals(code)){
-						if(!"".equals(name)){
-							refParamVO.setNamefield(name);
-						}	
-					}else if("ts".equals(code)){
-						if(!"".equals(name)){
-							refParamVO.setTs(name);
-						}	
-					}else if("dr".equals(code)){
-						if(!"".equals(name)){
-							String[] sArray = name.split(",");
-							refParamVO.setDr(sArray[0]);
-							refParamVO.setDrValue(sArray[1]);
-						}	
-					}else{
-						map.put(code,name);
-						list.add(code);
-					}
-				}
-				refParamVO.setShowcol(map);
-				refParamVO.setExtcol(list);
-				return refParamVO;
+
+	/**
+	 * 初始化表格配置
+	 * @param refParamVO 参照配置对象
+	 * @param tableElement xml解析对象
+	 * @throws NoSuchFieldException 属性不存在
+	 * @throws IllegalAccessException 属性不合法
+	 */
+	private static void initParamConfig(RefParamVO refParamVO,Element tableElement,String refNode) throws NoSuchFieldException, IllegalAccessException, ClassNotFoundException {
+		if(tableElement!=null){
+			List<Element>  fields             = tableElement.elements(RefXmlConstract.REF_FIELD_NODE);
+			RefParamConfig refParamConfig     =new RefParamConfig();
+			refParamConfig.setTableName(tableElement.attributeValue(RefXmlConstract.REF_TABLE_NAME));
+			for(Element field:fields){
+				setFieldValue(field, refParamConfig);
 			}
+			if(RefXmlConstract.REF_TABLE_NODE.equals(refNode)){
+				refParamVO.setRefParamConfigTable(refParamConfig);
+			}else{
+				refParamVO.setRefParamConfigTableTree(refParamConfig);
+			}
+
+
 		}
-		return null;
 	}
-	
-	
-	//根据refCode获取表名和字段 --树
-	public RefParamVO getMSConfigTree(String refCode) {
-		// 得到根节点
-		Element root = refConfigDocument.getRootElement();
-		List<Element> RefViewModelVOs = root.elements("RefViewModelVO");
-		for(Element refviewmodel:RefViewModelVOs){
-			if(refCode.equals(refviewmodel.attributeValue("code"))){
-				List<Element> ele = refviewmodel.elements("tableTree");
-				Element tableE = null;
-				if(ele.size() == 1){
-					tableE = ele.get(0);
-				}else{
-					//xml结构错误
-				}
-				
-				RefParamVO refParamVO = new RefParamVO();
-				String tableName = tableE.attributeValue("name");				
-				refParamVO.setTablename(tableName);
-				//解析参照模型是否是标准模型
-				String isBasic = tableE.attributeValue("isBasicTable");
-				if(isBasic != null && "false".equals(isBasic)){
-					refParamVO.setIsBasic(isBasic);
-				}
-				
-				Map<String,String> map = new HashMap<String,String>();
-				List<String> list = new ArrayList<String>();
-				List<Element> showele = tableE.elements();
-				for(Element showe : showele){
-					String code = showe.attributeValue("code");
-					String name = showe.getText();
-					if("pidfield".equals(code)){
-						refParamVO.setPidfield(name);
-					}else if("idfield".equals(code)){
-						refParamVO.setIdfield(name);
-					}else if("codefield".equals(code)){
-						refParamVO.setCodefield(name);
-					}else if("namefield".equals(code)){
-						refParamVO.setNamefield(name);
-					}else if("ts".equals(code)){
-						if(!"".equals(name)){
-							refParamVO.setTs(name);
-						}	
-					}else if("dr".equals(code)){
-						if(!"".equals(name)){
-							String[] sArray = name.split("|");
-							refParamVO.setDr(sArray[0]);
-							refParamVO.setDrValue(sArray[1]);
-						}	
-					}
-				}
-				return refParamVO;
-			}
-		}	
-		return null;
-	}
-	
-	//参照回显查询
-		public RefParamVO getFilterConfig(String refCode) {
-			// 得到根节点
-			Element root = refConfigDocument.getRootElement();
-			List<Element> RefViewModelVOs = root.elements("RefViewModelVO");
-			String refType = null;
-			for(Element refviewmodel:RefViewModelVOs){
-				refType = refviewmodel.attributeValue("reftype");
-				if(refType == null){
-					if(refCode.equals(refviewmodel.attributeValue("code"))){
-						List<Element> ele = refviewmodel.elements("table");
-						Element tableE = null;
-						if(ele.size() == 1){
-							tableE = ele.get(0);
-						}else{
-							//xml结构错误
-						}
-						
-						RefParamVO refParamVO = new RefParamVO();
-						//解析ref.xml表名
-						String tableName = tableE.attributeValue("name");
-						refParamVO.setTablename(tableName);
-						//解析参照模型是否是标准模型
-						String isBasic = tableE.attributeValue("isBasicTable");
-						if(isBasic != null){
-							refParamVO.setIsBasic(isBasic);
-						}
-						
-						Map<String,String> map = new HashMap<String,String>();
-						List<String> list = new ArrayList<String>();
-						
-						List<Element> showele = tableE.elements();
-						for(Element showe : showele){
-							String code = showe.attributeValue("code");
-							String name = showe.getText();
-							if("pidfield".equals(code)){
-								if(!"".equals(name)){
-									refParamVO.setPidfield(name);
-									list.add(name);
-								}
-							}else if("idfield".equals(code)){
-								if(!"".equals(name)){
-									refParamVO.setIdfield(name);
-								}	
-							}else if("ts".equals(code)){
-								if(!"".equals(name)){
-									refParamVO.setTs(name);
-								}	
-							}else if("dr".equals(code)){
-								if(!"".equals(name)){
-									String[] sArray = name.split(",");
-									refParamVO.setDr(sArray[0]);
-									refParamVO.setDrValue(sArray[1]);
-								}	
-							}else{
-								map.put(code,name);
-								list.add(code);
-							}
-						}
-						refParamVO.setShowcol(map);
-						refParamVO.setExtcol(list);
-						return refParamVO;
-					}
-				}else if(refType != null && "1".equals(refType) ){
-					if(refCode.equals(refviewmodel.attributeValue("code"))){
-						List<Element> ele = refviewmodel.elements("tableTree");
-						Element tableE = null;
-						if(ele.size() == 1){
-							tableE = ele.get(0);
-						}else{
-							//xml结构错误
-						}
-						
-						RefParamVO refParamVO = new RefParamVO();
-						String tableName = tableE.attributeValue("name");				
-						refParamVO.setTablename(tableName);
-						//解析参照模型是否是标准模型
-						String isBasic = tableE.attributeValue("isBasicTable");
-						if(isBasic != null && "false".equals(isBasic)){
-							refParamVO.setIsBasic(isBasic);
-						}
-						
-						Map<String,String> map = new HashMap<String,String>();
-						List<String> list = new ArrayList<String>();
-						List<Element> showele = tableE.elements();
-						for(Element showe : showele){
-							String code = showe.attributeValue("code");
-							String name = showe.getText();
-							if("pidfield".equals(code)){
-								refParamVO.setPidfield(name);
-								list.add(name);
-							}else if("idfield".equals(code)){
-								refParamVO.setIdfield(name);
-								list.add(name);
-							}else if("codefield".equals(code)){
-								refParamVO.setCodefield(name);
-								list.add(name);
-							}else if("namefield".equals(code)){
-								refParamVO.setNamefield(name);
-								list.add(name);
-							}else if("ts".equals(code)){
-								if(!"".equals(name)){
-									refParamVO.setTs(name);
-								}	
-							}else if("dr".equals(code)){
-								if(!"".equals(name)){
-									String[] sArray = name.split("|");
-									refParamVO.setDr(sArray[0]);
-									refParamVO.setDrValue(sArray[1]);
-								}	
-							}
-						}
-						refParamVO.setExtcol(list);
-						return refParamVO;
-					}
-				}else if(refType != null && "4".equals(refType)){
-					if(refCode.equals(refviewmodel.attributeValue("code"))){
-						List<Element> ele = refviewmodel.elements("table");
-						Element tableE = null;
-						if(ele.size() == 1){
-							tableE = ele.get(0);
-						}else{
-							//xml结构错误
-						}
-						
-						RefParamVO refParamVO = new RefParamVO();
-						//解析ref.xml表名
-						String tableName = tableE.attributeValue("name");
-						refParamVO.setTablename(tableName);
-						//解析参照模型是否是标准模型
-						String isBasic = tableE.attributeValue("isBasicTable");
-						if(isBasic != null){
-							refParamVO.setIsBasic(isBasic);
-						}
-						
-						Map<String,String> map = new HashMap<String,String>();
-						List<String> list = new ArrayList<String>();
-						
-						List<Element> showele = tableE.elements();
-						for(Element showe : showele){
-							String code = showe.attributeValue("code");
-							String name = showe.getText();
-							if("refcode".equals(code)){
-								if(!"".equals(name)){
-									refParamVO.setCodefield(name);
-									list.add(name);
-								}
-							}else if("idfield".equals(code)){
-								if(!"".equals(name)){
-									refParamVO.setIdfield(name);
-									list.add(name);
-								}	
-							}else if("refname".equals(code)){
-								if(!"".equals(name)){
-									refParamVO.setNamefield(name);
-									list.add(name);
-								}	
-							}else if("ts".equals(code)){
-								if(!"".equals(name)){
-									refParamVO.setTs(name);
-								}	
-							}else if("dr".equals(code)){
-								if(!"".equals(name)){
-									String[] sArray = name.split(",");
-									refParamVO.setDr(sArray[0]);
-									refParamVO.setDrValue(sArray[1]);
-								}	
-							}else{
-								map.put(code,name);
-								list.add(code);
-							}
-						}
-						refParamVO.setShowcol(map);
-						refParamVO.setExtcol(list);
-						return refParamVO;
-					}
-				}
-				
-			}
-			return null;
+
+
+
+	/**
+	 * 参数设值
+	 * @param field 属性
+	 * @param refParamConfig 对象
+	 * @throws NoSuchFieldException 属性不存在
+	 * @throws IllegalAccessException 属性不合法
+	 */
+	private static  void setFieldValue(Element field,RefParamConfig refParamConfig) throws NoSuchFieldException, IllegalAccessException, ClassNotFoundException {
+		Class clzz =  Class.forName(RefParamConfig.class.getName());
+		String code=field.attributeValue(RefXmlConstract.REF_FIELD_CODE_ATTRIBUTE);
+		String value=field.getStringValue();
+		Field               codeField=clzz.getDeclaredField(code);
+		codeField.setAccessible(true);
+		if(RefXmlConstract.REF_FIELD_CODE_codition.equals(code)){
+			refParamConfig.getCondition().add(value);
+		}else if(RefXmlConstract.REF_FIELD_CODE_EXTENSION.equals(code)){
+			refParamConfig.getExtension().add(value);
+		}else if(RefXmlConstract.REF_FIELD_CODE_SORT.equals(code)){
+			String order=field.attributeValue(RefXmlConstract.REF_FIELD_CODE_ORDER);
+			refParamConfig.setOrder(order);
+			refParamConfig.setSort(value);
+		}else{
+			codeField.set(refParamConfig,value);
 		}
-	
+
+	}
+	/**
+	 * 初始化表头信息
+	 * @param refParamVO 参照配置对象
+	 * @param theadElement xml解析对象
+	 */
+	private static void initThead(RefParamVO refParamVO,Element theadElement) {
+		if(theadElement!=null){
+			List<Element> fields= theadElement.elements(RefXmlConstract.REF_FIELD_NODE);
+			LinkedHashMap<String, String> thead=new LinkedHashMap<>();
+			for(Element field:fields){
+				String code=field.attributeValue(RefXmlConstract.REF_FIELD_CODE_ATTRIBUTE);
+				String value=field.getStringValue();
+				thead.put(code,value);
+			}
+			refParamVO.setThead(thead);
+		}
+	}
+
+
 }

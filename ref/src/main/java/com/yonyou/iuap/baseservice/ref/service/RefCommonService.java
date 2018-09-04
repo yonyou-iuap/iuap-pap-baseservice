@@ -10,10 +10,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.yonyou.iuap.baseservice.entity.Model;
+import com.yonyou.iuap.baseservice.entity.RefParamConfig;
 import com.yonyou.iuap.baseservice.persistence.support.QueryFeatureExtension;
 import com.yonyou.iuap.mvc.type.SearchParams;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +32,7 @@ import com.yonyou.iuap.baseservice.ref.dao.mapper.RefCommonMapper;
 
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
+
 
 /**
  * 通用参照服务,基于ref.XML解析,生成动态sql检索,此配置文件应部署在业务项目中,例如iuap-pap-quickStart/src/main/resources/ref.xml
@@ -50,26 +55,114 @@ public  class RefCommonService<T extends Model>  implements QueryFeatureExtensio
         return result;
     }
 
-    public Page<Map<String, Object>> getTreeRefData(PageRequest pageRequest,
-                                                    String tablename, String idfield, Map<String, String> condition,List<String> extColumns) {
+    public Page<Map<String, Object>> getTreeRefData(PageRequest pageRequest,String refType, RefParamConfig refParamConfigTable, String content,String fid, Set<String> ids) {
+        String keyword=null;
 
-        Page<Map<String,Object>> result = mapper.treerefselectAllByPage(pageRequest,tablename,idfield, extColumns,condition).getPage();
+        Map<String, String> conditions =null;
+
+        Map<String, String> conditionQuoter = new HashMap<>();
+
+        if("6".equals(refType)){
+            keyword="%"+content+"%";
+        }else if(StringUtils.isNotEmpty(content)){
+            conditions = new HashMap<>();
+            Map<String,String> map  = JSON.parseObject(content,Map.class);
+            Map<String,String> filters=new HashMap<>();
+            filters.putAll(refParamConfigTable.getFilters());
+            for(String key : map.keySet()){
+                String filter=filters.get(key);
+                String quoter=StringUtils.isEmpty(filter)?"like":filter;
+                conditionQuoter.put(key,quoter);
+                if("like".equals(quoter)){
+                    conditions.put(key,"%"+ map.get(key)+"%");
+                }else{
+                    conditions.put(key, map.get(key));
+                }
+
+            }
+        }
+        List<String> idList=null;
+        if(ids!=null&&ids.size()>0){
+            idList=new ArrayList<>(ids);
+        }
+        Page<Map<String,Object>> result = mapper.treerefselectAllByPage(pageRequest,refParamConfigTable.getTableName(),refParamConfigTable.getId(),
+                refParamConfigTable.getRefcode(),refParamConfigTable.getRefname(), refParamConfigTable.getExtension(),keyword,conditions,conditionQuoter,refParamConfigTable.getCondition(),refParamConfigTable.getFid(),fid,
+                idList).getPage();
+
         return result;
+
     }
-    
-    public Page<Map<String, Object>> getCheckboxData(PageRequest pageRequest,
-            String tablename, String idfield,
-            String codefield, String namefield, Map<String, String> condition,List<String> extColumns) {
-    	
-    	Page<Map<String,Object>> result = mapper.selectRefCheck(pageRequest,tablename,idfield,codefield,namefield, extColumns,condition).getPage();
+
+    public Page<Map<String, Object>> getCheckboxData(PageRequest pageRequest,String refType, RefParamConfig refParamConfigTable, String content, Set<String> ids) {
+        String keyword=null;
+
+        Map<String, String> conditions =null;
+
+        Map<String, String> conditionQuoter = new HashMap<>();
+
+        if("6".equals(refType)){
+            keyword="%"+content+"%";
+        }else if(StringUtils.isNotEmpty(content)){
+            conditions = new HashMap<>();
+            Map<String,String> map  = JSON.parseObject(content,Map.class);
+            Map<String,String> filters=new HashMap<>();
+            filters.putAll(refParamConfigTable.getFilters());
+            for(String key : map.keySet()){
+                String filter=filters.get(key);
+                String quoter=StringUtils.isEmpty(filter)?"like":filter;
+                conditionQuoter.put(key,quoter);
+                if("like".equals(quoter)){
+                    conditions.put(key,"%"+ map.get(key)+"%");
+                }else{
+                    conditions.put(key, map.get(key));
+                }
+
+            }
+        }
+        List<String> idList=null;
+        if(ids!=null&&ids.size()>0){
+            idList=new ArrayList<>(ids);
+        }
+    	Page<Map<String,Object>> result = mapper.selectRefCheck(pageRequest,refParamConfigTable.getTableName(),refParamConfigTable.getId(),
+                refParamConfigTable.getRefcode(),refParamConfigTable.getRefname(), refParamConfigTable.getExtension(),keyword,conditions,conditionQuoter,refParamConfigTable.getCondition(),
+                idList).getPage();
+
     	return result;
     }
 
-    public Page<Map<String, Object>> selectRefTree(PageRequest pageRequest,
-                                                   String tablename, String idfield, String pidfield,
-                                                   String codefield, String namefield, Map<String, String> condition,List<String> extColumns) {
+    public Page<Map<String, Object>> selectRefTree(PageRequest pageRequest,String refType, RefParamConfig refParamConfigTableTree, String content, Set<String> ids) {
+        String keyword=null;
 
-        Page<Map<String,Object>> result = mapper.selectRefTree(pageRequest,tablename,idfield,pidfield,codefield,namefield, extColumns,condition).getPage();
+        Map<String, String> conditions =null;
+
+        Map<String, String> conditionQuoter = new HashMap<>();
+
+        if("6".equals(refType)){
+            keyword="%"+content+"%";
+        }else if(StringUtils.isNotEmpty(content)){
+            conditions = new HashMap<>();
+            Map<String,String> map  = JSON.parseObject(content,Map.class);
+            Map<String,String> filters=new HashMap<>();
+            filters.putAll(refParamConfigTableTree.getFilters());
+            for(String key : map.keySet()){
+                String filter=filters.get(key);
+                String quoter=StringUtils.isEmpty(filter)?"like":filter;
+                conditionQuoter.put(key,quoter);
+                if("like".equals(quoter)){
+                    conditions.put(key,"%"+ map.get(key)+"%");
+                }else{
+                    conditions.put(key, map.get(key));
+                }
+
+            }
+        }
+        List<String> idList=null;
+        if(ids!=null&&ids.size()>0){
+            idList=new ArrayList<>(ids);
+        }
+        Page<Map<String,Object>> result = mapper.selectRefTree(pageRequest,refParamConfigTableTree.getTableName(),refParamConfigTableTree.getId(),
+                refParamConfigTableTree.getRefcode(),refParamConfigTableTree.getRefname(),refParamConfigTableTree.getPid(), refParamConfigTableTree.getExtension(),keyword,conditions,conditionQuoter,refParamConfigTableTree.getCondition(),
+                idList).getPage();
         return result;
     }
 
@@ -112,21 +205,19 @@ public  class RefCommonService<T extends Model>  implements QueryFeatureExtensio
              */
 
             for (Field field : refCache.keySet()) {
-                RefParamVO params = RefXMLParse.getInstance().getFilterConfig(refCache.get(field).code());
-                if (params==null){
+                RefParamVO refParamVO = RefXMLParse.getInstance().getReParamConfig(refCache.get(field).code());
+                RefParamConfig refParamConfig=refParamVO.getRefParamConfigTable();
+                if (refParamVO==null){
                     log.warn("参照配置错误:"+refCache.get(field).code()+"不存在");
                     continue;
                 }
-                String idfield = StringUtils.isBlank(params.getIdfield()) ? "id"
-                        : params.getIdfield();
                 List<String> setList = new ArrayList<>(idCache.get(field));
                 if (setList==null || setList.size()==0){
                     continue;
                 }
                 List<Map<String, Object>> refContents =
-                        mapper.findRefListByIds(params.getTablename(),
-                                idfield, params.getExtcol(), setList);
-//                CaseInsensitiveMap map =new CaseInsensitiveMap( list.get(0));
+                        mapper.findRefListByIds(refParamConfig.getTableName(),
+                                refParamConfig.getId(), refParamConfig.getExtension(), setList);
                 if ( null!= refContents && refContents.size()>0)
                     refDataCache.put(field, refContents);//将所有参照数据集和field的关系缓存起来后续使用
             }
@@ -186,5 +277,19 @@ public  class RefCommonService<T extends Model>  implements QueryFeatureExtensio
     @Override
     public List<T> afterListQuery(List<T> list) {
         return this.fillListWithRef(list);
+    }
+
+
+
+    public List<Map<String, Object>> getByIds(String tablename, String idfield,String codefield, String namefield,
+                                              List<String> extColumns, List<String> ids) {
+
+        List<Map<String, Object>> result = mapper.getByIds(tablename,idfield, codefield,  namefield,extColumns,ids);
+
+        return result;
+    }
+    public List<Map<String, Object>> likeSearch(String tablename, String idfield,String codefield, String namefield,
+                                                List<String> extColumns, List<String> ids,String keyword) {
+        return mapper.likeSearch(tablename,idfield, codefield,  namefield,extColumns,ids,keyword);
     }
 }

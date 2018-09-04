@@ -1,15 +1,18 @@
 package com.yonyou.iuap.baseservice.ref.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.google.common.collect.Lists;
+import com.alibaba.fastjson.JSONArray;
+import com.yonyou.iuap.baseservice.entity.RefParamConfig;
 import com.yonyou.iuap.baseservice.entity.RefParamVO;
 import com.yonyou.iuap.baseservice.persistence.utils.RefXMLParse;
+import com.yonyou.iuap.baseservice.persistence.utils.RefXmlConstract;
 import com.yonyou.iuap.baseservice.ref.service.RefCommonService;
+import com.yonyou.iuap.baseservice.ref.utils.RefUitls;
 import com.yonyou.iuap.baseservice.ref.utils.ValueConvertor;
-import com.yonyou.iuap.ref.model.RefUITypeEnum;
 import com.yonyou.iuap.ref.model.RefVertion;
 import com.yonyou.iuap.ref.model.RefViewModelVO;
+import com.yonyou.uap.ieop.security.datapermission.DataPermissionCenter;
+import com.yonyou.uap.wb.utils.JsonResponse;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -24,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 /**
@@ -32,142 +36,95 @@ import java.util.*;
  * @author leon
  * 2018年7月11日
  * @update 2018-7-25 移除了对平台uitemplate_common的依赖
- * @update 2018-8-31 加入了对平台uitemplate_common的依赖
  */
 @Controller
 @RequestMapping(value = "/common")
 public final class RefCommonController  {
-	
-	private Logger log = LoggerFactory.getLogger(RefCommonController.class);
 
-    /*
-     * 获取表头信息
-     * @see com.yonyou.iuap.ref.sdk.refmodel.model.AbstractTreeGridRefModel#getRefModelInfo(com.yonyou.iuap.ref.model.RefViewModelVO)
-     */
-    @RequestMapping(
-            value = {"/getRefModelInfo"},
-            method = {RequestMethod.POST}
-    )
+    private Logger logger = LoggerFactory.getLogger(RefCommonController.class);
+
+    @Autowired
+    private RefCommonService service;
+
+
+
+    @RequestMapping(value = {"/getRefModelInfo"}, method = {RequestMethod.POST})
     @ResponseBody
     public RefViewModelVO getRefModelInfo(@RequestBody RefViewModelVO refViewModel) {
-        refViewModel.setRefUIType(RefUITypeEnum.RefGridTree);
+        RefParamVO refParamVO = RefXMLParse.getInstance().getReParamConfig(refViewModel.getRefCode());
+        refViewModel.setRefName(refParamVO.getRefname());
         refViewModel.setRefVertion(RefVertion.NewRef);
-        RefViewModelVO refModel =  refViewModel;
-        RefParamVO refParamVO = RefXMLParse.getInstance().getMSConfig(refViewModel.getRefCode());
+        refViewModel.setRootName(refParamVO.getRefname());
+        refViewModel.setRefUIType(RefUitls.getRefUIType(refParamVO.getReftype()));
 
-        Map<String,String> showcolMap = refParamVO.getShowcol();
-        String[] showcode = null;
-        String[] showname = null;
-        if (showcolMap != null) {
-            showcode = new String[showcolMap.size()];
-            showname = new String[showcolMap.size()];
+        Map<String,String> showColMap = refParamVO.getThead();
+        String[] showCode = null;
+        String[] showName = null;
+        if (showColMap != null) {
+            showCode = new String[showColMap.size()];
+            showName = new String[showColMap.size()];
             int i = 0;
-            for (Map.Entry<String, String> entry : showcolMap.entrySet()) {
-                showcode[i] = entry.getKey();
-                showname[i] = entry.getValue();
+            for (Map.Entry<String, String> entry : showColMap.entrySet()) {
+                showCode[i] = entry.getKey();
+                showName[i] = entry.getValue();
                 i++;
             }
         }
-        //显示列编码和名称
-        refModel.setStrFieldCode(showcode);
-        refModel.setStrFieldName(showname);
-        refModel.setDefaultFieldCount(showcolMap.size());
-        return refModel;
+        /*显示列编码和名称*/
+        refViewModel.setStrFieldCode(showCode);
+        refViewModel.setStrFieldName(showName);
+        refViewModel.setDefaultFieldCount(showColMap.size());
+        return refViewModel;
     }
 
     /**
      * 通过pk查询所有数据,String pk数组入参
-     * @param vo 仅使用
-     *         vo.getId();
-     *         vo.getRefCode();
+     * @param arg0
      * @return
      */
-    @RequestMapping(
-            value = {"/matchPKRefJSON"},
-            method = {RequestMethod.POST}
-    )
+    @RequestMapping(value = {"/matchPKRefJSON"}, method = {RequestMethod.POST})
     @ResponseBody
-    public List<Map<String, String>> matchPKRefJSON(RefViewModelVO vo) {
-        if (vo.getRefCode()==null){
-            log.info("matchPKRefJSON 接口入参的refcode为空,返回空结果");
-            return  new ArrayList<>();
-        }
-        if (vo.getId()==null){
-            log.info("matchPKRefJSON 接口入参的id为空,返回空结果");
-            return  new ArrayList<>();
-        }
-        Map<String,String> params = new HashMap<>();
-        params.put("refCode",vo.getRefCode());
-        params.put("id",vo.getId());
-        List<Map<String,String>> list= new ArrayList<>()  ;
-        list.add(params);
-        return  filterRef(list);
+    public List<Map<String, String>> matchPKRefJSON(RefViewModelVO arg0) {
+        return null;
     }
-    
+
     /**
      * 通过pk查询所有数据,String pk数组入参
      * @return
      */
-    @RequestMapping(
-    		value = {"/getCommonRefData"},
-    		method = {RequestMethod.POST}
-    		)
+    @RequestMapping(value = {"/getCommonRefData"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> commonRefsearch(@RequestBody RefViewModelVO refModel) {
-    	//前台传过来的refType来做请求参数过滤
-        String transmitParam = refModel.getTransmitParam();
-        String refType = transmitParam;
 
-        //构建表体，其中list中为要查询的字段，必须和表头设置的相同，并且必须为表中的字段值
-        RefParamVO refParamVO = RefXMLParse.getInstance().getCheckboxMSConfig(refModel.getRefCode());
-
-        Map<String, Object> mapList = new HashMap<String, Object>();
-        List<Map<String, String>> results = new ArrayList<Map<String, String>>();
+        /*构建表体，其中list中为要查询的字段，必须和表头设置的相同，并且必须为表中的字段值*/
+        RefParamVO refParamVO = RefXMLParse.getInstance().getReParamConfig(refModel.getRefCode());
+        RefParamConfig refParamConfigTable=refParamVO.getRefParamConfigTable();
+        Map<String, Object> mapList = new HashMap<>();
+        List<Map<String, Object>> results = new ArrayList<>();
         try {
-            //获取当前页
+            /*获取当前页*/
             int pageNum = refModel.getRefClientPageInfo().getCurrPageIndex();
-            //每页显示的数量
-            int pageSize = 10;
-            //拼装分页请求对象
-            PageRequest request = null;
+            pageNum=pageNum<0?0:pageNum;
 
-            Map<String, String> conditions = new HashMap<String,String>();
-            
-            String basic = refParamVO.getIsBasic();
-            if(basic != null && "false".equals(basic)){//需要业务自己传递orderby字段
-            	String ts = refParamVO.getTs();
-            	request = buildPageRequest(pageNum, pageSize, ts);
-            	conditions.put(refParamVO.getDr(),refParamVO.getDrValue());
-            }else if(basic != null && "true".equals(basic)){//orderby ts
-            	request = buildPageRequest(pageNum, pageSize, "auto");
-            	conditions.put("dr", "0");
-            }else{//不加orderby过滤
-            	request = buildPageRequest(pageNum, pageSize, null);
+            /*每页显示的数量*/
+            int pageSize = refModel.getRefClientPageInfo().getPageSize();
+            pageSize=pageSize<1?10:pageSize;
+
+            /*拼装分页请求对象*/
+            PageRequest request = buildPageRequest(pageNum, pageSize,refParamVO.getRefParamConfigTable());
+
+            String dataPermission=refParamConfigTable.getDataPermission();
+            dataPermission=StringUtils.isEmpty(dataPermission)?refModel.getRefCode():dataPermission;
+            Set<String> ids = DataPermissionCenter.getInstance().getDataPermissionIds(dataPermission, refModel.getClientParam());
+            if ((DataPermissionCenter.getInstance().isUserDataPower(refModel.getClientParam())) && ((ids == null) || (ids.size() < 1))) {
+                mapList.put("dataList", results);
+                mapList.put("refViewModel", refModel);
+                return mapList;
             }
-            
-            refModel.getRefClientPageInfo().setPageSize(pageSize);
+            Page<Map<String, Object>> headpage = this.service.getCheckboxData(request,refParamVO.getReftype(), refParamConfigTable, refModel.getContent(), ids);
 
-            //获取查询条件 --如果content
-            String content = refModel.getContent();
-            
-            if(content != null && !"".equals(content)){
-                //对参照所有列进行模糊查询
-                for(String extcol : refParamVO.getExtcol()){
-                    conditions.put(extcol, content);
-                }
-            }
 
-            String idfield = StringUtils.isBlank(refParamVO.getIdfield()) ? "id"
-                    : refParamVO.getIdfield();
-            String codefield = StringUtils.isBlank(refParamVO.getIdfield()) ? "refcode"
-            		: refParamVO.getCodefield();
-            String namefield = StringUtils.isBlank(refParamVO.getIdfield()) ? "refname"
-            		: refParamVO.getNamefield();
-
-            Page<Map<String, Object>> headpage = this.service.getCheckboxData(
-                    request, refParamVO.getTablename(), idfield,codefield,namefield, conditions, refParamVO.getExtcol());
-
-            //总页数
+            /*总页数*/
             refModel.getRefClientPageInfo().setPageCount(headpage.getTotalPages());
 
             List<Map<String, Object>> headVOs = headpage.getContent();
@@ -175,7 +132,7 @@ public final class RefCommonController  {
             if (CollectionUtils.isNotEmpty(headVOs)) {
                 results = buildRtnValsOfCheckboxRef(headVOs);
             }
-            
+
             mapList.put("dataList", results);
             mapList.put("refViewModel", refModel);
         } catch (Exception e) {
@@ -189,10 +146,7 @@ public final class RefCommonController  {
      * @param arg0
      * @return
      */
-    @RequestMapping(
-            value = {"/filterRefJSON"},
-            method = {RequestMethod.POST}
-    )
+    @RequestMapping(value = {"/filterRefJSON"}, method = {RequestMethod.POST})
     @ResponseBody
     public List<Map<String, String>> filterRefJSON(RefViewModelVO arg0) {
         //
@@ -204,10 +158,7 @@ public final class RefCommonController  {
      * @param arg0
      * @return
      */
-    @RequestMapping(
-            value = {"/matchBlurRefJSON"},
-            method = {RequestMethod.POST}
-    )
+    @RequestMapping(value = {"/matchBlurRefJSON"}, method = {RequestMethod.POST})
     @ResponseBody
     public List<Map<String, String>> matchBlurRefJSON(RefViewModelVO arg0) {
         //
@@ -219,62 +170,53 @@ public final class RefCommonController  {
      * @param arg0
      * @return
      */
-    @RequestMapping(
-            value = {"/blobRefClassSearch"},
-            method = {RequestMethod.POST}
-    )
+    @RequestMapping(value = {"/blobRefClassSearch"}, method = {RequestMethod.POST})
     @ResponseBody
     public List<Map<String, String>> blobRefClassSearch(RefViewModelVO arg0) {
         //
         return null;
     }
 
-    /*
-     * 树
+    /**
      * @see com.yonyou.iuap.ref.sdk.refmodel.model.AbstractTreeGridRefModel#blobRefTree(com.yonyou.iuap.ref.model.RefViewModelVO)
+     * @param refModel
+     * @return
      */
-    @RequestMapping(
-            value = {"/blobRefTree"},
-            method = {RequestMethod.POST}
-    )
+    @RequestMapping(value = {"/blobRefTree"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> blobRefTree(@RequestBody RefViewModelVO refModel) {
 
-        //构建表体，其中list中为要查询的字段，必须和表头设置的相同，并且必须为表中的字段值
-        RefParamVO params = RefXMLParse.getInstance().getMSConfigTree(refModel.getRefCode());
+        /*构建表体，其中list中为要查询的字段，必须和表头设置的相同，并且必须为表中的字段值*/
+        RefParamVO refParamVO = RefXMLParse.getInstance().getReParamConfig(refModel.getRefCode());
+        RefParamConfig refParamConfigTableTree=refParamVO.getRefParamConfigTableTree();
 
-        Map<String, Object> mapList = new HashMap<String, Object>();
-        List<Map<String, String>> results = new ArrayList<Map<String, String>>();
+        Map<String, Object> mapList = new HashMap<>();
+        List<Map<String, Object>> results = new ArrayList<>();
         try {
+            /*获取当前页*/
             int pageNum = refModel.getRefClientPageInfo().getCurrPageIndex();
+            pageNum=pageNum<0?0:pageNum;
+
+            /*每页显示的数量*/
             int pageSize = refModel.getRefClientPageInfo().getPageSize();
-            PageRequest request = null;
-            Map<String, String> conditions = new HashMap<String, String>();
-            
-            String basic = params.getIsBasic();
-            if(basic != null && "false".equals(basic)){//需要业务自己传递orderby字段
-            	String ts = params.getTs();
-            	request = buildPageRequest(pageNum, pageSize, ts);
-            	conditions.put(params.getDr(), params.getDrValue());
-            }else if(basic != null && "true".equals(basic)){//orderby ts
-            	request = buildPageRequest(pageNum, pageSize, "auto");
-            	conditions.put("dr", "0");
-            }else{//不加orderby过滤
-            	request = buildPageRequest(pageNum, pageSize, null);
+            pageSize=pageSize<1?10:pageSize;
+
+            /*拼装分页请求对象*/
+            PageRequest request = buildPageRequest(pageNum, pageSize,refParamVO.getRefParamConfigTable());
+            /*获取查询条件 --如果content*/
+            String dataPermission=refParamConfigTableTree.getDataPermission();
+            dataPermission=StringUtils.isEmpty(dataPermission)?refModel.getRefCode():dataPermission;
+            Set<String> ids = DataPermissionCenter.getInstance().getDataPermissionIds(dataPermission, refModel.getClientParam());
+            if ((DataPermissionCenter.getInstance().isUserDataPower(refModel.getClientParam())) && ((ids == null) || (ids.size() < 1))) {
+                List<Map<String, Object>> headVOs =new ArrayList<>();
+                mapList.put("dataList", headVOs);
+                mapList.put("refViewModel", refModel);
+                return mapList;
             }
 
-            String idfield = StringUtils.isBlank(params.getIdfield()) ? "id"
-                    : params.getIdfield();
-            String pidfield = StringUtils.isBlank(params.getPidfield()) ? "pid"
-                    : params.getPidfield();
-            String codefield = StringUtils.isBlank(params.getCodefield()) ? "code"
-                    : params.getCodefield();
-            String namefield = StringUtils.isBlank(params.getNamefield()) ? "name"
-                    : params.getNamefield();
+            Page<Map<String, Object>> headpage = this.service.selectRefTree(request,refParamVO.getReftype(), refParamConfigTableTree, refModel.getContent(), ids);
 
-            Page<Map<String, Object>> headpage = this.service.selectRefTree(
-                    request, params.getTablename(), idfield, pidfield,codefield,
-                    namefield, conditions, params.getExtcol());
+
             List<Map<String, Object>> headVOs = headpage.getContent();
 
             if (CollectionUtils.isNotEmpty(headVOs)) {
@@ -294,77 +236,37 @@ public final class RefCommonController  {
      * 获取表体信息
      * @see com.yonyou.iuap.ref.sdk.refmodel.model.AbstractTreeGridRefModel#blobRefSearch(com.yonyou.iuap.ref.model.RefViewModelVO)
      */
-    @RequestMapping(
-            value = {"/blobRefSearch"},
-            method = {RequestMethod.POST}
-    )
+    @RequestMapping(value = {"/blobRefSearch"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> blobRefSearch(@RequestBody RefViewModelVO refModel) {
+        RefParamVO refParamVO = RefXMLParse.getInstance().getReParamConfig(refModel.getRefCode());
+        RefParamConfig refParamConfigTable=refParamVO.getRefParamConfigTable();
 
-        //前台传过来的refType来做请求参数过滤
-        String transmitParam = refModel.getTransmitParam();
-        String refType = transmitParam;
-
-
-        //构建表体，其中list中为要查询的字段，必须和表头设置的相同，并且必须为表中的字段值
-        RefParamVO refParamVO = RefXMLParse.getInstance().getMSConfig(refModel.getRefCode());
-
-        Map<String, Object> mapList = new HashMap<String, Object>();
-        List<Map<String, String>> results = new ArrayList<Map<String, String>>();
+        Map<String, Object> mapList = new HashMap<>();
+        List<Map<String, Object>> results = new ArrayList<>();
         try {
-            //获取当前页
+            /*获取当前页*/
             int pageNum = refModel.getRefClientPageInfo().getCurrPageIndex();
-            //每页显示的数量
-            int pageSize = 10;
-            //拼装分页请求对象
-            PageRequest request = null;
+            pageNum=pageNum<0?0:pageNum;
 
-            Map<String, String> conditions = new HashMap<String,String>();
-            
-            String basic = refParamVO.getIsBasic();
-            if(basic != null && "false".equals(basic)){//需要业务自己传递orderby字段
-            	String ts = refParamVO.getTs();
-            	request = buildPageRequest(pageNum, pageSize, ts);
-            	conditions.put(refParamVO.getDr(),refParamVO.getDrValue());
-            }else if(basic != null && "true".equals(basic)){//orderby ts
-            	request = buildPageRequest(pageNum, pageSize, "auto");
-            	conditions.put("dr", "0");
-            }else{//不加orderby过滤
-            	request = buildPageRequest(pageNum, pageSize, null);
+            /*每页显示的数量*/
+            int pageSize = refModel.getRefClientPageInfo().getPageSize();
+            pageSize=pageSize<1?10:pageSize;
+
+            /*拼装分页请求对象*/
+            PageRequest request = buildPageRequest(pageNum, pageSize,refParamVO.getRefParamConfigTable());
+            String dataPermission=refParamConfigTable.getDataPermission();
+            dataPermission=StringUtils.isEmpty(dataPermission)?refModel.getRefCode():dataPermission;
+            Set<String> ids = DataPermissionCenter.getInstance().getDataPermissionIds(dataPermission, refModel.getClientParam());
+            if ((DataPermissionCenter.getInstance().isUserDataPower(refModel.getClientParam())) && ((ids == null) || (ids.size() < 1))) {
+                mapList.put("dataList", results);
+                mapList.put("refViewModel", refModel);
+                return mapList;
             }
-            
-            refModel.getRefClientPageInfo().setPageSize(pageSize);
-
-            //树节点的ID
-            String condition = refModel.getCondition();
-
-            //获取查询条件 --如果content
-            String content = refModel.getContent();
-            if("6".equals(refType) && content != null){
-                JSONObject jsonObject = JSON.parseObject(content);
-                Map<String,Object> map = jsonObject;
-                for(String key : map.keySet()){
-                    conditions.put(key, (String)map.get(key));
-                }
-            }else{
-                if(content != null && !"".equals(content)){
-                    //对参照所有列进行模糊查询
-                    for(String extcol : refParamVO.getExtcol()){
-                        conditions.put(extcol, content);
-                    }
-                }
-            }
-
-            String idfield = StringUtils.isBlank(refParamVO.getIdfield()) ? "id"
-                    : refParamVO.getIdfield();
-
-            //根据树节点 查找树下的列表
-            if(condition != null && !"".equals(condition) && refParamVO.getPidfield()!=null && !"".equals(refParamVO.getPidfield())){
-                conditions.put(refParamVO.getPidfield(),condition);
-            }
-
-            Page<Map<String, Object>> headpage = this.service.getTreeRefData(
-                    request, refParamVO.getTablename(), idfield, conditions, refParamVO.getExtcol());
+            /*树节点id*/
+            String condition=refModel.getCondition();
+            condition=StringUtils.isEmpty(condition)||condition.equals("null")?null:condition;
+            Page<Map<String, Object>> headpage = this.service.getTreeRefData(request,refParamVO.getReftype(), refParamConfigTable, refModel.getContent(),condition, ids);
 
             //总页数
             refModel.getRefClientPageInfo().setPageCount(headpage.getTotalPages());
@@ -382,17 +284,18 @@ public final class RefCommonController  {
         return mapList;
     }
 
-    private PageRequest buildPageRequest(int pageNum, int pageSize,
-                                         String sortColumn) {
+    private PageRequest buildPageRequest(int pageNum, int pageSize, RefParamConfig refParamConfig) {
+        String sortColumn=refParamConfig.getSort();
+        String order=refParamConfig.getOrder();
         Sort sort = null;
         if(StringUtils.isEmpty(sortColumn)){
-        	
+            return new PageRequest(pageNum, pageSize, sort);
         }else{
-        	if ("auto".equalsIgnoreCase(sortColumn)) {
-                 sort = new Sort(Sort.Direction.ASC, "ts");
-             } else {
-                 sort = new Sort(Sort.Direction.DESC, sortColumn);
-             }
+            if(RefXmlConstract.REF_FIELD_CODE_ORDER_DESC.equals(order)){
+                sort = new Sort(Sort.Direction.DESC, sortColumn.split(","));
+            }else{
+                sort = new Sort(Sort.Direction.ASC, sortColumn.split(","));
+            }
         }
         return new PageRequest(pageNum, pageSize, sort);
     }
@@ -401,85 +304,27 @@ public final class RefCommonController  {
      * 过滤完的数据组装--表格
      *
      */
-    private List<Map<String, String>> buildRtnValsOfRef(
-            List<Map<String, Object>> headVOs) {
-        List<Map<String, String>> results = new ArrayList<Map<String, String>>();
-        if ((headVOs != null) && (!headVOs.isEmpty())) {
-            ValueConvertor convertor = new ValueConvertor();
-            for (Map<String, Object> entity : headVOs) {
-                Map<String, String> refDataMap = new HashMap<String, String>();
-                for (String key : entity.keySet()) {
-                    if(key.equalsIgnoreCase("id")){
-                        refDataMap.put("refpk", entity.get(key).toString());
-                        refDataMap.put(key.toLowerCase(), entity.get(key).toString());
-                    }else{
-                        refDataMap.put(key.toLowerCase(),
-                                convertor.convertToJsonType(entity.get(key)).toString());
-                    }
-                }
-                results.add(refDataMap);
-            }
-        }
-        return results;
+    private List<Map<String, Object>> buildRtnValsOfRef(List<Map<String, Object>> headVOs) {
+        return toLowerKey(headVOs);
     }
-    
+
     /**
      * 过滤完的数据组装--单选多选
      *
      */
-    private List<Map<String, String>> buildRtnValsOfCheckboxRef(
-    		List<Map<String, Object>> headVOs) {
-    	List<Map<String, String>> results = new ArrayList<Map<String, String>>();
-    	if ((headVOs != null) && (!headVOs.isEmpty())) {
-    		ValueConvertor convertor = new ValueConvertor();
-    		for (Map<String, Object> entity : headVOs) {
-    			Map<String, String> refDataMap = new HashMap<String, String>();
-    			for (String key : entity.keySet()) {
-    				if(key.equalsIgnoreCase("id")){
-                        refDataMap.put("refpk", entity.get(key).toString());
-                        refDataMap.put(key.toLowerCase(), entity.get(key).toString());
-                    }else{
-                    	refDataMap.put(key.toLowerCase(), convertor.convertToJsonType(entity.get(key)).toString());
-                    }
-    			}
-    			results.add(refDataMap);
-    		}
-    	}
-    	return results;
+    private List<Map<String, Object>> buildRtnValsOfCheckboxRef(
+            List<Map<String, Object>> headVOs) {
+        return toLowerKey(headVOs);
     }
     /**
      * 过滤完的数据组装--树
      *
      * @return
      */
-    private List<Map<String, String>> buildRtnValsOfRefTree(
+    private List<Map<String, Object>> buildRtnValsOfRefTree(
             List<Map<String, Object>> headVOs) {
 
-        List<Map<String, String>> results = new ArrayList<Map<String, String>>();
-        if ((headVOs != null) && (!headVOs.isEmpty())) {
-            ValueConvertor convertor = new ValueConvertor();
-            for (Map<String, Object> entity : headVOs) {
-                Map<String, String> refDataMap = new HashMap<String, String>();
-                String pid =null;
-                for (String key : entity.keySet()) {
-                    if(key.equalsIgnoreCase("id")){
-                        refDataMap.put("refpk", entity.get(key).toString());
-                        refDataMap.put(key.toLowerCase(), entity.get(key).toString());
-                    }else if(key.equalsIgnoreCase("pid")){
-                        pid = key;
-                    }else{
-                        refDataMap.put(key.toLowerCase(), convertor.convertToJsonType(entity.get(key)).toString());
-                    }
-                }
-                if(pid != null){
-                    refDataMap.put(pid.toLowerCase(), convertor.convertToJsonType(entity.get(pid)).toString());
-                }else{
-                    refDataMap.put("pid", "");
-                }
-                results.add(refDataMap);
-            }
-        }
-        return results;
+        return toLowerKey(headVOs);
     }
 
     /**
@@ -489,11 +334,11 @@ public final class RefCommonController  {
      */
     @RequestMapping(value = "/filterRef",method = RequestMethod.POST)
     @ResponseBody
-    public List<Map<String,String>> filterRef(@RequestBody List<Map<String,String>> list) {
+    public List<Map<String,Object>> filterRef(@RequestBody List<Map<String,String>> list) {
         if(list.size() > 0){
             String refCode = "";
             List<String> idsList = new ArrayList<String>();
-            List<Map<String, String>> results = new ArrayList<Map<String, String>>();
+            List<Map<String, Object>> results = new ArrayList<>();
 
             for(Map<String,String> map:list){
                 refCode = map.get("refCode");
@@ -505,23 +350,103 @@ public final class RefCommonController  {
                     }
                 }
             }
+            RefParamVO refParamVO = RefXMLParse.getInstance().getReParamConfig(refCode);
+            RefParamConfig refParamConfigTable=refParamVO.getRefParamConfigTable();
 
-            RefParamVO refParamVO = RefXMLParse.getInstance().getFilterConfig(refCode);
-            String idfield = StringUtils.isBlank(refParamVO.getIdfield()) ? "id"
-                    : refParamVO.getIdfield();
-            String tableName = refParamVO.getTablename();
-            List<Map<String, Object>> obj = service.getFilterRef(tableName,idfield,refParamVO.getExtcol(),idsList);
+            List<Map<String, Object>> obj = service.getFilterRef(refParamConfigTable.getTableName(),refParamConfigTable.getId(),refParamConfigTable.getExtension(),idsList);
             if (CollectionUtils.isNotEmpty(obj)) {
                 results = buildRtnValsOfRef(obj);
             }
             return results;
         }
-        return (new ArrayList<Map<String,String>>());
+        return (new ArrayList<>());
+    }
+
+    @RequestMapping(
+            value = {"/getByIds"},
+            method = {RequestMethod.POST}
+    )
+    @ResponseBody
+    public JsonResponse getByIds(HttpServletRequest request) {
+        JsonResponse results = new JsonResponse();
+        String data = request.getParameter("data");
+        String refCode = request.getParameter("resourcetypecode");
+        if (StringUtils.isBlank(data)) {
+            results.failed("请求参数Data不能为空！");
+            return results;
+        } else {
+            JSONArray                 array    = JSON.parseArray(data);
+            List<Map<String, Object>> dataList = new ArrayList();
+            if (!CollectionUtils.isEmpty(array)) {
+                String[] strArray = array.toArray(new String[array.size()]);
+                RefParamVO refParamVO = RefXMLParse.getInstance().getReParamConfig(refCode);
+                RefParamConfig refParamConfigTable=refParamVO.getRefParamConfigTable();
+
+                dataList.addAll(this.service.getByIds(refParamConfigTable.getTableName(), refParamConfigTable.getId(), refParamConfigTable.getRefcode(),
+                        refParamConfigTable.getRefname(), refParamConfigTable.getExtension(), Arrays.asList(strArray)));
+            }
+
+            List<Map<String, Object>> dataListResult = toLowerKey(dataList);
+
+
+            results.success("操作成功！", "data", dataListResult);
+            return results;
+        }
+    }
+
+    @RequestMapping(
+            value = {"/search"},
+            method = {RequestMethod.POST}
+    )
+    @ResponseBody
+    public JsonResponse search(HttpServletRequest request) {
+        JsonResponse results = new JsonResponse();
+        String refCode = request.getParameter("resourcetypecode");
+        String data = request.getParameter("data");
+        if (StringUtils.isBlank(data)) {
+            results.failed("请求参数Data不能为空！");
+            return results;
+        } else {
+            JSONArray array = JSON.parseArray(data);
+            List<String> idList = Arrays.asList(array.toArray(new String[array.size()]));
+            RefParamVO refParamVO = RefXMLParse.getInstance().getReParamConfig(refCode);
+            RefParamConfig refParamConfigTable=refParamVO.getRefParamConfigTable();
+
+            String keyword = request.getParameter("keyword");
+            List<Map<String, Object>> dataList = this.service.likeSearch(refParamConfigTable.getTableName(), refParamConfigTable.getId(),
+                    refParamConfigTable.getRefcode(), refParamConfigTable.getRefname(),
+                    refParamConfigTable.getExtension(), idList, "%" + keyword + "%");
+            List<Map<String, Object>> dataListResult = toLowerKey(dataList);
+
+
+            results.success("操作成功！", "data", dataListResult);
+            return results;
+        }
+    }
+    private  List<Map<String, Object>> toLowerKey(List<Map<String, Object>> dataList){
+        List<Map<String, Object>> dataListResult = new ArrayList();
+        if(dataList!=null&&dataList.size()>0){
+            for(Map<String, Object> map:dataList){
+                Map<String, Object> mapResult = new HashMap();
+                for(Map.Entry<String,Object> entry:map.entrySet()){
+
+                    if("id".equalsIgnoreCase(entry.getKey())){
+                        mapResult.put("refpk",entry.getValue());
+                        mapResult.put(entry.getKey().toLowerCase(),entry.getValue());
+                    }else if("pid".equalsIgnoreCase(entry.getKey())){
+                        mapResult.put(entry.getKey().toLowerCase(),entry.getValue()==null?"":entry.getValue());
+                    }else{
+                        mapResult.put(entry.getKey().toLowerCase(),entry.getValue());
+                    }
+
+                }
+                dataListResult.add(mapResult);
+
+            }
+        }
+        return dataListResult;
     }
 
 
-	/************************************************************/
-    @Autowired
-	private RefCommonService service;
 
 }
