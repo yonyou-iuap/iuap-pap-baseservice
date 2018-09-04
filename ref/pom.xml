@@ -20,6 +20,11 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>com.yonyou.iuap.pap.authrbac</groupId>
+            <artifactId>iuap-authrbac-sdk</artifactId>
+            <version>${eiap.module.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.yonyou.iuap</groupId>
             <artifactId>uitemplate_common</artifactId>
             <version>2.0.1-ref-profession-SNAPSHOT</version>

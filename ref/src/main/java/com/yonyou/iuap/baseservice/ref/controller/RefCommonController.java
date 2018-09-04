@@ -12,7 +12,7 @@ import com.yonyou.iuap.baseservice.ref.utils.ValueConvertor;
 import com.yonyou.iuap.ref.model.RefVertion;
 import com.yonyou.iuap.ref.model.RefViewModelVO;
 import com.yonyou.uap.ieop.security.datapermission.DataPermissionCenter;
-import com.yonyou.uap.wb.utils.JsonResponse;
+import com.yonyou.iuap.wb.utils.JsonResponse;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -84,8 +84,21 @@ public final class RefCommonController  {
      */
     @RequestMapping(value = {"/matchPKRefJSON"}, method = {RequestMethod.POST})
     @ResponseBody
-    public List<Map<String, String>> matchPKRefJSON(RefViewModelVO arg0) {
-        return null;
+    public List<Map<String, Object>> matchPKRefJSON(RefViewModelVO vo) {
+        if (vo.getRefCode()==null){
+            logger.info("matchPKRefJSON 接口入参的refcode为空,返回空结果");
+            return  new ArrayList<>();
+        }
+        if (vo.getId()==null){
+            logger.info("matchPKRefJSON 接口入参的id为空,返回空结果");
+            return  new ArrayList<>();
+        }
+        Map<String,String> params = new HashMap<>();
+        params.put("refCode",vo.getRefCode());
+        params.put("id",vo.getId());
+        List<Map<String,String>> list= new ArrayList<>()  ;
+        list.add(params);
+        return  filterRef(list);
     }
 
     /**
