@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.yonyou.iuap.baseservice.entity.RefParamConfig;
@@ -43,8 +44,8 @@ public class RefXMLParse {
 					logger.error(REF_DECUMENT_NAME+".xml，解析失败");
 					logger.error(e.getStackTrace().toString());
 				}
+				return new RefXMLParse();
 			}
-			return new RefXMLParse();
 		} else {
 			return refXMLParse;
 		}
@@ -136,6 +137,10 @@ public class RefXMLParse {
 			for(Element field:fields){
 				setFieldValue(field, refParamConfig);
 			}
+			Element  filterContainer          = tableElement.element(RefXmlConstract.REF_FIELD_CODE_FILTERS);
+			List<Element>  filters=filterContainer==null?null:filterContainer.elements(RefXmlConstract.REF_FIELD_CODE_FILTER);
+			setFilters(filters,refParamConfig);
+
 			if(RefXmlConstract.REF_TABLE_NODE.equals(refNode)){
 				refParamVO.setRefParamConfigTable(refParamConfig);
 			}else{
@@ -146,7 +151,21 @@ public class RefXMLParse {
 		}
 	}
 
-
+	private static void setFilters(List<Element> elements, RefParamConfig refParamConfig) {
+		if(elements==null||elements.size()<1){
+			return ;
+		}
+		Map<String,String> map =refParamConfig.getFilters();
+		for(Element element:elements){
+			String code=element.attributeValue(RefXmlConstract.REF_FIELD_CODE_ATTRIBUTE);
+			String value=StringUtils.isEmpty(element.getStringValue())?element.attributeValue(RefXmlConstract.REF_FIELD_VALUE_ATTRIBUTE):element.getStringValue();
+			if(StringUtils.isEmpty(code)||StringUtils.isEmpty(value)){
+				continue;
+			}else {
+				map.put(code,value);
+			}
+		}
+	}
 
 	/**
 	 * 参数设值
@@ -159,6 +178,9 @@ public class RefXMLParse {
 		Class clzz =  Class.forName(RefParamConfig.class.getName());
 		String code=field.attributeValue(RefXmlConstract.REF_FIELD_CODE_ATTRIBUTE);
 		String value=field.getStringValue();
+		if(StringUtils.isEmpty(code)||StringUtils.isEmpty(value)){
+			return ;
+		}
 		Field               codeField=clzz.getDeclaredField(code);
 		codeField.setAccessible(true);
 		if(RefXmlConstract.REF_FIELD_CODE_codition.equals(code)){
@@ -174,6 +196,9 @@ public class RefXMLParse {
 		}
 
 	}
+
+
+
 	/**
 	 * 初始化表头信息
 	 * @param refParamVO 参照配置对象

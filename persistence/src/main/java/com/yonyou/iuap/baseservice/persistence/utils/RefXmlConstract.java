@@ -42,9 +42,15 @@ public class RefXmlConstract {
 
     public static final String REF_FIELD_CODE_ATTRIBUTE = "code";
 
+    public static final String REF_FIELD_VALUE_ATTRIBUTE = "value";
+
     public static final String REF_FIELD_CODE_EXTENSION = "extension";
 
     public static final String REF_FIELD_CODE_codition = "condition";
+
+    public static final String REF_FIELD_CODE_FILTERS = "filters";
+
+    public static final String REF_FIELD_CODE_FILTER = "filter";
 
     public static final String REF_FIELD_CODE_SORT = "sort";
 

@@ -33,7 +33,7 @@
 			<if test="condmap != null and condmap.size>0 ">
 				<foreach collection="condmap.keys" item="k">
 					<if test="null != condmap[k]">
-						and ${k}   ${condmap[k]}
+						and ${k} ${condQu[k]}  ${condmap[k]}
 					</if>
 				</foreach>
 			</if>
@@ -54,7 +54,7 @@
 		from ${tablename}
 		<where>
 			1 = 1
-			<if test="keyword != null ">
+			<if test="keyword != null and keyword != ''  ">
 				and
 				(
 					${codefield} like #{keyword}
@@ -65,7 +65,7 @@
 			<if test="condmap != null and condmap.size>0 ">
 				<foreach collection="condmap.keys" item="k" >
 					<if test="null != condmap[k]">
-						and ${k} ${conditionQuoter[k]} #{condmap[${k}]}
+						and ${k} ${condQu[k]} #{condmap[${k}]}
 					</if>
 				</foreach>
 			</if>
@@ -101,7 +101,7 @@
 			<if test="fidvalue != null and fidvalue != '' ">
 				and ${fidfield} = #{fidvalue}
 			</if>
-			<if test="keyword != null ">
+			<if test="keyword != null and keyword != ''  ">
 				and
 				(
 				${codefield} like #{keyword}
@@ -113,7 +113,7 @@
 			<if test="condmap != null and condmap.size>0 ">
 				<foreach collection="condmap.keys" item="k" >
 					<if test="null != condmap[k]">
-						and ${k} ${conditionQuoter[k]} #{condmap[${k}]}
+						and ${k} ${condQu[k]} #{condmap[${k}]}
 					</if>
 				</foreach>
 			</if>
@@ -143,7 +143,7 @@
 		from ${tablename}
 		<where>
 			1 = 1
-			<if test="keyword != null ">
+			<if test="keyword != null and keyword != ''  ">
 				and
 				(
 				${codefield} like #{keyword}
@@ -154,7 +154,7 @@
 			<if test="condmap != null and condmap.size>0 ">
 				<foreach collection="condmap.keys" item="k" >
 					<if test="null != condmap[k]">
-						and ${k} ${conditionQuoter[k]} #{condmap[${k}]}
+						and ${k} ${condQu[k]} #{condmap[${k}]}
 					</if>
 				</foreach>
 			</if>

@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.entity.RefParamConfig;
@@ -41,7 +42,7 @@ import cn.hutool.core.util.ReflectUtil;
  */
 @Service
 public  class RefCommonService<T extends Model>  implements QueryFeatureExtension<T>{
-    private static Logger log= LoggerFactory.getLogger(RefCommonService.class);
+    private static Logger logger= LoggerFactory.getLogger(RefCommonService.class);
 
 
     @Autowired
@@ -56,37 +57,20 @@ public  class RefCommonService<T extends Model>  implements QueryFeatureExtensio
     }
 
     public Page<Map<String, Object>> getTreeRefData(PageRequest pageRequest,String refType, RefParamConfig refParamConfigTable, String content,String fid, Set<String> ids) {
-        String keyword=null;
+        StringBuilder keyword=new StringBuilder();
 
-        Map<String, String> conditions =null;
+        Map<String, String> conditions =new HashMap<>();
 
         Map<String, String> conditionQuoter = new HashMap<>();
 
-        if("6".equals(refType)){
-            keyword="%"+content+"%";
-        }else if(StringUtils.isNotEmpty(content)){
-            conditions = new HashMap<>();
-            Map<String,String> map  = JSON.parseObject(content,Map.class);
-            Map<String,String> filters=new HashMap<>();
-            filters.putAll(refParamConfigTable.getFilters());
-            for(String key : map.keySet()){
-                String filter=filters.get(key);
-                String quoter=StringUtils.isEmpty(filter)?"like":filter;
-                conditionQuoter.put(key,quoter);
-                if("like".equals(quoter)){
-                    conditions.put(key,"%"+ map.get(key)+"%");
-                }else{
-                    conditions.put(key, map.get(key));
-                }
+        setCondition(refParamConfigTable,keyword,conditions,conditionQuoter,content);
 
-            }
-        }
         List<String> idList=null;
         if(ids!=null&&ids.size()>0){
             idList=new ArrayList<>(ids);
         }
         Page<Map<String,Object>> result = mapper.treerefselectAllByPage(pageRequest,refParamConfigTable.getTableName(),refParamConfigTable.getId(),
-                refParamConfigTable.getRefcode(),refParamConfigTable.getRefname(), refParamConfigTable.getExtension(),keyword,conditions,conditionQuoter,refParamConfigTable.getCondition(),refParamConfigTable.getFid(),fid,
+                refParamConfigTable.getRefcode(),refParamConfigTable.getRefname(), refParamConfigTable.getExtension(),keyword.toString(),conditions,conditionQuoter,refParamConfigTable.getCondition(),refParamConfigTable.getFid(),fid,
                 idList).getPage();
 
         return result;
@@ -94,78 +78,70 @@ public  class RefCommonService<T extends Model>  implements QueryFeatureExtensio
     }
 
     public Page<Map<String, Object>> getCheckboxData(PageRequest pageRequest,String refType, RefParamConfig refParamConfigTable, String content, Set<String> ids) {
-        String keyword=null;
+        StringBuilder keyword=new StringBuilder();
 
-        Map<String, String> conditions =null;
+        Map<String, String> conditions =new HashMap<>();
 
         Map<String, String> conditionQuoter = new HashMap<>();
 
-        if("6".equals(refType)){
-            keyword="%"+content+"%";
-        }else if(StringUtils.isNotEmpty(content)){
-            conditions = new HashMap<>();
-            Map<String,String> map  = JSON.parseObject(content,Map.class);
-            Map<String,String> filters=new HashMap<>();
-            filters.putAll(refParamConfigTable.getFilters());
-            for(String key : map.keySet()){
-                String filter=filters.get(key);
-                String quoter=StringUtils.isEmpty(filter)?"like":filter;
-                conditionQuoter.put(key,quoter);
-                if("like".equals(quoter)){
-                    conditions.put(key,"%"+ map.get(key)+"%");
-                }else{
-                    conditions.put(key, map.get(key));
-                }
+        setCondition(refParamConfigTable,keyword,conditions,conditionQuoter,content);
 
-            }
-        }
         List<String> idList=null;
         if(ids!=null&&ids.size()>0){
             idList=new ArrayList<>(ids);
         }
+
     	Page<Map<String,Object>> result = mapper.selectRefCheck(pageRequest,refParamConfigTable.getTableName(),refParamConfigTable.getId(),
-                refParamConfigTable.getRefcode(),refParamConfigTable.getRefname(), refParamConfigTable.getExtension(),keyword,conditions,conditionQuoter,refParamConfigTable.getCondition(),
+                refParamConfigTable.getRefcode(),refParamConfigTable.getRefname(), refParamConfigTable.getExtension(),keyword.toString(),conditions,conditionQuoter,refParamConfigTable.getCondition(),
                 idList).getPage();
 
     	return result;
     }
 
     public Page<Map<String, Object>> selectRefTree(PageRequest pageRequest,String refType, RefParamConfig refParamConfigTableTree, String content, Set<String> ids) {
-        String keyword=null;
+        StringBuilder keyword=new StringBuilder();
 
-        Map<String, String> conditions =null;
+        Map<String, String> conditions =new HashMap<>();
 
         Map<String, String> conditionQuoter = new HashMap<>();
 
-        if("6".equals(refType)){
-            if (StringUtils.isNotEmpty(content)){
-                keyword="%"+content+"%";
-            }
-        }else if(StringUtils.isNotEmpty(content)){
-            conditions = new HashMap<>();
-            Map<String,String> map  = JSON.parseObject(content,Map.class);
-            Map<String,String> filters=new HashMap<>();
-            filters.putAll(refParamConfigTableTree.getFilters());
-            for(String key : map.keySet()){
-                String filter=filters.get(key);
-                String quoter=StringUtils.isEmpty(filter)?"like":filter;
-                conditionQuoter.put(key,quoter);
-                if("like".equals(quoter)){
-                    conditions.put(key,"%"+ map.get(key)+"%");
-                }else{
-                    conditions.put(key, map.get(key));
-                }
+        setCondition(refParamConfigTableTree,keyword,conditions,conditionQuoter,content);
 
-            }
-        }
         List<String> idList=null;
         if(ids!=null&&ids.size()>0){
             idList=new ArrayList<>(ids);
         }
         Page<Map<String,Object>> result = mapper.selectRefTree(pageRequest,refParamConfigTableTree.getTableName(),refParamConfigTableTree.getId(),
-                refParamConfigTableTree.getRefcode(),refParamConfigTableTree.getRefname(),refParamConfigTableTree.getPid(), refParamConfigTableTree.getExtension(),keyword,conditions,conditionQuoter,refParamConfigTableTree.getCondition(),
+                refParamConfigTableTree.getRefcode(),refParamConfigTableTree.getRefname(),refParamConfigTableTree.getPid(), refParamConfigTableTree.getExtension(),keyword.toString(),conditions,conditionQuoter,refParamConfigTableTree.getCondition(),
                 idList).getPage();
         return result;
+    }
+    private void setCondition( RefParamConfig refParamConfigTable,StringBuilder keyword,Map<String, String> conditions,Map<String, String> conditionQuoter,String content){
+
+        try {
+            conditions.putAll(JSON.parseObject(content,Map.class));
+            Map<String,String> filters=refParamConfigTable.getFilters();
+            List<String> removeKeys=new ArrayList<>();
+            for(String key : conditions.keySet()){
+                String filter=filters.get(key);
+                if(StringUtils.isEmpty(filter)){
+                    removeKeys.add(key);
+                    logger.error(key+"值对应的filter类型不存在，请验证");
+                    continue;
+                }
+                if("like".equalsIgnoreCase(filter.trim())){
+                    conditions.put(key,"%"+conditions.get(key)+"%");
+                }
+                conditionQuoter.put(key,filter);
+            }
+            for(String removeKey:removeKeys){
+                conditions.remove(removeKey);
+            }
+        }catch (Exception e){
+            if(StringUtils.isNotEmpty(content)){
+                keyword.append("%").append(content).append("%");
+            }
+        }
     }
 
     /**
@@ -210,7 +186,7 @@ public  class RefCommonService<T extends Model>  implements QueryFeatureExtensio
                 RefParamVO refParamVO = RefXMLParse.getInstance().getReParamConfig(refCache.get(field).code());
                 RefParamConfig refParamConfig=refParamVO.getRefParamConfigTable();
                 if (refParamVO==null){
-                    log.warn("参照配置错误:"+refCache.get(field).code()+"不存在");
+                    logger.warn("参照配置错误:"+refCache.get(field).code()+"不存在");
                     continue;
                 }
                 List<String> setList = new ArrayList<>(idCache.get(field));
