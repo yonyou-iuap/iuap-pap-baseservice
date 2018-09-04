@@ -138,7 +138,9 @@ public  class RefCommonService<T extends Model>  implements QueryFeatureExtensio
         Map<String, String> conditionQuoter = new HashMap<>();
 
         if("6".equals(refType)){
-            keyword="%"+content+"%";
+            if (StringUtils.isNotEmpty(content)){
+                keyword="%"+content+"%";
+            }
         }else if(StringUtils.isNotEmpty(content)){
             conditions = new HashMap<>();
             Map<String,String> map  = JSON.parseObject(content,Map.class);

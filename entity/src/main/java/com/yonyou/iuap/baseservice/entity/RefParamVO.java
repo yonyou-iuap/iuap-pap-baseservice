@@ -41,12 +41,12 @@ public class RefParamVO {
 		return refParamConfigTableTree;
 	}
 
-	public void setRefParamConfigTableTree(RefParamConfig refParamConfigTableTree) {
-		this.refParamConfigTableTree = refParamConfigTableTree;
-	}
-
 	public String getRefname() {
 		return refname;
+	}
+
+	public void setRefParamConfigTableTree(RefParamConfig refParamConfigTableTree) {
+		this.refParamConfigTableTree = refParamConfigTableTree;
 	}
 
 	public void setRefname(String refname) {
