@@ -1,14 +1,15 @@
 package com.yonyou.iuap.baseservice.bpm.utils;
 
 import com.alibaba.fastjson.JSONObject;
+import com.yonyou.iuap.bpm.util.BPMUtil;
 
 public class BpmExUtil {
 	
-	public static final int BPM_STATE_NOTSTART = 0;				//未启动
-	public static final int BPM_STATE_START = 1;				//已启动
-	public static final int BPM_STATE_RUNNING = 2;				//流程中
-	public static final int BPM_STATE_FINISH = 3;				//正常结束
-	public static final int BPM_STATE_ABEND = 4;				//异常终止
+	public static final int BPM_STATE_NOTSTART = BPMUtil.BPM_BILLSTATUS_NOTSTART;		//未启动0
+	public static final int BPM_STATE_START = BPMUtil.BPM_BILLSTATUS_RUN;				//已启动1
+	public static final int BPM_STATE_RUNNING = BPMUtil.BPM_BILLSTATUS_RUN;				//流程中1
+	public static final int BPM_STATE_FINISH = BPMUtil.BPM_BILLSTATUS_END;				//正常结束2
+	public static final int BPM_STATE_ABEND = BPMUtil.BPM_BILLSTATUS_TERMINATION;		//异常终止3
 	
 	
 	private BpmExUtil() {}
