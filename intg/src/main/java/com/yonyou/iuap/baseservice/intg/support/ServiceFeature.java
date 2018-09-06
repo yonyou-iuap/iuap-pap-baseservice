@@ -25,8 +25,13 @@ public enum ServiceFeature {
         for (ServiceFeature feat : ServiceFeature.values()) {
             try {
                 Class featClass = Class.forName(feat.clazz);
-                if (featClass.isInstance(instance))
-                    return feat;
+                if(featClass.isInterface()){
+                    if (featClass.isInstance(instance))
+                        return feat;
+                }else{
+                    if(instance.getClass().isAssignableFrom(featClass))
+                        return feat;
+                }
             } catch (ClassNotFoundException e) {
                 return OTHER;
             }

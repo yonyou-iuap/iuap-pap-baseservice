@@ -185,9 +185,9 @@ public  class RefCommonService<T extends Model>  implements QueryFeatureExtensio
 
             for (Field field : refCache.keySet()) {
                 RefParamVO refParamVO = RefXMLParse.getInstance().getReParamConfig(refCache.get(field).code());
-                RefParamConfig refParamConfig=refParamVO.getRefParamConfigTable();
-                if (refParamVO==null){
-                    logger.warn("参照配置错误:"+refCache.get(field).code()+"不存在");
+                RefParamConfig refParamConfig=refParamVO.getRefParamConfigTable()==null?refParamVO.getRefParamConfigTableTree():refParamVO.getRefParamConfigTable();
+                if (refParamVO==null||refParamConfig==null){
+                    logger.warn("参照XML配置错误:"+refCache.get(field).code());
                     continue;
                 }
                 List<String> setList = new ArrayList<>(idCache.get(field));

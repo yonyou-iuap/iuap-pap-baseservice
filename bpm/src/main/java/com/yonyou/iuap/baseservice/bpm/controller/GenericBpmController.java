@@ -204,7 +204,7 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 		Map hisProc = (Map)node;
 		String busiId = hisProc.get("businessKey").toString();
 		T entity=service.findById(busiId);
-		entity.setBpmState(BpmExUtil.BPM_STATE_FINISH);//已办结
+		entity.setBpmState(BpmExUtil.BPM_STATE_ABEND);//异常终止
 		T result = service.save(entity);
 		return buildSuccess(result);
 	}
