@@ -4,6 +4,7 @@ import com.yonyou.iuap.baseservice.bpm.entity.BpmSimpleModel;
 import com.yonyou.iuap.baseservice.bpm.utils.BpmExUtil;
 import com.yonyou.iuap.baseservice.persistence.support.DeleteFeatureExtension;
 import com.yonyou.iuap.baseservice.persistence.support.SaveFeatureExtension;
+import com.yonyou.iuap.persistence.vo.pub.BusinessException;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -26,7 +27,12 @@ public class BpmCommonService<T extends BpmSimpleModel> implements SaveFeatureEx
 
     @Override
     public T prepareDeleteParams(T entity, Map params) {
-        return null;
+        int bpmstate = entity.getBpmState();
+        if( bpmstate == BpmExUtil.BPM_STATE_RUNNING ){
+            throw new BusinessException("流程正在运行，无法删除");
+        }else{
+            return entity;
+        }
     }
 
     @Override
