@@ -27,9 +27,13 @@ public class BpmCommonService<T extends BpmSimpleModel> implements SaveFeatureEx
 
     @Override
     public T prepareDeleteParams(T entity, Map params) {
-        int bpmstate = entity.getBpmState();
-        if( bpmstate == BpmExUtil.BPM_STATE_RUNNING ){
-            throw new BusinessException("流程正在运行，无法删除");
+        if(entity.getBpmState() != null){
+            int bpmstate = entity.getBpmState();
+            if( bpmstate == BpmExUtil.BPM_STATE_RUNNING || bpmstate ==  BpmExUtil.BPM_STATE_START){
+                throw new BusinessException("流程正在运行，无法删除");
+            }else{
+                return entity;
+            }
         }else{
             return entity;
         }
@@ -39,4 +43,5 @@ public class BpmCommonService<T extends BpmSimpleModel> implements SaveFeatureEx
     public void afterDeteleEntity(T entity) {
 
     }
+
 }
