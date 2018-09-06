@@ -34,11 +34,7 @@ public enum ServiceFeature {
                 }
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
-                return OTHER;
             }
-
-
-
         }
         return OTHER;
     }
