@@ -12,6 +12,12 @@ import java.util.Map;
 @Service
 public class BpmCommonService<T extends BpmSimpleModel> implements SaveFeatureExtension<T>, DeleteFeatureExtension<T> {
 
+
+    /**
+     * 流程状态初始化，当不存在流程状态时，设置为流程未启动
+     * @param entity
+     * @return
+     */
     @Override
     public T prepareEntityBeforeSave(T entity) {
         if ( entity.getId()==null || entity.getBpmState() == null){
@@ -25,6 +31,15 @@ public class BpmCommonService<T extends BpmSimpleModel> implements SaveFeatureEx
         return entity;
     }
 
+
+    /**
+     * <p>
+     * 使用baseservice集成流程特性时，删除单据，进行流程状态判断，流程未终止，则无法进行删除。
+     * <p/>
+     * @param entity
+     * @param params
+     * @return
+     */
     @Override
     public T prepareDeleteParams(T entity, Map params) {
         if(entity.getBpmState() != null){
