@@ -1,18 +1,14 @@
 package com.yonyou.iuap.baseservice.ref.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.yonyou.iuap.baseservice.entity.RefParamConfig;
-import com.yonyou.iuap.baseservice.entity.RefParamVO;
-import com.yonyou.iuap.baseservice.persistence.utils.RefXMLParse;
-import com.yonyou.iuap.baseservice.persistence.utils.RefXmlConstract;
-import com.yonyou.iuap.baseservice.ref.service.RefCommonService;
-import com.yonyou.iuap.baseservice.ref.utils.RefUitls;
-import com.yonyou.iuap.baseservice.ref.utils.ValueConvertor;
-import com.yonyou.iuap.ref.model.RefVertion;
-import com.yonyou.iuap.ref.model.RefViewModelVO;
-import com.yonyou.uap.ieop.security.datapermission.DataPermissionCenter;
-import com.yonyou.iuap.wb.utils.JsonResponse;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -27,8 +23,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.yonyou.iuap.baseservice.entity.RefParamConfig;
+import com.yonyou.iuap.baseservice.entity.RefParamVO;
+import com.yonyou.iuap.baseservice.persistence.utils.RefXMLParse;
+import com.yonyou.iuap.baseservice.persistence.utils.RefXmlConstract;
+import com.yonyou.iuap.baseservice.ref.service.RefCommonService;
+import com.yonyou.iuap.baseservice.ref.utils.RefUitls;
+import com.yonyou.iuap.ref.model.RefVertion;
+import com.yonyou.iuap.ref.model.RefViewModelVO;
+import com.yonyou.iuap.wb.utils.JsonResponse;
+import com.yonyou.uap.ieop.security.datapermission.DataPermissionCenter;
 
 /**
  * 说明：参照基础controller,所有参照都通过平台回调到这个地址取数据
@@ -370,11 +376,24 @@ public final class RefCommonController  {
             if (CollectionUtils.isNotEmpty(obj)) {
                 results = buildRtnValsOfRef(obj);
             }
+            results = testSortList(idsList,results);
             return results;
         }
         return (new ArrayList<>());
     }
 
+    private List<Map<String,Object>> testSortList(List<String> idsList ,List<Map<String,Object>> obj){
+		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+		for(String idvalue : idsList){
+			for(Map<String,Object> map : obj){
+				if(idvalue.equals(map.get("id").toString())){
+					list.add(map);
+				}
+			}
+		}
+		return list;
+	}
+    
     @RequestMapping(
             value = {"/getByIds"},
             method = {RequestMethod.POST}

@@ -12,7 +12,7 @@
 		from ${tablename}
 		<where>
 			1 = 1
-			and id in
+			and ${idfield} in
 			<foreach collection="ids" item="id" open="(" close=")" separator="," index="index">
 				'${ids[index]}'
 			</foreach>
