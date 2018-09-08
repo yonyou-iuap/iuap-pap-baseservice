@@ -221,7 +221,10 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 	public JsonResponse doRejectMarkerBillAction(@RequestBody Map<String, Object> params) throws Exception {
 		String billId = String.valueOf(params.get("billId"));
 		service.doRejectMarkerBill(billId);
-		return buildSuccess();
+		T entity=service.findById(billId);
+		entity.setBpmState(BpmExUtil.BPM_STATE_ABEND);//异常终止
+		T result = service.save(entity);
+		return buildSuccess(result);
 	}
 
 	@Override
