@@ -139,8 +139,18 @@ public  class RefCommonService<T extends Model>  implements QueryFeatureExtensio
                 conditions.remove(removeKey);
             }
         }catch (Exception e){
-            if(StringUtils.isNotEmpty(content)){
-                keyword.append("%").append(content).append("%");
+        	if(StringUtils.isNotEmpty(content)){
+        		keyword.append("%").append(content).append("%");
+                String filterStr=refParamConfigTable.getFilters().get("likeSearchField");
+                if(StringUtils.isEmpty(filterStr)){
+                    conditionQuoter.put(refParamConfigTable.getRefcode(),"like");
+                    conditionQuoter.put(refParamConfigTable.getRefname(),"like");
+                }else {
+                    String[] filterAry=filterStr.split(",");
+                    for(String filter:filterAry){
+                        conditionQuoter.put(filter,"like");
+                    }
+                }
             }
         }
     }

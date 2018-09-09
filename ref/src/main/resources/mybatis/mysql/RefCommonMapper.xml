@@ -98,18 +98,19 @@
 		from ${tablename}
 		<where>
 			1 = 1
+			<if test="keyword != null and keyword != ''  "> 
+				and
+				<foreach collection="condQu.keys" item="k" open="(" close=")" separator="or" >
+					<if test="null != condQu[k]">
+						${k} ${condQu[k]} #{keyword}
+					</if>
+				</foreach>
+			</if>
+			
 			<if test="fidvalue != null and fidvalue != '' ">
 				and ${fidfield} = #{fidvalue}
 			</if>
-			<if test="keyword != null and keyword != ''  ">
-				and
-				(
-				${codefield} like #{keyword}
-				or
-				${namefield} like #{keyword}
-				)
-			</if>
-
+			
 			<if test="condmap != null and condmap.size>0 ">
 				<foreach collection="condmap.keys" item="k" >
 					<if test="null != condmap[k]">

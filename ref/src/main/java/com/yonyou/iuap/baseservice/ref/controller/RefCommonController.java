@@ -1,5 +1,6 @@
 package com.yonyou.iuap.baseservice.ref.controller;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.yonyou.iuap.baseservice.entity.RefParamConfig;
 import com.yonyou.iuap.baseservice.entity.RefParamVO;
 import com.yonyou.iuap.baseservice.persistence.utils.RefXMLParse;
@@ -258,7 +260,13 @@ public final class RefCommonController  {
     @RequestMapping(value = {"/blobRefSearch"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> blobRefSearch(@RequestBody RefViewModelVO refModel) {
-        RefParamVO refParamVO = RefXMLParse.getInstance().getReParamConfig(refModel.getRefCode());
+        try {
+//        	String content = URLDecoder.decode(refModel.getContent(), "UTF-8");
+        	String content = new String(refModel.getContent().getBytes("iso8859-1"),"utf-8");
+        	refModel.setContent(content);
+		} catch (Exception e) {
+		}
+    	RefParamVO refParamVO = RefXMLParse.getInstance().getReParamConfig(refModel.getRefCode());
         RefParamConfig refParamConfigTable=refParamVO.getRefParamConfigTable();
 
         Map<String, Object> mapList = new HashMap<>();
