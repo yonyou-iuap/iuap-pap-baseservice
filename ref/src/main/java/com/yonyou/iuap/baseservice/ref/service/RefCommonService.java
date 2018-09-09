@@ -122,21 +122,19 @@ public  class RefCommonService<T extends Model>  implements QueryFeatureExtensio
         try {
             conditions.putAll(JSON.parseObject(content,Map.class));
             Map<String,String> filters=refParamConfigTable.getFilters();
-            List<String> removeKeys=new ArrayList<>();
             for(String key : conditions.keySet()){
                 String filter=filters.get(key);
                 if(StringUtils.isEmpty(filter)){
-                    removeKeys.add(key);
-                    logger.error(key+"值对应的filter类型不存在，请验证");
-                    continue;
+                	//如果filter是空，默认like查询
+                	conditions.put(key,"%"+conditions.get(key)+"%");
+                	conditionQuoter.put(key,"like");
+                }else{
+                	if("like".equalsIgnoreCase(filter.trim())){
+                        conditions.put(key,"%"+conditions.get(key)+"%");
+                    }
+                    conditionQuoter.put(key,filter);
                 }
-                if("like".equalsIgnoreCase(filter.trim())){
-                    conditions.put(key,"%"+conditions.get(key)+"%");
-                }
-                conditionQuoter.put(key,filter);
-            }
-            for(String removeKey:removeKeys){
-                conditions.remove(removeKey);
+                
             }
         }catch (Exception e){
         	if(StringUtils.isNotEmpty(content)){
