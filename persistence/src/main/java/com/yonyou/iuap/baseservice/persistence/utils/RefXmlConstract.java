@@ -26,7 +26,7 @@ public class RefXmlConstract {
 
     public static final String REF_VIEW_MODEL_VO = "RefViewModelVO";
     public static final String REF_VIEW_MODEL_VO_CODE = "code";
-
+    public static final String REF_VIEW_MODEL_VO_I18N = "i18nkey";
     public static final String REF_TYPE = "type";
     public static final String REF_NAME = "name";
 

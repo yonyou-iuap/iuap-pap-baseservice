@@ -161,7 +161,7 @@ public abstract class GenericService<T extends Model>{
 			entity.setTs(now);
 			
 			if(entity.getClass().getAnnotation(CodingEntity.class)!=null) {
-				CodingUtil.inst().buildCoding(entity);		//按编码规则设置编码
+				CodingUtil.inst(). buildCoding(entity);		//按编码规则设置编码
 			}
 			
 			this.genericMapper.insert(entity);

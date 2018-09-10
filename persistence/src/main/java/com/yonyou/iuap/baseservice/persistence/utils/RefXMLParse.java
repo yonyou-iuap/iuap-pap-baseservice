@@ -110,11 +110,13 @@ public class RefXMLParse {
 			String refType=refViewModelVOElement.attributeValue(RefXmlConstract.REF_TYPE);
 			String refname=refViewModelVOElement.attributeValue(RefXmlConstract.REF_NAME);
 			String voCode=refViewModelVOElement.attributeValue(RefXmlConstract.REF_VIEW_MODEL_VO_CODE);
+			String i18nKey=refViewModelVOElement.attributeValue(RefXmlConstract.REF_VIEW_MODEL_VO_I18N);
 			if(StringUtils.isEmpty(refType)){
 				logger.error("参照类型不可为空，请设reftype值，例如：<RefViewModelVO code=\"***\" refType = \"1\">");
 			}
 			refParamVO.setReftype(refType);
 			refParamVO.setRefname(refname);
+			refParamVO.setRefi18n(i18nKey);
 			initParamConfig(refParamVO,refViewModelVOElement.element(RefXmlConstract.REF_TABLE_NODE),RefXmlConstract.REF_TABLE_NODE);
 			initParamConfig(refParamVO,refViewModelVOElement.element(RefXmlConstract.REF_TREE_NODE),RefXmlConstract.REF_TREE_NODE);
 			initThead(refParamVO,refViewModelVOElement.element(RefXmlConstract.REF_THEAD_NODE));
@@ -208,12 +210,16 @@ public class RefXMLParse {
 		if(theadElement!=null){
 			List<Element> fields= theadElement.elements(RefXmlConstract.REF_FIELD_NODE);
 			LinkedHashMap<String, String> thead=new LinkedHashMap<>();
+			LinkedHashMap<String, String> theadI18n=new LinkedHashMap<>();
 			for(Element field:fields){
 				String code=field.attributeValue(RefXmlConstract.REF_FIELD_CODE_ATTRIBUTE);
+				String i18n=field.attributeValue(RefXmlConstract.REF_VIEW_MODEL_VO_I18N);
 				String value=field.getStringValue();
 				thead.put(code,value);
+				theadI18n.put(code,i18n);
 			}
 			refParamVO.setThead(thead);
+			refParamVO.setTheadI18n(theadI18n);
 		}
 	}
 

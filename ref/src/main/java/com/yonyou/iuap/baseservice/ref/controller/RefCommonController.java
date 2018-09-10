@@ -9,6 +9,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.yonyou.iuap.i18n.MessageSourceUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -58,14 +59,21 @@ public final class RefCommonController  {
     @ResponseBody
     public RefViewModelVO getRefModelInfo(@RequestBody RefViewModelVO refViewModel) {
         RefParamVO refParamVO = RefXMLParse.getInstance().getReParamConfig(refViewModel.getRefCode());
-        refViewModel.setRefName(refParamVO.getRefname());
+        if (refParamVO.getRefi18n()==null){
+            refViewModel.setRefName(refParamVO.getRefname());
+            refViewModel.setRootName(refParamVO.getRefname());
+        }else{
+            refViewModel.setRefName(MessageSourceUtil.getMessage(refParamVO.getRefi18n(),refParamVO.getRefname()) );
+            refViewModel.setRootName(MessageSourceUtil.getMessage(refParamVO.getRefi18n(),refParamVO.getRefname()) );
+        }
+
         refViewModel.setRefVertion(RefVertion.NewRef);
-        refViewModel.setRootName(refParamVO.getRefname());
         refViewModel.setRefUIType(RefUitls.getRefUIType(refParamVO.getReftype()));
 
         Map<String,String> showColMap = refParamVO.getThead();
         String[] showCode = null;
         String[] showName = null;
+        String[] showNameI18n = null;
         if (showColMap != null) {
             showCode = new String[showColMap.size()];
             showName = new String[showColMap.size()];
@@ -73,12 +81,24 @@ public final class RefCommonController  {
             for (Map.Entry<String, String> entry : showColMap.entrySet()) {
                 showCode[i] = entry.getKey();
                 showName[i] = entry.getValue();
+                if (refParamVO.getTheadI18n()!=null  ){
+                    showNameI18n[i]=
+                            refParamVO.getTheadI18n().get(entry.getKey())==null
+                                    ?showName[i]
+                                    :MessageSourceUtil.getMessage(refParamVO.getTheadI18n().get(entry.getKey()),showName[i]);
+                }
                 i++;
             }
         }
-        /*显示列编码和名称*/
         refViewModel.setStrFieldCode(showCode);
-        refViewModel.setStrFieldName(showName);
+        //国际化
+        if (refParamVO.getTheadI18n()==null){
+            /*显示列编码和名称*/
+            refViewModel.setStrFieldName(showName);
+        }else{
+            refViewModel.setStrFieldName(showNameI18n);
+        }
+
         refViewModel.setDefaultFieldCount(showColMap.size());
         return refViewModel;
     }
@@ -412,10 +432,10 @@ public final class RefCommonController  {
             if (!CollectionUtils.isEmpty(array)) {
                 String[] strArray = array.toArray(new String[array.size()]);
                 RefParamVO refParamVO = RefXMLParse.getInstance().getReParamConfig(refCode);
-                RefParamConfig refParamConfigTable=refParamVO.getRefParamConfigTable();
-
-                dataList.addAll(this.service.getByIds(refParamConfigTable.getTableName(), refParamConfigTable.getId(), refParamConfigTable.getRefcode(),
-                        refParamConfigTable.getRefname(), refParamConfigTable.getExtension(), Arrays.asList(strArray)));
+//                RefParamConfig refParamConfigTable=refParamVO.getRefParamConfigTable();
+                RefParamConfig refParamConfig=refParamVO.getRefParamConfigTable()==null?refParamVO.getRefParamConfigTableTree():refParamVO.getRefParamConfigTable();
+                dataList.addAll(this.service.getByIds(refParamConfig.getTableName(), refParamConfig.getId(), refParamConfig.getRefcode(),
+                        refParamConfig.getRefname(), refParamConfig.getExtension(), Arrays.asList(strArray)));
             }
 
             List<Map<String, Object>> dataListResult = toLowerKey(dataList);
