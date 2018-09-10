@@ -398,9 +398,9 @@ public final class RefCommonController  {
                 }
             }
             RefParamVO refParamVO = RefXMLParse.getInstance().getReParamConfig(refCode);
-            RefParamConfig refParamConfigTable=refParamVO.getRefParamConfigTable();
-
-            List<Map<String, Object>> obj = service.getFilterRef(refParamConfigTable.getTableName(),refParamConfigTable.getId(),refParamConfigTable.getExtension(),idsList);
+//            RefParamConfig refParamConfig=refParamVO.getRefParamConfigTable();
+            RefParamConfig refParamConfig=refParamVO.getRefParamConfigTable()==null?refParamVO.getRefParamConfigTableTree():refParamVO.getRefParamConfigTable();
+            List<Map<String, Object>> obj = service.getFilterRef(refParamConfig.getTableName(),refParamConfig.getId(),refParamConfig.getExtension(),idsList);
             if (CollectionUtils.isNotEmpty(obj)) {
                 results = buildRtnValsOfRef(obj);
             }
