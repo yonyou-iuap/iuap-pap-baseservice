@@ -29,8 +29,15 @@ public class BpmExUtil {
 	public boolean isSuccess4Revoke(JSONObject result) {
 		return result!=null && "success".equals(result.getString("success"));
 	}
-	
-	/*************************************************/
+
+	public boolean isSuccess(JSONObject resultJsonObject) {
+		return resultJsonObject != null && resultJsonObject.get("flag").equals("success");
+	}
+
+	public boolean isFail(JSONObject resultJsonObject) {
+		return resultJsonObject != null && resultJsonObject.get("flag").equals("fail");
+	}
+
 	private static class Inner{
 		private static BpmExUtil INST = new BpmExUtil();
 	}
