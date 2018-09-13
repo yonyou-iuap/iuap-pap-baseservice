@@ -79,6 +79,7 @@ public final class RefCommonController  {
         if (showColMap != null) {
             showCode = new String[showColMap.size()];
             showName = new String[showColMap.size()];
+            showNameI18n = new String[showColMap.size()];
             int i = 0;
             for (Map.Entry<String, String> entry : showColMap.entrySet()) {
                 showCode[i] = entry.getKey();
