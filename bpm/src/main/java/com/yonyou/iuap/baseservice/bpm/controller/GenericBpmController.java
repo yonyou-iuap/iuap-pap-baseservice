@@ -258,6 +258,11 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 	}
 
 	@Override
+	public JsonResponse doCompletedWithdraw(Map<String, Object> map) throws Exception {
+		return null;
+	}
+
+	@Override
 	public JsonResponse doSuspend(Map<String, Object> map) throws Exception {
 		logger.debug("doSuspend");
 		return buildSuccess();
