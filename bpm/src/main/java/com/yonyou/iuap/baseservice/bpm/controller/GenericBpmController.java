@@ -258,8 +258,19 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 	}
 
 	@Override
-	public JsonResponse doCompletedWithdraw(Map<String, Object> map) throws Exception {
-		return null;
+	public JsonResponse doCompletedWithdraw(Map<String, Object> params) throws Exception {
+		logger.debug("doCompletedWithdraw begin");
+        Object node = params.get("historicProcessInstanceNode");
+        if (node==null) throw new BusinessException("流程终止回调参数为空");
+        Map hisProc = (Map)node;
+        String busiId = hisProc.get("businessKey").toString();
+        logger.debug(busiId);
+        T entity=service.findById(busiId);
+        entity.setBpmState(BpmExUtil.BPM_STATE_RUNNING);//流程中
+        T result = service.save(entity);
+        logger.debug(JSONObject.toJSONString(entity));
+		logger.debug("doCompletedWithdraw end.");
+        return buildSuccess(result);
 	}
 
 	@Override
