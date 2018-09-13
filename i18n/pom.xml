@@ -13,11 +13,79 @@
     <artifactId>iuap-pap-baseservice-i18n</artifactId>
 
     <dependencies>
-    <dependency>
-        <groupId>com.yonyou.iuap.pap</groupId>
-        <artifactId>eiap-plus-common</artifactId>
-        <version>${eiap.module.version}</version>
-    </dependency>
+
+        <!--spring-core 4.0.5-->
+        <!--commons-collection 3.2-->
+        <!--commons-loggin 1.1.1-->
+        <!--spring-beans 4.0.5-->
+        <!--spring-context 4.0.5-->
+        <!--jslf4j-api 1.7.8-->
+        <!--servlet-api 3.1.0-->
+        <!--iuap-generic 3.1.0-->
+        <!--iuap-utils 3.1.0-->
+
+        <!--<dependency>
+            <groupId>com.yonyou.iuap.pap</groupId>
+            <artifactId>eiap-plus-common</artifactId>
+            <version>${eiap.module.version}</version>
+        </dependency>-->
+
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${spring.verison}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${spring.verison}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.verison}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.8</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.yonyou.iuap</groupId>
+            <artifactId>iuap-utils</artifactId>
+            <version>3.1.0-RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.yonyou.iuap</groupId>
+            <artifactId>iuap-generic</artifactId>
+            <version>3.1.0-RELEASE</version>
+        </dependency>
+
     </dependencies>
 
 </project>

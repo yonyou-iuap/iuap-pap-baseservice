@@ -146,20 +146,6 @@ public abstract class GenericBpmService<T extends BpmSimpleModel> extends Generi
 
 
 
-
-
-
-    private boolean isSuccess(JSONObject resultJsonObject) {
-        return resultJsonObject.get("flag").equals("success");
-    }
-
-    private boolean isFail(JSONObject resultJsonObject) {
-        return resultJsonObject.get("flag").equals("fail");
-    }
-
-
-/** =================================================================================================================== */
-
 	/**
 	 * 获取单据编号
 	 * @param entity
@@ -214,11 +200,11 @@ public abstract class GenericBpmService<T extends BpmSimpleModel> extends Generi
 	            return resultJsonObject;
 	        }
 
-	        if (isSuccess(resultJsonObject)) {
+	        if (BpmExUtil.inst().isSuccess(resultJsonObject)) {
 	            entity.setBpmState(1);// 从未提交状态改为已提交状态;
 //	            //修改DB表数据
 	            save(entity);
-	        } else if (isFail(resultJsonObject)) {
+	        } else if (BpmExUtil.inst().isFail(resultJsonObject)) {
 	            String msg = resultJsonObject.get("msg").toString();
 	            throw new BusinessException("提交启动流程实例发生错误，请联系管理员！错误原因：" + msg);
 	        }
@@ -238,11 +224,11 @@ public abstract class GenericBpmService<T extends BpmSimpleModel> extends Generi
                 return resultJsonObject;
             }
 
-            if (isSuccess(resultJsonObject)) {
+            if (BpmExUtil.inst().isSuccess(resultJsonObject)) {
                 entity.setBpmState(1);// 从未提交状态改为已提交状态;
 //	            //修改DB表数据
                 save(entity);
-            } else if (isFail(resultJsonObject)) {
+            } else if (BpmExUtil.inst().isFail(resultJsonObject)) {
                 String msg = resultJsonObject.get("msg").toString();
                 throw new BusinessException("提交启动流程实例发生错误，请联系管理员！错误原因：" + msg);
             }
@@ -261,11 +247,11 @@ public abstract class GenericBpmService<T extends BpmSimpleModel> extends Generi
     public void assignSubmitEntity(T entity, String processDefineCode, AssignInfo assignInfo) {
         BPMFormJSON bpmform = buildBPMFormJSON(processDefineCode, entity);
         JSONObject resultJsonObject = bpmSubmitBasicService.assignSubmit(bpmform, assignInfo);
-        if (isSuccess(resultJsonObject)) {
+        if (BpmExUtil.inst().isSuccess(resultJsonObject)) {
         	entity.setBpmState(1);// 从未提交状态改为已提交状态;
             //修改DB表数据
             save(entity);
-        } else if (isFail(resultJsonObject)) {
+        } else if (BpmExUtil.inst().isFail(resultJsonObject)) {
             String msg = resultJsonObject.get("msg").toString();
             throw new BusinessException("提交启动流程实例发生错误，请联系管理员！错误原因：" + msg);
         }
@@ -284,10 +270,10 @@ public abstract class GenericBpmService<T extends BpmSimpleModel> extends Generi
         if(copyUsers!=null && copyUsers.size()>0)
             bpmform.setCopyUsers(copyUsers);
         JSONObject resultJsonObject = bpmSubmitBasicService.assignSubmit(bpmform, assignInfo);
-        if (isSuccess(resultJsonObject)) {
+        if (BpmExUtil.inst().isSuccess(resultJsonObject)) {
             entity.setBpmState(1);// 修改业务对象流程状态字段，从未提交改为提交。
             save(entity);
-        } else if (isFail(resultJsonObject)) {
+        } else if (BpmExUtil.inst().isFail(resultJsonObject)) {
             String msg = resultJsonObject.get("msg").toString();
             throw new BusinessException("提交启动流程实例发生错误，请联系管理员！错误原因：" + msg);
         }
