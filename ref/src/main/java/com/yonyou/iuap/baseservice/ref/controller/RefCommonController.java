@@ -281,12 +281,12 @@ public final class RefCommonController  {
     @RequestMapping(value = {"/blobRefSearch"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> blobRefSearch(@RequestBody RefViewModelVO refModel) {
-        try {
-//        	String content = URLDecoder.decode(refModel.getContent(), "UTF-8");
-        	String content = new String(refModel.getContent().getBytes("iso8859-1"),"utf-8");
-        	refModel.setContent(content);
-		} catch (Exception e) {
-		}
+//        try {
+////        	String content = URLDecoder.decode(refModel.getContent(), "UTF-8");
+//        	String content = new String(refModel.getContent().getBytes("iso8859-1"),"utf-8");
+//        	refModel.setContent(content);
+//		} catch (Exception e) {
+//		}
     	RefParamVO refParamVO = RefXMLParse.getInstance().getReParamConfig(refModel.getRefCode());
         RefParamConfig refParamConfigTable=refParamVO.getRefParamConfigTable();
 
