@@ -120,7 +120,13 @@ public  class RefCommonService<T extends Model>  implements QueryFeatureExtensio
     private void setCondition( RefParamConfig refParamConfigTable,StringBuilder keyword,Map<String, String> conditions,Map<String, String> conditionQuoter,String content){
 
         try {
-            conditions.putAll(JSON.parseObject(content,Map.class));
+            Map<String,String> contentJson = JSON.parseObject(content,Map.class)==null? new HashMap<String, String>(): JSON.parseObject(content,Map.class);
+            for (String key :contentJson.keySet()){
+                if ( StringUtils.isNotEmpty( contentJson.get(key)  )){
+                    conditions.put(key, contentJson.get(key) );
+                }
+            }
+
             Map<String,String> filters=refParamConfigTable.getFilters();
             for(String key : conditions.keySet()){
                 String filter=filters.get(key);
