@@ -11,12 +11,14 @@ import com.yonyou.iuap.baseservice.service.GenericService;
 import com.yonyou.iuap.mvc.type.SearchParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -252,7 +254,15 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
     @Override
     public T insert(T entity) {
         prepareFeatEntity(entity);
-        entity=super.insert(entity);
+        try {
+            entity=super.insert(entity);
+        } catch (Exception e) {
+            if (e instanceof  DuplicateKeyException){
+                throw new RuntimeException("违反唯一性约束，无法保存");
+            }else{
+                throw e;
+            }
+        }
         addFeatAfterEntitySave(entity);
         return entity;
     }
@@ -265,7 +275,15 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
     @Override
     public T update(T entity) {
         prepareFeatEntity(entity);
-        entity=super.update(entity);
+        try {
+            entity=super.update(entity);
+        } catch (Exception e) {
+            if (e instanceof DuplicateKeyException){
+                throw new RuntimeException("违反唯一性约束，无法保存");
+            }else{
+                throw e;
+            }
+        }
         addFeatAfterEntitySave(entity);
         return entity;
     }
