@@ -263,7 +263,14 @@ public  class RefCommonService<T extends Model>  implements QueryFeatureExtensio
      */
     @Override
     public List<T> afterListQuery(List<T> list) {
-        return this.fillListWithRef(list);
+
+        try{
+           return fillListWithRef(list);
+        }catch (Exception e){
+            logger.error("参照反写失败",e);
+        }
+
+        return list;
     }
 
 
