@@ -172,7 +172,6 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value={"/doApprove"}, method={RequestMethod.POST})
 	@ResponseBody
 	public Object doApproveAction(@RequestBody Map<String, Object> params, HttpServletRequest request) throws Exception {
 		Object node = params.get("historicProcessInstanceNode");
@@ -216,13 +215,12 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 	 * @return null
 	 * @throws Exception
 	 */
-	@RequestMapping(value = {"/doRejectMarkerBill"}, method = {RequestMethod.POST})
 	@ResponseBody
 	public JsonResponse doRejectMarkerBillAction(@RequestBody Map<String, Object> params) throws Exception {
 		String billId = String.valueOf(params.get("billId"));
 		service.doRejectMarkerBill(billId);
 		T entity=service.findById(billId);
-		entity.setBpmState(BpmExUtil.BPM_STATE_ABEND);//异常终止
+		entity.setBpmState(BpmExUtil.BPM_STATE_NOTSTART);//异常终止
 		T result = service.save(entity);
 		return buildSuccess(result);
 	}
