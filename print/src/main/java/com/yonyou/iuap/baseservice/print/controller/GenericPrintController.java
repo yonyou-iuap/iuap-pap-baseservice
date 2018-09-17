@@ -34,7 +34,7 @@ public abstract  class GenericPrintController<T extends Printable> extends BaseC
     private Logger log = LoggerFactory.getLogger(GenericPrintController.class);
 
     @Autowired
-    RefCommonService refService;
+    protected RefCommonService refService;
   
 
     @RequestMapping(value = "/dataForPrint", method = RequestMethod.POST)
@@ -91,7 +91,7 @@ public abstract  class GenericPrintController<T extends Printable> extends BaseC
 
 
     /************************************************************/
-    private Map<String ,GenericService> subServices = new HashMap<>();
+    protected Map<String ,GenericService> subServices = new HashMap<>();
     private GenericService<T> service;
 
     protected void setService(GenericService<T> genericService) {
