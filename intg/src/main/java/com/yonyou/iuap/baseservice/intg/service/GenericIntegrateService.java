@@ -19,9 +19,7 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.yonyou.iuap.baseservice.intg.support.ServiceFeature.*;
 
@@ -68,14 +66,15 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
      */
     private SearchParams  prepareFeatSearchParam(SearchParams searchParams){
 
-        for (ServiceFeature feat:feats){
-           QueryFeatureExtension instance = ServiceFeatureHolder.getQueryExtension(feat.name());
+        for (String feat:feats){
+           QueryFeatureExtension instance = ServiceFeatureHolder.getQueryExtension(feat);
            if (instance==null){
                 log.info(LOG_TEMPLATE, feat,QueryFeatureExtension.class);
            }else{
                searchParams= instance.prepareQueryParam(searchParams,getModelClass());
            }
         }
+
         return searchParams;
     }
 
@@ -85,8 +84,8 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
      * @return
      */
     private List fillListFeatAfterQuery(List list){
-        for (ServiceFeature feat:feats){
-            QueryFeatureExtension instance = ServiceFeatureHolder.getQueryExtension(feat.name());
+        for (String feat:feats){
+            QueryFeatureExtension instance = ServiceFeatureHolder.getQueryExtension(feat);
             if (instance==null){
                 log.info(LOG_TEMPLATE, feat,QueryFeatureExtension.class);
             }else{
@@ -201,8 +200,8 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
      * @param entity
      */
     private void prepareFeatEntity(T entity){
-        for (ServiceFeature feat:feats){
-            SaveFeatureExtension instance = ServiceFeatureHolder.getSaveExtension(feat.name());
+        for (String feat:feats){
+            SaveFeatureExtension instance = ServiceFeatureHolder.getSaveExtension(feat);
             if (instance==null){
                 log.info(LOG_TEMPLATE, feat,SaveFeatureExtension.class);
             }else{
@@ -212,8 +211,8 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
     }
 
     private void addFeatAfterEntitySave(T entity){
-        for (ServiceFeature feat:feats){
-            SaveFeatureExtension instance = ServiceFeatureHolder.getSaveExtension(feat.name());
+        for (String feat:feats){
+            SaveFeatureExtension instance = ServiceFeatureHolder.getSaveExtension(feat);
             if (instance==null){
                 log.info(LOG_TEMPLATE, feat,SaveFeatureExtension.class);
             }else{
@@ -293,8 +292,8 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
      * @param entity
      */
     private void prepareFeatDeleteParam(T entity,Map params){
-        for (ServiceFeature feat:feats){
-            DeleteFeatureExtension instance = ServiceFeatureHolder.getDeleteExtension(feat.name());
+        for (String feat:feats){
+            DeleteFeatureExtension instance = ServiceFeatureHolder.getDeleteExtension(feat);
             if (instance==null){
                 log.info(LOG_TEMPLATE, feat,DeleteFeatureExtension.class);
             }else{
@@ -303,8 +302,8 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
         }
     }
     private void runFeatAfterEntityDelete(T entity) {
-        for (ServiceFeature feat : feats) {
-            DeleteFeatureExtension instance = ServiceFeatureHolder.getDeleteExtension(feat.name());
+        for (String feat : feats) {
+            DeleteFeatureExtension instance = ServiceFeatureHolder.getDeleteExtension(feat);
             if (instance == null) {
                 log.info(LOG_TEMPLATE, feat,DeleteFeatureExtension.class);
             } else {
@@ -374,8 +373,8 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
     }
 
     private boolean isLogicalDel(){
-        for (ServiceFeature feat:feats){
-            if (feat==LOGICAL_DEL) return true;
+        for (String feat:feats){
+            if (LOGICAL_DEL.name().equalsIgnoreCase(feat )) return true;
         }
         return false;
     }
@@ -384,15 +383,27 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
 
     protected GenericMapper<T> genericMapper;
 
-    protected ServiceFeature[] feats = new ServiceFeature[]{ATTACHMENT,MULTI_TENANT,LOGICAL_DEL,REFERENCE};
+    protected String[] feats = new String[]{"REFERENCE"};
 
     protected abstract ServiceFeature[] getFeats();
 
-    public void setGenericMapper(GenericMapper<T> mapper) {
-        this.feats=getFeats();
+
+    public void setGenericMapper(GenericMapper<T> mapper,String... extensions ) {
+        this.feats=combineFeats(extensions);
         this.genericMapper = mapper;
         super.setGenericMapper(mapper);
     }
 
+    private String[] combineFeats(String[] extensions){
+        List<String> allFeat = new ArrayList<>();
+
+        for (ServiceFeature feature:getFeats()){
+            allFeat.add(feature.name());
+        }
+        for (String ex:extensions){
+            allFeat.add(ex);
+        }
+        return  allFeat.toArray(extensions);
+    }
 
 }
