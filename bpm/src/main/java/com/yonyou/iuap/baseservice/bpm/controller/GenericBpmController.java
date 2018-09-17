@@ -222,7 +222,7 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 		String billId = String.valueOf(params.get("billId"));
 		service.doRejectMarkerBill(billId);
 		T entity=service.findById(billId);
-		entity.setBpmState(BpmExUtil.BPM_STATE_ABEND);//异常终止
+		entity.setBpmState(BpmExUtil.BPM_STATE_NOTSTART);//异常终止
 		T result = service.save(entity);
 		return buildSuccess(result);
 	}
