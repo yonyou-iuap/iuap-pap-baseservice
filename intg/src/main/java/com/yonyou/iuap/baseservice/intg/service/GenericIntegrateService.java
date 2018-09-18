@@ -389,7 +389,7 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
 
     public void setGenericMapper(GenericMapper<T> mapper ) {
         setGenericMapper(mapper,new String[0]);
-    }it
+    }
 
     public void setGenericMapper(GenericMapper<T> mapper,String... extensions ) {
         this.feats=combineFeats(extensions);
