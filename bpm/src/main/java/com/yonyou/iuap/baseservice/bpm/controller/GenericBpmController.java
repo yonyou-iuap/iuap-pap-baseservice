@@ -212,7 +212,7 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 	/**
 	 * 回调：驳回到制单人
 	 * @param params
-	 * @return null
+	 * @return JsonResponse
 	 * @throws Exception
 	 */
 	@ResponseBody
