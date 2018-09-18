@@ -218,9 +218,11 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 	@ResponseBody
 	public JsonResponse doRejectMarkerBillAction(@RequestBody Map<String, Object> params) throws Exception {
 		String billId = String.valueOf(params.get("billId"));
+		logger.debug("doRejectMarkerBillAction处理单据：{}",billId);
 		service.doRejectMarkerBill(billId);
 		T entity=service.findById(billId);
 		entity.setBpmState(BpmExUtil.BPM_STATE_NOTSTART);//异常终止
+        logger.debug("doRejectMarkerBillAction处理单据状态：{}",entity.getBpmState());
 		T result = service.save(entity);
 		return buildSuccess(result);
 	}
