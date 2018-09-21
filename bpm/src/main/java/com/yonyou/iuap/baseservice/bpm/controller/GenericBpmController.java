@@ -11,6 +11,7 @@ import com.yonyou.iuap.bpm.service.JsonResultService;
 import com.yonyou.iuap.bpm.web.IBPMBusinessProcessController;
 import com.yonyou.iuap.mvc.type.JsonResponse;
 import com.yonyou.iuap.persistence.vo.pub.BusinessException;
+import com.yonyou.iuap.persistence.vo.pub.util.StringUtil;
 import net.sf.json.JSONNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,9 @@ import java.util.Map;
 public  class GenericBpmController<T extends BpmSimpleModel> extends BaseController implements IBPMBusinessProcessController {
 
 	private Logger logger= LoggerFactory.getLogger(this.getClass());
+
+	private String billId;
+	private Map hisProc;
 
 	@Autowired
 	private JsonResultService jsonResultService;
@@ -174,12 +178,9 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 	 */
 	@ResponseBody
 	public Object doApproveAction(@RequestBody Map<String, Object> params, HttpServletRequest request) throws Exception {
-		Object node = params.get("historicProcessInstanceNode");
-		if (node==null) throw new BusinessException("流程审批回调参数为空");
-		Map hisProc = (Map)node;
+		evalParamData(params);
 		Object endTime = hisProc.get("endTime");
-		String busiId = hisProc.get("businessKey").toString();
-		T entity=service.findById(busiId);
+		T entity=service.findById(billId);
 		if (endTime != null && endTime != JSONNull.getInstance() && !"".equals(endTime)) {
 			entity.setBpmState(BpmExUtil.BPM_STATE_FINISH);//已办结
 		}else {
@@ -198,11 +199,8 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 	 */
 	@ResponseBody
 	public JsonResponse doTerminationAction(@RequestBody Map<String, Object> params) throws Exception {
-		Object node = params.get("historicProcessInstanceNode");
-		if (node==null) throw new BusinessException("流程终止回调参数为空");
-		Map hisProc = (Map)node;
-		String busiId = hisProc.get("businessKey").toString();
-		T entity=service.findById(busiId);
+		evalParamData(params);
+		T entity=service.findById(billId);
 		entity.setBpmState(BpmExUtil.BPM_STATE_ABEND);//异常终止
 		T result = service.save(entity);
 		return buildSuccess(result);
@@ -217,7 +215,7 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 	 */
 	@ResponseBody
 	public JsonResponse doRejectMarkerBillAction(@RequestBody Map<String, Object> params) throws Exception {
-		String billId = String.valueOf(params.get("billId"));
+		evalParamData(params);
 		logger.debug("doRejectMarkerBillAction处理单据：{}",billId);
 		service.doRejectMarkerBill(billId);
 		T entity=service.findById(billId);
@@ -260,12 +258,8 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 	@Override
 	public JsonResponse doCompletedWithdraw(Map<String, Object> params) throws Exception {
 		logger.debug("doCompletedWithdraw begin");
-        Object node = params.get("historicProcessInstanceNode");
-        if (node==null) throw new BusinessException("流程终止回调参数为空");
-        Map hisProc = (Map)node;
-        String busiId = hisProc.get("businessKey").toString();
-        logger.debug(busiId);
-        T entity=service.findById(busiId);
+		evalParamData(params);
+        T entity=service.findById(billId);
         entity.setBpmState(BpmExUtil.BPM_STATE_RUNNING);//流程中
         T result = service.save(entity);
         logger.debug(JSONObject.toJSONString(entity));
@@ -301,6 +295,17 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 		}
 		logger.debug("抄送对象数据：{}",JSONObject.toJSONString(participants));
 		return participants;
+	}
+
+	private void evalParamData(Map<String, Object> params){
+		logger.debug("evalParamData-params:{}",JSONObject.toJSONString(params));
+		Object historicProcessInstanceNode = params.get("historicProcessInstanceNode");
+		if (historicProcessInstanceNode==null) throw new BusinessException("流程终止回调参数为空");
+		hisProc = (Map)historicProcessInstanceNode;
+		billId = hisProc.get("businessKey").toString();
+		if(StringUtil.isEmpty(billId)) {
+			billId = String.valueOf(params.get("billId"));
+		}
 	}
 
 }
