@@ -5,10 +5,8 @@ import com.yonyou.iuap.persistence.mybatis.anotation.MyBatisRepository;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.PageRequest;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * 查询参照数据mybatis

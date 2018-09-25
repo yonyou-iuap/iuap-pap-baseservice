@@ -1,6 +1,5 @@
 package com.yonyou.iuap.baseservice.attachment.entity;
 
-import com.yonyou.iuap.baseservice.entity.LogicDel;
 import com.yonyou.iuap.baseservice.entity.Model;
 
 import java.util.List;

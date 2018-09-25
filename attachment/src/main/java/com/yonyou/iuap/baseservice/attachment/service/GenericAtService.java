@@ -2,26 +2,27 @@ package com.yonyou.iuap.baseservice.attachment.service;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import com.yonyou.iuap.baseservice.attachment.dao.mapper.AttachmentMapper;
 import com.yonyou.iuap.baseservice.attachment.entity.AttachmentEntity;
 import com.yonyou.iuap.baseservice.attachment.entity.Attachmentable;
-import com.yonyou.iuap.baseservice.attachment.dao.mapper.AttachmentMapper;
 import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericExMapper;
 import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericMapper;
 import com.yonyou.iuap.baseservice.ref.service.RefCommonService;
 import com.yonyou.iuap.baseservice.service.GenericService;
-import com.yonyou.iuap.baseservice.persistence.support.QueryFeatureExtension;
 import com.yonyou.iuap.baseservice.support.generator.GeneratorManager;
 import com.yonyou.iuap.context.InvocationInfoProxy;
 import com.yonyou.iuap.mvc.type.SearchParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class GenericAtService<T extends Attachmentable> extends GenericService<T>   {
 

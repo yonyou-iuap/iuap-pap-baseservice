@@ -9,7 +9,6 @@ import com.yonyou.iuap.mvc.type.SearchParams;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 

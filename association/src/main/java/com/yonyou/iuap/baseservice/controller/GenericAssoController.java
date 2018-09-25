@@ -5,7 +5,6 @@ import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.entity.annotation.Associative;
 import com.yonyou.iuap.baseservice.intg.service.GenericIntegrateService;
 import com.yonyou.iuap.baseservice.service.GenericAssoService;
-import com.yonyou.iuap.baseservice.service.GenericService;
 import com.yonyou.iuap.baseservice.vo.GenericAssoVo;
 import com.yonyou.iuap.mvc.constants.RequestStatusEnum;
 import com.yonyou.iuap.mvc.type.JsonResponse;

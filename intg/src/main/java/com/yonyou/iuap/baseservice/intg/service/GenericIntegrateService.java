@@ -18,10 +18,12 @@ import org.springframework.data.domain.PageRequest;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static com.yonyou.iuap.baseservice.intg.support.ServiceFeature.*;
+import static com.yonyou.iuap.baseservice.intg.support.ServiceFeature.LOGICAL_DEL;
 
 /**
  * 特性集成服务,用于GenericService所有服务接口集成多种组件特性

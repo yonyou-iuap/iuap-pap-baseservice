@@ -1,6 +1,5 @@
 package com.yonyou.iuap.baseservice.intg.service;
 
-import cn.hutool.core.util.ReflectUtil;
 import com.yonyou.iuap.baseservice.entity.LogicDel;
 import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.persistence.support.DeleteFeatureExtension;
@@ -9,7 +8,6 @@ import com.yonyou.iuap.baseservice.persistence.support.SaveFeatureExtension;
 import com.yonyou.iuap.mvc.type.SearchParams;
 import org.springframework.stereotype.Service;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 

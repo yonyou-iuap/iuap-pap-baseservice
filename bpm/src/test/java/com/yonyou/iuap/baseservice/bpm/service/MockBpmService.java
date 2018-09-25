@@ -1,6 +1,5 @@
 package com.yonyou.iuap.baseservice.bpm.service;
 
-import com.yonyou.iuap.baseservice.bpm.service.GenericBpmService;
 import com.yonyou.iuap.baseservice.bpm.dao.MockMapper;
 import com.yonyou.iuap.baseservice.bpm.model.MockModel;
 import com.yonyou.iuap.bpm.pojo.BPMFormJSON;

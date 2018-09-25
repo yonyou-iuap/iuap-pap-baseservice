@@ -1,7 +1,8 @@
 package com.yonyou.iuap.baseservice.model;
 
-import java.lang.reflect.Field;
 import com.yonyou.iuap.baseservice.entity.annotation.Reference;
+
+import java.lang.reflect.Field;
 
 /**
  * Hello world!

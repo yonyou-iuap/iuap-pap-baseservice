@@ -1,24 +1,18 @@
 package com.yonyou.iuap.baseservice.ref.service;
 
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.core.util.ReflectUtil;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.entity.RefParamConfig;
+import com.yonyou.iuap.baseservice.entity.RefParamVO;
+import com.yonyou.iuap.baseservice.entity.annotation.Reference;
 import com.yonyou.iuap.baseservice.persistence.support.QueryFeatureExtension;
+import com.yonyou.iuap.baseservice.persistence.utils.RefXMLParse;
+import com.yonyou.iuap.baseservice.ref.dao.mapper.RefCommonMapper;
 import com.yonyou.iuap.mvc.type.SearchParams;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +20,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import com.yonyou.iuap.baseservice.entity.RefParamVO;
-import com.yonyou.iuap.baseservice.entity.annotation.Reference;
-import com.yonyou.iuap.baseservice.persistence.utils.RefXMLParse;
-import com.yonyou.iuap.baseservice.ref.dao.mapper.RefCommonMapper;
-
-import cn.hutool.core.util.ArrayUtil;
-import cn.hutool.core.util.ReflectUtil;
+import java.lang.reflect.Field;
+import java.util.*;
 
 
 /**
