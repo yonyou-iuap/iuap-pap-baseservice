@@ -40,6 +40,6 @@ public class BpmExUtil {
 
 	private static class Inner{
 		private static BpmExUtil INST = new BpmExUtil();
-	}
+	} 
 
 }
