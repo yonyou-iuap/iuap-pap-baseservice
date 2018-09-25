@@ -5,7 +5,9 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 
 import com.yonyou.iuap.i18n.utils.LocaleUtil;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
+import org.springframework.context.support.DelegatingMessageSource;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -28,6 +30,8 @@ public class MessageSourceUtil {
 	private static MessageSource messageSource;
 
 	private static MessageSourceUtil instance = null;
+
+	public static final String MESSAGE_SOURCE_BEAN_NAME = "messageSource";
 
 	// 默认英文，通过U_locale转换而来
 	private static Locale locale = Locale.ENGLISH;
@@ -53,7 +57,17 @@ public class MessageSourceUtil {
 	private static void init() {
 		if (messageSource == null) {
 			synchronized (MessageSourceUtil.class) {
-				messageSource = (MessageSource) ApplicationContextUtil.getApplicationContext().getBean("messageSource");
+
+				ApplicationContext applicationContext = ApplicationContextUtil.getApplicationContext();
+
+				if(applicationContext != null && applicationContext.containsBean(MESSAGE_SOURCE_BEAN_NAME)){
+					messageSource = (MessageSource) applicationContext.getBean(MESSAGE_SOURCE_BEAN_NAME);
+				}else{
+					DelegatingMessageSource dms = new DelegatingMessageSource();
+					dms.setParentMessageSource(applicationContext);
+					messageSource = dms;
+				}
+
 			}
 		}
 		
