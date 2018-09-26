@@ -1,10 +1,17 @@
 package com.yonyou.iuap.baseservice.intg.support;
 
+import cn.hutool.core.util.ReflectUtil;
+import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.persistence.support.DeleteFeatureExtension;
 import com.yonyou.iuap.baseservice.persistence.support.QueryFeatureExtension;
 import com.yonyou.iuap.baseservice.persistence.support.SaveFeatureExtension;
+import org.springframework.core.ResolvableType;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -85,6 +92,55 @@ public class ServiceFeatureHolder  {
             init();
         }
         return dExtMap.get(feature);
+    }
+
+    public static<T> List<T> getModelExtensions(Class modelClass,Class<T> extIf){
+        List<T> result =new ArrayList<>();
+        if (modelClass.equals(Model.class)){
+            return result;
+        }
+        if (!isInit.get()){
+            init();
+        }
+
+        if (extIf ==  QueryFeatureExtension.class){
+            for (String name : qExtMap.keySet()) {
+                if (qExtMap.get(name) != null && qExtMap.get(name).getClass().getSuperclass().getGenericInterfaces() != null) {
+                    ResolvableType serviceType = ResolvableType.forType(qExtMap.get(name).getClass().getSuperclass().getGenericInterfaces()[0]);
+                    if (serviceType.getGenerics() != null && serviceType.getGenerics().length > 0) {
+                        if (serviceType.getGeneric(0).resolve() == modelClass) {
+                            result.add((T) qExtMap.get(name));
+                        }
+                    }
+                }
+            }
+        }
+        if (extIf ==  SaveFeatureExtension.class){
+            for (String name : sExtMap.keySet()) {
+                if (sExtMap.get(name) != null && sExtMap.get(name).getClass().getSuperclass().getGenericInterfaces() != null) {
+                    ResolvableType serviceType = ResolvableType.forType(sExtMap.get(name).getClass().getSuperclass().getGenericInterfaces()[0]);
+                    if (serviceType.getGenerics() != null && serviceType.getGenerics().length > 0) {
+                        if (serviceType.getGeneric(0).resolve() == modelClass) {
+                            result.add((T) sExtMap.get(name));
+                        }
+                    }
+                }
+            }
+        }
+
+        if (extIf ==  DeleteFeatureExtension.class){
+            for (String name : dExtMap.keySet()) {
+                if (dExtMap.get(name) != null && dExtMap.get(name).getClass().getSuperclass().getGenericInterfaces() != null) {
+                    ResolvableType serviceType = ResolvableType.forType(dExtMap.get(name).getClass().getSuperclass().getGenericInterfaces()[0]);
+                    if (serviceType.getGenerics() != null && serviceType.getGenerics().length > 0) {
+                        if (serviceType.getGeneric(0).resolve() == modelClass) {
+                            result.add((T) dExtMap.get(name));
+                        }
+                    }
+                }
+            }
+        }
+        return result;
     }
 
 }

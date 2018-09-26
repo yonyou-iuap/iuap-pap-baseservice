@@ -28,12 +28,10 @@ import static com.yonyou.iuap.baseservice.intg.support.ServiceFeature.LOGICAL_DE
 /**
  * 特性集成服务,用于GenericService所有服务接口集成多种组件特性
  * 默认支持
- *      <p>ATTACHMENT-附件,
- *      <p>MULTI_TENANT-多租户,
- *      <p>REFERENCE-参照,
- *      <p>LOGICAL_DEL-逻辑删除
+ *      <p>REFERENCE-参照
  * @param <T>
  */
+@SuppressWarnings("ALL")
 public  abstract class GenericIntegrateService<T extends Model> extends GenericService<T> {
     private static Logger log = LoggerFactory.getLogger(GenericIntegrateService.class);
     private static final String LOG_TEMPLATE="特性组件{}的未实现{}扩展" ;
@@ -41,12 +39,12 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
 
     /**
      * 在执行查询方法前，仅能通过泛型来拿到实体的真实类型
-     * @return
+     * @return 泛型指定的业务实体Class
      */
     private Class  getModelClass(){
         Type superclassType = this.getClass().getGenericSuperclass();
         if (!ParameterizedType.class.isAssignableFrom(superclassType.getClass())) {
-            log.info("泛型解析失败，无法解析数据权限");
+            log.warn("泛型解析失败，可能影响特性扩展服务");
             return Model.class ;
         }
         Type[] t = ((ParameterizedType) superclassType).getActualTypeArguments();
@@ -59,10 +57,13 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
     }
 
 
+    protected  List<QueryFeatureExtension> customQueryExts;     //客户自定义的查询特性服务扩展点
+    protected  List<SaveFeatureExtension> customSaveExts;       //客户自定义的保存特性服务扩展点
+    protected  List<DeleteFeatureExtension> customDeleteExts;   //客户自定义的删除特性服务扩展点
 
     /***************************************************/
     /**
-     * 查询前置条件处理
+     * 查询前置条件处理埋点
      * @param searchParams
      * @return
      */
@@ -71,17 +72,22 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
         for (String feat:feats){
            QueryFeatureExtension instance = ServiceFeatureHolder.getQueryExtension(feat);
            if (instance==null){
-                log.info(LOG_TEMPLATE, feat,QueryFeatureExtension.class);
+                log.info(LOG_TEMPLATE, feat,QueryFeatureExtension.class.getSimpleName());
            }else{
                searchParams= instance.prepareQueryParam(searchParams,getModelClass());
            }
         }
-
+        if ( customQueryExts == null){
+            customQueryExts = ServiceFeatureHolder.getModelExtensions(getModelClass(), QueryFeatureExtension.class);
+        }
+        for (QueryFeatureExtension qService : customQueryExts){
+            searchParams= qService.prepareQueryParam(searchParams,getModelClass());
+        }
         return searchParams;
     }
 
     /**
-     * 查询后续处理
+     * 查询后续处理埋点
      * @param list
      * @return
      */
@@ -93,6 +99,12 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
             }else{
                 list= instance.afterListQuery(list);
             }
+        }
+        if ( customQueryExts == null){
+            customQueryExts = ServiceFeatureHolder.getModelExtensions(getModelClass(), QueryFeatureExtension.class);
+        }
+        for (QueryFeatureExtension qService : customQueryExts){
+            list= qService.afterListQuery(list);
         }
         return list;
     }
@@ -152,8 +164,8 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
 
     /**
      * 根据参数查询List【返回值为List<Map>】
-     * @param params
-     * @return
+     * @param params 查询条件参数
+     * @return 查询动态结果集
      */
     @Override
     public List<Map<String,Object>> queryListByMap(Map<String,Object> params){
@@ -168,8 +180,8 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
 
     /**
      * 根据ID查询数据
-     * @param id
-     * @return
+     * @param id 主键
+     * @return 带特性加工的业务实体
      */
     @Override
     public T findById(Serializable id) {
@@ -178,9 +190,9 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
 
     /**
      * 查询唯一数据
-     * @param name
-     * @param value
-     * @return
+     * @param name 查询参数名
+     * @param value 查询匹配值
+     * @return 带特性加工的业务实体
      */
     @Override
     public T findUnique(String name, Object value) {
@@ -199,7 +211,7 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
     /***************************************************/
     /**
      * 保存前按特性初始化entity
-     * @param entity
+     * @param entity 保存前的业务实体
      */
     private void prepareFeatEntity(T entity){
         for (String feat:feats){
@@ -210,8 +222,18 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
                 instance.prepareEntityBeforeSave(entity);
             }
         }
+        if ( customSaveExts == null){
+            customSaveExts = ServiceFeatureHolder.getModelExtensions(getModelClass(), SaveFeatureExtension.class);
+        }
+        for (SaveFeatureExtension sService : customSaveExts){
+            sService.prepareEntityBeforeSave(entity);
+        }
     }
 
+    /**
+     * 保存实体之后的特性扩展埋点
+     * @param entity
+     */
     private void addFeatAfterEntitySave(T entity){
         for (String feat:feats){
             SaveFeatureExtension instance = ServiceFeatureHolder.getSaveExtension(feat);
@@ -220,6 +242,12 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
             }else{
                 instance.afterEntitySave(entity);
             }
+        }
+        if ( customSaveExts == null){
+            customSaveExts = ServiceFeatureHolder.getModelExtensions(getModelClass(), SaveFeatureExtension.class);
+        }
+        for (SaveFeatureExtension sService : customSaveExts){
+            sService.afterEntitySave(entity);
         }
     }
 
@@ -290,8 +318,9 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
     }
     /***************************************************/
     /**
-     * 保存前按特性初始化entity
-     * @param entity
+     * 删除前操作业务实体entity,或查询条件 params
+     * @param entity 单实体删除时传参
+     * @param params 批量删除时的查询条件
      */
     private void prepareFeatDeleteParam(T entity,Map params){
         for (String feat:feats){
@@ -302,7 +331,18 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
                 instance.prepareDeleteParams(entity,params);
             }
         }
+        if ( customDeleteExts == null){
+            customDeleteExts = ServiceFeatureHolder.getModelExtensions(getModelClass(), DeleteFeatureExtension.class);
+        }
+        for (DeleteFeatureExtension dService : customDeleteExts){
+            dService.prepareDeleteParams(entity,params);
+        }
     }
+
+    /**
+     * 删除后特性扩展埋点
+     * @param entity 被删除的业务实体
+     */
     private void runFeatAfterEntityDelete(T entity) {
         for (String feat : feats) {
             DeleteFeatureExtension instance = ServiceFeatureHolder.getDeleteExtension(feat);
@@ -311,6 +351,12 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
             } else {
                 instance.afterDeteleEntity(entity);
             }
+        }
+        if ( customDeleteExts == null){
+            customDeleteExts = ServiceFeatureHolder.getModelExtensions(getModelClass(), DeleteFeatureExtension.class);
+        }
+        for (DeleteFeatureExtension dService : customDeleteExts){
+            dService.afterDeteleEntity(entity);
         }
     }
             /**
