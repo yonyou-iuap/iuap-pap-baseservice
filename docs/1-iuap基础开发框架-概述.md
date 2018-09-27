@@ -10,8 +10,7 @@
 * 提供iuap应用平台组件(流程、多租户、编码规则、打印、导入导出、附件、数据权限)可插拔式集成
 * 简化[tinper](http://tinper.org/)前端组件集成
 ### 功能架构
-[](https://github.com/yonyou-iuap/iuap-pap-baseservice/blob/develop/docs/images/architecture_v1.png?raw=true)
-![Alt text](./images/baseService-arch.png)
+![](images/architecture_v1.png)
 
 ### 安装及快速开始
 > 示例工程仅展示了主子表通用服务能力，可插拔的组件能力需要依赖iuap应用平台
