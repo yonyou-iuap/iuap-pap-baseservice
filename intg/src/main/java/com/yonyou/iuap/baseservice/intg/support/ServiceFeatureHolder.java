@@ -103,10 +103,12 @@ public class ServiceFeatureHolder  {
             init();
         }
 
-        if (extIf ==  QueryFeatureExtension.class){
+        if (extIf == QueryFeatureExtension.class) {
             for (String name : qExtMap.keySet()) {
-                if (qExtMap.get(name) != null && qExtMap.get(name).getClass().getSuperclass().getGenericInterfaces() != null) {
-                    ResolvableType serviceType = ResolvableType.forType(qExtMap.get(name).getClass().getSuperclass().getGenericInterfaces()[0]);
+                if (qExtMap.get(name) != null
+                        && qExtMap.get(name).getClass().getGenericInterfaces() != null
+                        && qExtMap.get(name).getClass().getGenericInterfaces().length > 0) {
+                    ResolvableType serviceType = ResolvableType.forType(qExtMap.get(name).getClass().getGenericInterfaces()[0]);
                     if (serviceType.getGenerics() != null && serviceType.getGenerics().length > 0) {
                         if (serviceType.getGeneric(0).resolve() == modelClass) {
                             result.add((T) qExtMap.get(name));
@@ -117,8 +119,10 @@ public class ServiceFeatureHolder  {
         }
         if (extIf ==  SaveFeatureExtension.class){
             for (String name : sExtMap.keySet()) {
-                if (sExtMap.get(name) != null && sExtMap.get(name).getClass().getSuperclass().getGenericInterfaces() != null) {
-                    ResolvableType serviceType = ResolvableType.forType(sExtMap.get(name).getClass().getSuperclass().getGenericInterfaces()[0]);
+                if (sExtMap.get(name) != null
+                        && sExtMap.get(name).getClass().getGenericInterfaces() != null
+                        && sExtMap.get(name).getClass().getGenericInterfaces().length > 0) {
+                    ResolvableType serviceType = ResolvableType.forType(sExtMap.get(name).getClass().getGenericInterfaces()[0]);
                     if (serviceType.getGenerics() != null && serviceType.getGenerics().length > 0) {
                         if (serviceType.getGeneric(0).resolve() == modelClass) {
                             result.add((T) sExtMap.get(name));
@@ -130,8 +134,10 @@ public class ServiceFeatureHolder  {
 
         if (extIf ==  DeleteFeatureExtension.class){
             for (String name : dExtMap.keySet()) {
-                if (dExtMap.get(name) != null && dExtMap.get(name).getClass().getSuperclass().getGenericInterfaces() != null) {
-                    ResolvableType serviceType = ResolvableType.forType(dExtMap.get(name).getClass().getSuperclass().getGenericInterfaces()[0]);
+                if (dExtMap.get(name) != null
+                        && dExtMap.get(name).getClass().getGenericInterfaces() != null
+                        && dExtMap.get(name).getClass().getGenericInterfaces().length > 0) {
+                    ResolvableType serviceType = ResolvableType.forType(dExtMap.get(name).getClass().getGenericInterfaces()[0]);
                     if (serviceType.getGenerics() != null && serviceType.getGenerics().length > 0) {
                         if (serviceType.getGeneric(0).resolve() == modelClass) {
                             result.add((T) dExtMap.get(name));
