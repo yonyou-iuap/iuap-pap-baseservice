@@ -41,7 +41,7 @@
 </repository>
 ```
 
-####运行示例
+#### 运行示例
 下载源码
 ```bash
 git clone https://github.com/sungine/iuap-pap-baseservice-demo.git
@@ -49,4 +49,6 @@ cd iuap-pap-baseservice-demo
 ```
 打开工程
 
-运行
+运行sql
+
+启动服务
