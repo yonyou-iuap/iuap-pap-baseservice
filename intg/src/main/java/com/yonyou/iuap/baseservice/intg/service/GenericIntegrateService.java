@@ -252,15 +252,15 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
     }
 
     /**
-     * 保存数据
+     * 保存数据,不需埋点,因为其后续会调用insert 或 update的埋点
      * @param entity
      * @return
      */
     @Override
     public T save(T entity) {
-        prepareFeatEntity(entity);
+//        prepareFeatEntity(entity);
         entity=super.save(entity);
-        addFeatAfterEntitySave(entity);
+//        addFeatAfterEntitySave(entity);
         return entity;
     }
 
