@@ -86,7 +86,7 @@ public class CodingUtil {
         if ("failed".equalsIgnoreCase(getFlag)){
             String errMsg = billCodeInfo.getString("msg");
             log.error("按编码规则生成编码出错："+JSON.toJSONString(data)+"，错误信息："+errMsg);
-            throw new BusinessException("按编码规则生成编码出错",errMsg);
+            throw new BusinessException("按编码规则生成编码出错，原因："+errMsg);
         }
         return billCode;
     }
