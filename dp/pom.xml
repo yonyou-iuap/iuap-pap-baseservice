@@ -33,7 +33,7 @@
         <dependency>
             <groupId>com.yonyou.iuap.pap.authrbac</groupId>
             <artifactId>iuap-authrbac-common</artifactId>
-            <version>3.5.1-RELEASE</version>
+            <version>3.5.2-RELEASE</version>
         </dependency>
         <dependency>
             <groupId>com.yonyou.iuap.baseservice</groupId>

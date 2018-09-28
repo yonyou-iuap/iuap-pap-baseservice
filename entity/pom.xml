@@ -11,7 +11,7 @@
 
 	<groupId>com.yonyou.iuap.baseservice</groupId>
 	<artifactId>iuap-pap-baseservice-entity</artifactId>
-	<name>model</name>
+	<name>iuap-pap-baseservice-entity</name>
 	<url>http://maven.apache.org</url>
 
 	<properties>
