@@ -43,6 +43,7 @@ public class RefXMLParse {
 				} catch (NoSuchFieldException | IllegalAccessException  |ClassNotFoundException e) {
 					logger.error(REF_DECUMENT_NAME+".xml，解析失败");
 					logger.error(e.getStackTrace().toString());
+					e.printStackTrace();
 				}
 				return new RefXMLParse();
 			}
@@ -109,7 +110,7 @@ public class RefXMLParse {
 			RefParamVO refParamVO=new RefParamVO();
 			String refType=refViewModelVOElement.attributeValue(RefXmlConstract.REF_TYPE);
 			String refname=refViewModelVOElement.attributeValue(RefXmlConstract.REF_NAME);
-			String voCode=refViewModelVOElement.attributeValue(RefXmlConstract.REF_VIEW_MODEL_VO_CODE);
+			String voCode=refViewModelVOElement.attributeValue(RefXmlConstract.REF_VIEW_MODEL_VO_CODE).trim();
 			String i18nKey=refViewModelVOElement.attributeValue(RefXmlConstract.REF_VIEW_MODEL_VO_I18N);
 			if(StringUtils.isEmpty(refType)){
 				logger.error("参照类型不可为空，请设reftype值，例如：<RefViewModelVO code=\"***\" refType = \"1\">");
@@ -178,7 +179,7 @@ public class RefXMLParse {
 	 */
 	private static  void setFieldValue(Element field,RefParamConfig refParamConfig) throws NoSuchFieldException, IllegalAccessException, ClassNotFoundException {
 		Class clzz =  Class.forName(RefParamConfig.class.getName());
-		String code=field.attributeValue(RefXmlConstract.REF_FIELD_CODE_ATTRIBUTE);
+		String code=field.attributeValue(RefXmlConstract.REF_FIELD_CODE_ATTRIBUTE).trim();
 		String value=field.getStringValue();
 		if(StringUtils.isEmpty(code)||StringUtils.isEmpty(value)){
 			return ;
