@@ -1,5 +1,6 @@
 package com.yonyou.iuap.baseservice.intg.support;
 
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
 import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.persistence.support.DeleteFeatureExtension;
@@ -9,12 +10,14 @@ import org.springframework.core.ResolvableType;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * 解析在spring上下文中哪些服务实现了QueryFeatureExtension,SaveFeatureExtension或DeleteFeatureExtension
+ * 并把他们缓存住,按要求返还给GenericIntegrateService,用于CRUD的整体特性集成
+ */
+@SuppressWarnings("unchecked")
 public class ServiceFeatureHolder  {
 
 
@@ -26,7 +29,9 @@ public class ServiceFeatureHolder  {
 
 //    private ServiceFeatureHolder() {}
 
-
+    /**
+     * 三套map缓存的单例初始化
+     */
     private synchronized static void init() {
         if (isInit.get()) {
             return;
@@ -94,8 +99,8 @@ public class ServiceFeatureHolder  {
         return dExtMap.get(feature);
     }
 
-    public static<T> List<T> getModelExtensions(Class modelClass,Class<T> extIf){
-        List<T> result =new ArrayList<>();
+    public static Set getModelExtensions(Class modelClass, Class extIf){
+        Set result =new HashSet<>();
         if (modelClass.equals(Model.class)){
             return result;
         }
@@ -105,28 +110,18 @@ public class ServiceFeatureHolder  {
 
         if (extIf == QueryFeatureExtension.class) {
             for (String name : qExtMap.keySet()) {
-                if (qExtMap.get(name) != null
-                        && qExtMap.get(name).getClass().getGenericInterfaces() != null
-                        && qExtMap.get(name).getClass().getGenericInterfaces().length > 0) {
-                    ResolvableType serviceType = ResolvableType.forType(qExtMap.get(name).getClass().getGenericInterfaces()[0]);
-                    if (serviceType.getGenerics() != null && serviceType.getGenerics().length > 0) {
-                        if (serviceType.getGeneric(0).resolve() == modelClass) {
-                            result.add((T) qExtMap.get(name));
-                        }
+                if (qExtMap.get(name) != null) {
+                    if(isExtServiceAssignedToModel(qExtMap.get(name),extIf,modelClass)) {
+                        result.add( qExtMap.get(name));
                     }
                 }
             }
         }
         if (extIf ==  SaveFeatureExtension.class){
             for (String name : sExtMap.keySet()) {
-                if (sExtMap.get(name) != null
-                        && sExtMap.get(name).getClass().getGenericInterfaces() != null
-                        && sExtMap.get(name).getClass().getGenericInterfaces().length > 0) {
-                    ResolvableType serviceType = ResolvableType.forType(sExtMap.get(name).getClass().getGenericInterfaces()[0]);
-                    if (serviceType.getGenerics() != null && serviceType.getGenerics().length > 0) {
-                        if (serviceType.getGeneric(0).resolve() == modelClass) {
-                            result.add((T) sExtMap.get(name));
-                        }
+                if (sExtMap.get(name) != null ) {
+                    if(isExtServiceAssignedToModel(sExtMap.get(name),extIf,modelClass)) {
+                        result.add( sExtMap.get(name));
                     }
                 }
             }
@@ -134,19 +129,38 @@ public class ServiceFeatureHolder  {
 
         if (extIf ==  DeleteFeatureExtension.class){
             for (String name : dExtMap.keySet()) {
-                if (dExtMap.get(name) != null
-                        && dExtMap.get(name).getClass().getGenericInterfaces() != null
-                        && dExtMap.get(name).getClass().getGenericInterfaces().length > 0) {
-                    ResolvableType serviceType = ResolvableType.forType(dExtMap.get(name).getClass().getGenericInterfaces()[0]);
-                    if (serviceType.getGenerics() != null && serviceType.getGenerics().length > 0) {
-                        if (serviceType.getGeneric(0).resolve() == modelClass) {
-                            result.add((T) dExtMap.get(name));
-                        }
+                if (dExtMap.get(name) != null ) {
+                    if(isExtServiceAssignedToModel(dExtMap.get(name),extIf,modelClass)) {
+                        result.add( dExtMap.get(name));
                     }
                 }
             }
         }
         return result;
     }
+
+    /**
+     * 解析feature service实例中实现接口的泛型model是否跟当前service的泛型model一致
+     * @param instance  feature service的实例
+     * @param extIf  instance实现的接口
+     * @param modelClass 当前service的model类名
+     * @param <T> service类型保留
+     * @return
+     */
+    private static<T> boolean isExtServiceAssignedToModel(T instance,Class extIf,Class modelClass){
+
+        ResolvableType serviceType = ResolvableType.forClass(extIf,instance.getClass());
+//        if (service.getSuperclass() == Object.class) {
+//            serviceType = ResolvableType.forType(
+//                    service.getGenericInterfaces()[0]);
+//        } else {
+//            serviceType = ResolvableType.forType(
+//                    service.getSuperclass().getGenericInterfaces()[0]);
+//        }
+        return  ArrayUtil.isNotEmpty(serviceType.getGenerics())
+                && serviceType.getGeneric(0).resolve() == modelClass;
+
+    }
+
 
 }
