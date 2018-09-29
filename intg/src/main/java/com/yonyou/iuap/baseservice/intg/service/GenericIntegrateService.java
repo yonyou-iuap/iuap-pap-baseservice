@@ -18,10 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.yonyou.iuap.baseservice.intg.support.ServiceFeature.LOGICAL_DEL;
 
@@ -57,9 +54,9 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
     }
 
 
-    protected  List<QueryFeatureExtension> customQueryExts;     //客户自定义的查询特性服务扩展点
-    protected  List<SaveFeatureExtension> customSaveExts;       //客户自定义的保存特性服务扩展点
-    protected  List<DeleteFeatureExtension> customDeleteExts;   //客户自定义的删除特性服务扩展点
+    protected Set<QueryFeatureExtension> customQueryExts;     //客户自定义的查询特性服务扩展点
+    protected Set<SaveFeatureExtension> customSaveExts;       //客户自定义的保存特性服务扩展点
+    protected Set<DeleteFeatureExtension> customDeleteExts;   //客户自定义的删除特性服务扩展点
 
     /***************************************************/
     /**
