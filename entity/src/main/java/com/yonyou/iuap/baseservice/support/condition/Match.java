@@ -4,7 +4,7 @@ package com.yonyou.iuap.baseservice.support.condition;
 public enum Match {
 
     EQ("="), GT(">"), LT("<"), GTEQ(">="), LTEQ("<="), LIKE("like"), LLIKE("llike"), RLIKE("rlike"),
-    RANGE("range");
+    RANGE("range"),IN("in");
 
     private String type;
 

@@ -88,14 +88,14 @@
 	</dependencies>
 	
 	<build>
-		<defaultGoal>compile</defaultGoal>
+		<!--<defaultGoal>compile</defaultGoal>-->
 		<resources>
 			<resource>
-				<targetPath>META-INF/plexus</targetPath>
+				<!--<targetPath>META-INF/plexus</targetPath>-->
 				<filtering>false</filtering>
 				<directory>${basedir}/src/main/resources</directory>
 				<includes>
-					<include>*</include>
+					<include>**/**/*</include>
 				</includes>
 				<excludes>
 					<exclude>**/*.properties</exclude>  
@@ -114,6 +114,13 @@
 					<source>1.8</source> <!-- 源代码使用的开发版本 -->
 					<target>1.8</target> <!-- 需要生成的目标class文件的编译版本 -->
 					<encoding>UTF8</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.0.2</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
 		</plugins>
