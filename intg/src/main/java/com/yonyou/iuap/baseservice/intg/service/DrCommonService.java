@@ -11,6 +11,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 逻辑删除特性服务,可插拔
+ * @param <T> 业务实体类型,需实现Model及LogicDel接口
+ */
 @Service
 public class DrCommonService<T extends Model& LogicDel> implements QueryFeatureExtension<T>, SaveFeatureExtension<T>, DeleteFeatureExtension<T> {
     @Override
