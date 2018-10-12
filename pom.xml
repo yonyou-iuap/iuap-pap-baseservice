@@ -24,7 +24,7 @@
 		<repository>
 			<id>nexus</id>
 			<name>Nexus</name>
-			<url>http://maven.yonyoucloud.com/nexus/content/groups/public</url>
+			<url>http://maven.yonyou.com/nexus/content/groups/public</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
@@ -36,7 +36,7 @@
 		<repository>
 			<id>iUAP-Snapshots</id>
 			<name>iUAP-Snapshots</name>
-			<url>http://maven.yonyoucloud.com/nexus/content/repositories/iUAP-Snapshots/</url>
+			<url>http://maven.yonyou.com/nexus/content/repositories/iUAP-Snapshots/</url>
 			<releases>
 				<enabled>false</enabled>
 			</releases>
@@ -47,7 +47,7 @@
 		<repository>
 			<id>iUAP-Stagings</id>
 			<name>iUAP-Stagings</name>
-			<url>http://maven.yonyoucloud.com/nexus/content/repositories/iUAP-Stagings/</url>
+			<url>http://maven.yonyou.com/nexus/content/repositories/iUAP-Stagings/</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
@@ -58,7 +58,7 @@
 		<repository>
 			<id>iUAP</id>
 			<name>iWeb</name>
-			<url>http://maven.yonyoucloud.com/nexus/content/repositories/iUAP/</url>
+			<url>http://maven.yonyou.com/nexus/content/repositories/iUAP/</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
@@ -69,7 +69,7 @@
 		<repository>
 			<id>central</id>
 			<name>central</name>
-			<url>http://maven.yonyoucloud.com/nexus/service/local/repositories/central</url>
+			<url>http://maven.yonyou.com/nexus/service/local/repositories/central</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
