@@ -13,6 +13,7 @@ public enum ServiceFeature {
     REFERENCE("com.yonyou.iuap.baseservice.ref.service.RefCommonService"),
     BPM("com.yonyou.iuap.baseservice.bpm.service.BpmCommonService"),
     DATA_PERMISSION("com.yonyou.iuap.baseservice.datapermission.service.DpCommonService"),
+    I18N("com.yonyou.iuap.baseservice.intg.service.I18nCommonService"),
     OTHER("java.lang.Class"),
 
 //    PRINT(GenericAtService.class )

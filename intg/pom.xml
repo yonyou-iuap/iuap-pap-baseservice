@@ -18,7 +18,11 @@
         <artifactId>iuap-pap-baseservice-service</artifactId>
         <version>${pap.module.version}</version>
     </dependency>
-
+        <dependency>
+            <groupId>com.yonyou.iuap.baseservice</groupId>
+            <artifactId>iuap-pap-baseservice-i18n</artifactId>
+            <version>${pap.module.version}</version>
+        </dependency>
     </dependencies>
 
 </project>
