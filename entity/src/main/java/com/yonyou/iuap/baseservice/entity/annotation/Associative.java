@@ -17,7 +17,6 @@ public @interface Associative {
 
     // 子表外键对应的业务实体Field名字
     String fkName() default "";
-    // 挂载子表的类型,TODO 未来考虑设计成只需传class就可以动态加载数据的算法
-//    Class[] assoClass() default{};
-
+    //是否进行级联删除的标识
+    boolean deleteCascade() default true;
 }

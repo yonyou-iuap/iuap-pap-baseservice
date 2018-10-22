@@ -35,7 +35,12 @@ public abstract  class GenericAssoController<T extends Model> extends BaseContro
 //    @Autowired
 //    RefCommonService refService;
 
-
+    /**
+     * 主子表合并处理--主表单条查询
+     * @param pageRequest
+     * @param searchParams
+     * @return GenericAssoVo ,entity中保存的是单条主表数据,sublist中保存的是字表数据,一次性全部加载
+     */
     @RequestMapping(value = "/getAssoVo")
     @ResponseBody
     public Object  getAssoVo(PageRequest pageRequest,
@@ -49,6 +54,11 @@ public abstract  class GenericAssoController<T extends Model> extends BaseContro
         return  result;
     }
 
+    /**
+     * 主子表合并处理--主表单条保存
+     * @param vo GenericAssoVo ,entity中保存的是单条主表数据,sublist中保存的是字表数据
+     * @return 主表的业务实体
+     */
     @RequestMapping(value = "/saveAssoVo")
     @ResponseBody
     public Object  saveAssoVo(@RequestBody GenericAssoVo<T> vo){
@@ -60,16 +70,28 @@ public abstract  class GenericAssoController<T extends Model> extends BaseContro
         return this.buildSuccess(result) ;
     }
 
-//    protected boolean hasReferrence(Class entityClass){
-//        Field[] fields = ReflectUtil.getFields(entityClass);
-//        for (Field field : fields) {
-//            Reference ref = field.getAnnotation(Reference.class);
-//            if (null != ref) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
+    /**
+     * 主子表合并处理--主表单条删除
+     * @param vo GenericAssoVo,待删除Vo
+     * @return 删除成功的实体
+     */
+    @RequestMapping(value = "/deleAssoVo")
+    @ResponseBody
+    public Object  deleAssoVo(@RequestBody T entity){
+        Associative annotation = (Associative)entity.getClass().getAnnotation(Associative.class);
+        if (annotation != null && !StringUtils.isEmpty(annotation.fkName())) {
+            if (StringUtils.isEmpty(entity.getId())) {
+                return this.buildError("", "ID field must not be empty", RequestStatusEnum.FAIL_FIELD);
+            } else if (StringUtils.isEmpty(entity.getTs())) {
+                return this.buildError("", "TS field must not be empty", RequestStatusEnum.FAIL_FIELD);
+            } else {
+                int result = this.service.deleAssoVo(entity, annotation);
+                return this.buildSuccess(result + " rows has been deleted!");
+            }
+        } else {
+            return this.buildError("", "Nothing got @Associative or without fkName", RequestStatusEnum.FAIL_FIELD);
+        }
+    }
 
 
     /************************************************************/

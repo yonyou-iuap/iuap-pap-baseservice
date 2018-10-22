@@ -24,6 +24,7 @@ import java.util.Map;
  * 主子表服务基础类,直接继承GenericIntegrateService,依赖其他所有组件,
  * @param <T>
  */
+@SuppressWarnings("ALL")
 public abstract class GenericAssoService<T extends Model> extends GenericIntegrateService<T> {
     private Logger log = LoggerFactory.getLogger(GenericAssoService.class);
 
@@ -66,6 +67,22 @@ public abstract class GenericAssoService<T extends Model> extends GenericIntegra
         return  newEntity ;
     }
 
+    @Transactional
+    public int deleAssoVo(T entity, Associative annotation) {
+        int deleted = 0;
+        deleted = super.delete(entity);
+        if (annotation.deleteCascade()) {//是否联删除的标识
+            for (Class assoKey : subServices.keySet()) {
+                GenericIntegrateService subSer = subServices.get(assoKey);
+                List<Model> subList= subSer.queryList(annotation.fkName(),entity.getId());
+                if (subList != null && subList.size() > 0) {
+                    deleted +=subSer.deleteBatch(subList);
+                }
+            }
+        }
+
+        return deleted;
+    }
     /************************************************************/
     private Map<Class ,GenericIntegrateService> subServices = new HashMap<>();
 
