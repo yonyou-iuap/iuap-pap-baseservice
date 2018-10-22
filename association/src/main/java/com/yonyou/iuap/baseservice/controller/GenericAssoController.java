@@ -72,7 +72,7 @@ public abstract  class GenericAssoController<T extends Model> extends BaseContro
 
     /**
      * 主子表合并处理--主表单条删除
-     * @param vo GenericAssoVo,待删除Vo
+     * @param entity 待删除业务实体
      * @return 删除成功的实体
      */
     @RequestMapping(value = "/deleAssoVo")
