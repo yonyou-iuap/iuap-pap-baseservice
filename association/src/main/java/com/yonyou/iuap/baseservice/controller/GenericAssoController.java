@@ -71,23 +71,31 @@ public abstract  class GenericAssoController<T extends Model> extends BaseContro
     }
 
     /**
-     * 主子表合并处理--主表单条删除
+     * 主子表合并处理--主表单条删除,若取消级联删除请在主实体上注解改为@Associative(fkName = "${fkName}",deleteCascade = false)
+     * @see GenericAssoController
      * @param entity 待删除业务实体
      * @return 删除成功的实体
      */
     @RequestMapping(value = "/deleAssoVo")
     @ResponseBody
-    public Object  deleAssoVo(@RequestBody T entity){
-        Associative annotation = (Associative)entity.getClass().getAnnotation(Associative.class);
+    public Object  deleAssoVo(@RequestBody T... entities){
+        if (entities.length==0){
+            return this.buildGlobalError("requst entity must not be empty");
+        }
+        Associative annotation = (Associative)entities[0].getClass().getAnnotation(Associative.class);
         if (annotation != null && !StringUtils.isEmpty(annotation.fkName())) {
-            if (StringUtils.isEmpty(entity.getId())) {
-                return this.buildError("", "ID field must not be empty", RequestStatusEnum.FAIL_FIELD);
-            } else if (StringUtils.isEmpty(entity.getTs())) {
-                return this.buildError("", "TS field must not be empty", RequestStatusEnum.FAIL_FIELD);
-            } else {
-                int result = this.service.deleAssoVo(entity, annotation);
-                return this.buildSuccess(result + " rows has been deleted!");
+            int result =0;
+            for (T entity:entities){
+                if (StringUtils.isEmpty(entity.getId())) {
+                    return this.buildError("ID", "ID field is empty:"+entity.toString(), RequestStatusEnum.FAIL_FIELD);
+                } else if (StringUtils.isEmpty(entity.getTs())) {
+                    return this.buildError("TS", "TS field is empty:"+entity.toString(), RequestStatusEnum.FAIL_FIELD);
+                } else {
+                    result += this.service.deleAssoVo(entity, annotation);
+
+                }
             }
+            return this.buildSuccess(result + " rows(entity and its subentities) has been deleted!");
         } else {
             return this.buildError("", "Nothing got @Associative or without fkName", RequestStatusEnum.FAIL_FIELD);
         }
