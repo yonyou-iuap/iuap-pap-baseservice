@@ -97,9 +97,15 @@ public class DefaultMapperBuilder implements MapperBuilder{
 			if(methodMapper.type() == SqlCommandType.SELECT) {
 				return this.mapperFactory.parseSQL4Select(method, entityClazz);
 			}else if(methodMapper.type() == SqlCommandType.UPDATE) {
-				return this.mapperFactory.parseSQL4Update(method, entityClazz);
+                if (methodMapper.isSelective())
+                    return mapperFactory.parseSQL4UpdateSelective(method, entityClazz);
+                else
+                    return this.mapperFactory.parseSQL4Update(method, entityClazz);
 			}else if(methodMapper.type() == SqlCommandType.INSERT) {
-				return this.mapperFactory.parseSQL4Insert(method, entityClazz);
+                if (methodMapper.isSelective())
+                    return mapperFactory.parseSQL4InsertSelective(method, entityClazz);
+                else
+				    return this.mapperFactory.parseSQL4Insert(method, entityClazz);
 			}else if(methodMapper.type() == SqlCommandType.DELETE) {
 				return this.mapperFactory.parseSQL4Delete(method, entityClazz);
 			}else {

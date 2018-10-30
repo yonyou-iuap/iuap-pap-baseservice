@@ -13,4 +13,6 @@ public @interface MethodMapper {
 
 	public SqlCommandType type();
 
+	public boolean isSelective() default false;
+
 }

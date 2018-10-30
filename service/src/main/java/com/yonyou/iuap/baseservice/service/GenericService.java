@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import org.apache.http.client.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
@@ -148,29 +149,52 @@ public abstract class GenericService<T extends Model>{
 	 * @return
 	 */
 	public T insert(T entity) {
-		if(entity != null) {
-			//ID为空的情况下，生成生成主键
-			if(entity.getId()==null || StrUtil.isBlankIfStr(entity.getId())) {
-				this.genAndSetEntityId(entity);
-			}
-			String now = DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss SSS");
-			entity.setCreateTime(now);
-			entity.setCreateUser(InvocationInfoProxy.getUserid());
-			entity.setLastModified(now);
-			entity.setLastModifyUser(InvocationInfoProxy.getUserid());
-			entity.setTs(now);
-			
-			if(entity.getClass().getAnnotation(CodingEntity.class)!=null) {
-				CodingUtil.inst(). buildCoding(entity);		//按编码规则设置编码
-			}
-			
-			this.genericMapper.insert(entity);
-			log.info("新增保存数据：\r\n"+JSON.toJSONString(entity));
-			return entity;
-		}else {
-			throw new RuntimeException("新增保存数据出错，对象为空!");
-		}
+		return executeInsert(entity,false);
 	}
+
+    /**
+     * 新增保存数据,跳过空值字段
+     * @param entity
+     * @return
+     */
+    public T insertSelective(T entity) {
+        return executeInsert(entity,true);
+    }
+
+    /**
+     * 实际insert执行
+     * @param entity
+     * @param isSelective
+     * @return
+     */
+    protected T executeInsert(T entity,boolean isSelective) {
+        if(entity != null) {
+            //ID为空的情况下，生成生成主键
+            if(entity.getId()==null || StrUtil.isBlankIfStr(entity.getId())) {
+                this.genAndSetEntityId(entity);
+            }
+            String now = DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss SSS");
+            entity.setCreateTime(now);
+            entity.setCreateUser(InvocationInfoProxy.getUserid());
+            entity.setLastModified(now);
+            entity.setLastModifyUser(InvocationInfoProxy.getUserid());
+            entity.setTs(now);
+
+            if(entity.getClass().getAnnotation(CodingEntity.class)!=null) {
+                CodingUtil.inst(). buildCoding(entity);		//按编码规则设置编码
+            }
+            if (isSelective){
+                this.genericMapper.insertSelective(entity);
+                BeanUtils.copyProperties(this.findById(entity.getId()),entity);//insertSelective之后的信息完整化回传
+            }
+            else
+                this.genericMapper.insert(entity);
+            log.info("新增保存数据：\r\n"+JSON.toJSONString(entity));
+            return entity;
+        }else {
+            throw new RuntimeException("新增保存数据出错，对象为空!");
+        }
+    }
 
 	/**
 	 * 更新保存数据
@@ -178,22 +202,41 @@ public abstract class GenericService<T extends Model>{
 	 * @return
 	 */
 	public T update(T entity) {
-		if(entity!=null) {
-			String now = DateUtils.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss SSS");
-			entity.setLastModified(now);
-			entity.setLastModifyUser(InvocationInfoProxy.getUserid());
-
-			int count = genericMapper.update(entity);
-			if(count != 1) {
-				log.error("更新保存数据出错，更新记录数="+count+"\r\n"+JSON.toJSONString(entity));
-				throw new RuntimeException("更新保存数据出错，更新记录数="+count);
-			}
-			return entity;
-		}else {
-			log.error("更新保存数据出错，输入参数对象为空!");
-			throw new RuntimeException("更新保存数据出错，输入参数对象为空!");
-		}
+        return  executeUpdate(entity,false);
 	}
+
+    /**
+     * 更新保存数据,跳过空值字段
+     * @param entity
+     * @return
+     */
+    public T updateSelective(T entity) {
+        return  executeUpdate(entity,true);
+    }
+
+    protected T executeUpdate(T entity,boolean isSelective) {
+        int count ;
+        if(entity!=null) {
+            String now = DateUtils.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss SSS");
+            entity.setLastModified(now);
+            entity.setLastModifyUser(InvocationInfoProxy.getUserid());
+            if (isSelective){
+                count = genericMapper.updateSelective(entity);
+            }else{
+                count = genericMapper.update(entity);
+            }
+            if(count != 1) {
+                log.error("更新保存数据出错，更新记录数="+count+"\r\n"+JSON.toJSONString(entity));
+                throw new RuntimeException("更新保存数据出错，更新记录数="+count);
+            }else if (isSelective){
+                BeanUtils.copyProperties(this.findById(entity.getId()),entity);//updateSelective之后的信息完整化回传
+            }
+            return entity;
+        }else {
+            log.error("更新保存数据出错，输入参数对象为空!");
+            throw new RuntimeException("更新保存数据出错，输入参数对象为空!");
+        }
+    }
 
 	/**
 	 * 删除数据

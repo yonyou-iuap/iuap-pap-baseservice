@@ -40,11 +40,10 @@
 		<defaultGoal>compile</defaultGoal>
 		<resources>
 			<resource>
-				<targetPath>META-INF/plexus</targetPath>
 				<filtering>false</filtering>
 				<directory>${basedir}/src/main/resources</directory>
 				<includes>
-					<include>*</include>
+                    <include>**/**/*</include>
 				</includes>
 				<excludes>
 					<exclude>**/*.properties</exclude>  

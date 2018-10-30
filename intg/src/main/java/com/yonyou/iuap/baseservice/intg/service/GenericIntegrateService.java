@@ -1,5 +1,6 @@
 package com.yonyou.iuap.baseservice.intg.service;
 
+import cn.hutool.core.util.StrUtil;
 import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.intg.support.ServiceFeature;
 import com.yonyou.iuap.baseservice.intg.support.ServiceFeatureHolder;
@@ -175,15 +176,6 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
         return   fillListFeatAfterQuery(list);
     }
 
-    /**
-     * 根据ID查询数据
-     * @param id 主键
-     * @return 带特性加工的业务实体
-     */
-    @Override
-    public T findById(Serializable id) {
-       return  this.findUnique("id",id);
-    }
 
     /**
      * 查询唯一数据
@@ -249,39 +241,40 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
     }
 
     /**
-     * 保存数据,不需埋点,因为其后续会调用insert 或 update的埋点
-     * @param entity
-     * @return
+     * 保存数据,将GenericService.save中的全值保存方式切换为selective方式
+     * 不需埋点,因为其后续会调用executeInsert或executeUpdate的埋点
+     * @param entity  入参转化后的业务实体,需至少实现model接口
+     * @return 保存后的完整实体信息
      */
     @Override
     public T save(T entity) {
-//        prepareFeatEntity(entity);
-        entity=super.save(entity);
-//        addFeatAfterEntitySave(entity);
-        return entity;
-    }
-
-    /**
-     * 批量保存
-     * @param listEntity
-     */
-    @Override
-    public void saveBatch(List<T> listEntity){
-        for(int i=0; i<listEntity.size(); i++) {
-            this.save(listEntity.get(i));
+        boolean isNew = false;					//是否新增数据
+        if(entity instanceof Model) {
+            if(entity.getId()==null) {
+                isNew = true;
+            }else {
+                isNew = StrUtil.isEmptyIfStr(entity.getId());
+            }
+        }
+        if(isNew) {
+            return insertSelective(entity);
+        }else {
+            return updateSelective(entity);
         }
     }
 
     /**
-     * 新增保存数据
-     * @param entity
-     * @return
+     * 在GenericService#executeInsert()上进行重载+埋点,
+     * 埋点后,无论执行的时insert还是insertSelective,所有集成的特性便都会生效
+     * @param entity 入参转化后的业务实体,需至少实现model接口
+     * @param isSelective 是否启用selective方式的标识
+     * @return 保存后的完整实体信息
      */
     @Override
-    public T insert(T entity) {
+    protected    T executeInsert(T entity,boolean isSelective) {
         prepareFeatEntity(entity);
         try {
-            entity=super.insert(entity);
+            entity=super.executeInsert(entity,isSelective);
         } catch (Exception e) {
             if (e instanceof  DuplicateKeyException){
                 throw new RuntimeException("违反唯一性约束，无法保存");
@@ -293,16 +286,20 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
         return entity;
     }
 
+
+
     /**
-     * 更新保存数据
-     * @param entity
-     * @return
+     * 在GenericService#executeUpdate()上进行重载+埋点,
+     * 埋点后,无论执行的时update还是updateSelective,所有集成的特性便都会生效
+     * @param entity 入参转化后的业务实体,需至少实现model接口
+     * @param isSelective 是否启用selective方式的标识
+     * @return 保存后的完整实体信息
      */
     @Override
-    public T update(T entity) {
+    protected T executeUpdate(T entity,boolean isSelective) {
         prepareFeatEntity(entity);
         try {
-            entity=super.update(entity);
+            entity=super.executeUpdate(entity,isSelective);
         } catch (Exception e) {
             if (e instanceof DuplicateKeyException){
                 throw new RuntimeException("违反唯一性约束，无法保存");
@@ -355,17 +352,6 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
         for (DeleteFeatureExtension dService : customDeleteExts){
             dService.afterDeteleEntity(entity);
         }
-    }
-            /**
-             * 删除数据
-             */
-    @Override
-    public int deleteBatch(List<T> list) {
-        int count = 0;
-        for(T entity: list) {
-            count += this.delete(entity.getId());
-        }
-        return count;
     }
 
     /**

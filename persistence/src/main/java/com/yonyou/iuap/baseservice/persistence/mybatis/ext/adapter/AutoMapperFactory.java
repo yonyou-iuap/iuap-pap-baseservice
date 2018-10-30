@@ -15,6 +15,10 @@ public interface AutoMapperFactory {
 
 	public String parseSQL4Update(Method method, Class<?> entityClazz);
 
+    public String parseSQL4InsertSelective(Method method, Class<?> entityClazz);
+
+    public String parseSQL4UpdateSelective(Method method, Class<?> entityClazz);
+
 	public String parseSQL4Delete(Method method, Class<?> entityClazz);
 
 	public String parseSQL4Select(Method method, Class<?> entityClazz);

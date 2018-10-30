@@ -54,10 +54,9 @@ public class CodingUtil {
 		}
 		if(codingField != null) {
 			CodingField annatation = codingField.getAnnotation(CodingField.class);
-			String code = CodingUtil.inst().genCode(annatation.code(), entity);
-
 			if(ReflectUtil.getFieldValue(entity,codingField)==null|| "".equals(ReflectUtil.getFieldValue(entity,codingField) ) ){
-				ReflectUtil.setFieldValue(entity, codingField, code);
+                String code = CodingUtil.inst().genCode(annatation.code(), entity);
+			    ReflectUtil.setFieldValue(entity, codingField, code);
 			}
 
 		}
