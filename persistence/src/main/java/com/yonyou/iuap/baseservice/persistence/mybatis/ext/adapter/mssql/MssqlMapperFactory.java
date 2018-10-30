@@ -73,12 +73,12 @@ public class MssqlMapperFactory implements AutoMapperFactory{
 
     @Override
     public String parseSQL4InsertSelective(Method method, Class<?> entityClazz) {
-        return null;
+        return new MssqlInsertSelectiveTemplate().parseSQL(method,entityClazz);
     }
 
     @Override
     public String parseSQL4UpdateSelective(Method method, Class<?> entityClazz) {
-        return null;
+        return new MssqlUpdateSelectiveTemplate().parseSQL(method,entityClazz);
     }
 
     @Override

@@ -75,12 +75,12 @@ public class MysqlMapperFactory implements AutoMapperFactory{
 
     @Override
     public String parseSQL4InsertSelective(Method method, Class<?> entityClazz) {
-        return null;
+        return new MysqlInsertSelectiveTemplate().parseSQL(method,entityClazz);
     }
 
     @Override
     public String parseSQL4UpdateSelective(Method method, Class<?> entityClazz) {
-        return null;
+        return new MysqlUpdateSelectiveTemplate().parseSQL(method,entityClazz);
     }
 
     @Override
