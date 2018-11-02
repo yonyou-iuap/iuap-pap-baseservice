@@ -73,7 +73,17 @@ public class MysqlMapperFactory implements AutoMapperFactory{
 		return this.getSqlTempalte(SqlCommandType.UPDATE).parseSQL(method, entityClazz);
 	}
 
-	@Override
+    @Override
+    public String parseSQL4InsertSelective(Method method, Class<?> entityClazz) {
+        return new MysqlInsertSelectiveTemplate().parseSQL(method,entityClazz);
+    }
+
+    @Override
+    public String parseSQL4UpdateSelective(Method method, Class<?> entityClazz) {
+        return new MysqlUpdateSelectiveTemplate().parseSQL(method,entityClazz);
+    }
+
+    @Override
 	public String parseSQL4Delete(Method method, Class<?> entityClazz) {
 		return this.getSqlTempalte(SqlCommandType.DELETE).parseSQL(method, entityClazz);
 	}

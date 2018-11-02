@@ -31,9 +31,15 @@ public interface GenericMapper<T extends Model> {
 
 	@MethodMapper(type=SqlCommandType.INSERT)
     public int insert(T entity);
-	
-	@MethodMapper(type=SqlCommandType.UPDATE)
-	public int update(T entity);
+
+    @MethodMapper(type=SqlCommandType.INSERT,isSelective = true)
+    public int insertSelective(T entity);
+
+    @MethodMapper(type=SqlCommandType.UPDATE)
+    public int update(T entity);
+
+	@MethodMapper(type=SqlCommandType.UPDATE,isSelective = true)
+	public int updateSelective(T entity);
 
 	@MethodMapper(type=SqlCommandType.DELETE)
 	public int delete(@Param("condition")Map<String,Object> params);
