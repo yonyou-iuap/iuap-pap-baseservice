@@ -355,6 +355,17 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
     }
 
     /**
+     * 删除数据
+     */
+    @Override
+    public int deleteBatch(List<T> list) {
+        int count = 0;
+        for(T entity: list) {
+            count += this.delete(entity.getId());
+        }
+        return count;
+    }
+    /**
      * 删除数据:核心集成点
      * @param entity
      * @return
