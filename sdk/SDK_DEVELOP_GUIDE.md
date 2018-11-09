@@ -4,7 +4,12 @@
 > 对外提供sdk应该遵循以下规范
 
 # SDK开发说明
-##### 1. 实现SDK
+##### 1. 添加maven依赖
+        <dependency>
+			<groupId>com.yonyou.iuap.baseservice</groupId>
+		    <artifactId>iuap-pap-baseservice-sdk</artifactId>		    
+        </dependency>
+##### 2. 实现SDK
 
     public class UserCenter  extends AbstractBaseSdk {
         private static Logger logger = LoggerFactory.getLogger(UserCenter.class);
@@ -28,7 +33,7 @@
 >4、getAdapter():获取调用远程接口的适配器
 
 >5、JsonResponse<T>:远程返回值，与远程接口返回值一致。且要求远程接口的返回值通过com.yonyou.iuap.baseservice.sdk.response.JsonResponse封装
-##### 2. 属性配置
+##### 3. 属性配置
 以getSdkKey方法的返回值为workbench.sdk.wbalone.user，说明属性配置,属性配置文件为application.properties
 
 1、[getSdkKey()].url:远程接口连接,例如:workbench.sdk.wbalone.user.url=http://127.0.0.1:8080/wbalone/user-rest-with-sign
@@ -38,7 +43,7 @@ SDK实现类中的静态属性体现。
 2、通道开关
 workbench.sdk.channel:总开关，默认是为with-sign.
 workbench.sdk.wbalone.user.channel:服务开关，默认是为with-sign.
-##### 3. SDK方法命名规范
+##### 4. SDK方法命名规范
 * save
 * update
 * delete
