@@ -41,11 +41,11 @@ public abstract class  AbstractBaseSdk{
 
     private static final String DEFAULT_CHANNEL="with-sign";
     /**
-     * key值命名规范: iuap.rest.[模块名称].[资源名称]
-     * 例如返回值为：workbench.rest.user
-     * application.properteis配置
-     * workbench.rest.user.url=http://127.0.0.1:8080/wbalone
-     * workbench.rest.user.channel=xxx ，默认值为with-sign
+     * key值命名规范: workbench.sdk.[模块名称].[资源名称]
+     * 例如返回值为：workbench.sdk.wbalone.user
+     * application.properties配置
+     * workbench.sdk.user.url=http://127.0.0.1:8080/wbalone
+     * workbench.sdk.user.channel=xxx ，默认值为with-sign
      * @return application.properties 中配置url的key值前缀
      */
     protected abstract String getSdkKey();
@@ -76,12 +76,16 @@ public abstract class  AbstractBaseSdk{
     }
 
 
+    /**
+     * 远程接口调用通道
+     * @return 调用通道
+     */
     public  IRpcAdapter getAdapter(){
         return RpcManager.getAdapter(getChannel());
     }
 
     /**
-     * 获取sdk通道，优先级：sdk实现的配置>sdk总开关>默认
+     * 获取sdk通道，优先级：服务开关>sdk总开关>默认
      * @return sdk通道
      */
     private  String getChannel(){
