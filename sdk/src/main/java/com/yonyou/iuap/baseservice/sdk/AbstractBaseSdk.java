@@ -25,10 +25,7 @@ package com.yonyou.iuap.baseservice.sdk;
 
 import com.yonyou.iuap.baseservice.sdk.adapter.IRpcAdapter;
 import com.yonyou.iuap.baseservice.sdk.properties.SdkProperties;
-import com.yonyou.iuap.baseservice.sdk.response.JsonContract;
-import com.yonyou.iuap.baseservice.sdk.response.JsonResponse;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

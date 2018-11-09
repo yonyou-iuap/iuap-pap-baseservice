@@ -32,7 +32,7 @@ import com.yonyou.iuap.generic.sign.SignMake;
 import com.yonyou.iuap.generic.utils.IConstant;
 import com.yonyou.iuap.generic.utils.PropertiesUtils;
 import com.yonyou.iuap.generic.utils.RestAPIUtils;
-import org.apache.commons.lang.CharEncoding;
+import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.*;
 import org.apache.http.client.config.RequestConfig;
@@ -65,12 +65,12 @@ public class SdkSignHttpToolkit implements IRpcAdapter {
         try {
             /*初始化httpclient 配置属性，最大连接数*/
             String maxTotal = PropertiesUtils.getLocalProperty("httpclient.MaxTotal");
-            if ((org.apache.commons.lang.StringUtils.isBlank(maxTotal)) || (!org.apache.commons.lang.StringUtils.isNumeric(maxTotal))) {
+            if ((StringUtils.isBlank(maxTotal)) || (!StringUtils.isNumeric(maxTotal))) {
                 maxTotal = "";
             }
             /*初始化httpclient 配置属性，单个uri最大连接数*/
             String maxPerRoute = PropertiesUtils.getLocalProperty("httpclient.MaxPerRoute");
-            if ((org.apache.commons.lang.StringUtils.isBlank(maxPerRoute)) || (!org.apache.commons.lang.StringUtils.isNumeric(maxPerRoute))) {
+            if ((StringUtils.isBlank(maxPerRoute)) || (!StringUtils.isNumeric(maxPerRoute))) {
                 maxPerRoute = "";
             }
             /*连接池管理器*/
@@ -105,7 +105,7 @@ public class SdkSignHttpToolkit implements IRpcAdapter {
     @Override
     public  <T>  JsonResponse<T> doGet(String url, Map<String, String> params, Map<String, String> headers, String charset) {
         JsonResponse<T> jsonResponse=new JsonResponse<>();
-        if (org.apache.commons.lang.StringUtils.isBlank(url)) {
+        if (StringUtils.isBlank(url)) {
             jsonResponse.failed("http client url  cannot be null");
             return jsonResponse;
         }
@@ -167,7 +167,7 @@ public class SdkSignHttpToolkit implements IRpcAdapter {
     @Override
     public  <T>  JsonResponse<T> doPost(String url, Map<String, String> params, Map<String, String> headers, String charset) {
         JsonResponse<T> jsonResponse=new JsonResponse<>();
-        if (org.apache.commons.lang.StringUtils.isBlank(url)) {
+        if (StringUtils.isBlank(url)) {
             jsonResponse.failed("http client url  cannot be null");
             return jsonResponse;
         }
@@ -212,7 +212,7 @@ public class SdkSignHttpToolkit implements IRpcAdapter {
     @Override
     public  <T>  JsonResponse<T> doPostWithJson(String url, String json, Map<String, String> headers, String charset) {
         JsonResponse<T> jsonResponse=new JsonResponse<>();
-        if (org.apache.commons.lang.StringUtils.isBlank(url)) {
+        if (StringUtils.isBlank(url)) {
             jsonResponse.failed("http client url  cannot be null");
             return jsonResponse;
         }
@@ -267,7 +267,7 @@ public class SdkSignHttpToolkit implements IRpcAdapter {
     @Override
     public  <T>  JsonResponse<T> doDelete(String url, Map<String, String> params, Map<String, String> headers, String charset) {
         JsonResponse<T> jsonResponse=new JsonResponse<>();
-        if (org.apache.commons.lang.StringUtils.isBlank(url)) {
+        if (StringUtils.isBlank(url)) {
             jsonResponse.failed("http client url  cannot be null");
             return jsonResponse;
         }
@@ -321,7 +321,7 @@ public class SdkSignHttpToolkit implements IRpcAdapter {
     @Override
     public  <T>  JsonResponse<T> doPut(String url, Map<String, String> params, Map<String, String> headers, String charset) {
         JsonResponse<T> jsonResponse=new JsonResponse<>();
-        if (org.apache.commons.lang.StringUtils.isBlank(url)) {
+        if (StringUtils.isBlank(url)) {
             jsonResponse.failed("http client url  cannot be null");
             return jsonResponse;
         }
