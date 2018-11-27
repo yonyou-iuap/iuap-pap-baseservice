@@ -2,6 +2,7 @@ package com.yonyou.iuap.baseservice.intg.service;
 
 import cn.hutool.core.util.StrUtil;
 import com.yonyou.iuap.baseservice.entity.Model;
+import com.yonyou.iuap.baseservice.intg.support.PageRequestAndSearchParams;
 import com.yonyou.iuap.baseservice.intg.support.ServiceFeature;
 import com.yonyou.iuap.baseservice.intg.support.ServiceFeatureHolder;
 import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericMapper;
@@ -20,10 +21,11 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.function.Function;
 
 import static com.yonyou.iuap.baseservice.intg.support.ServiceFeature.LOGICAL_DEL;
 
-/**
+/**TODO 增加可扩展领域范围的方法,并默认提供特性集成
  * 特性集成服务,用于GenericService所有服务接口集成多种组件特性
  * 默认支持
  *      <p>REFERENCE-参照
@@ -420,6 +422,37 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
         }
         return false;
     }
+    /***************************************************/
+    public Page<T> customSelectPageWithFeatures(Function<PageRequestAndSearchParams,Page<T>> function, SearchParams searchParams, PageRequest pageRequest){
+        PageRequestAndSearchParams customSelectParam = new PageRequestAndSearchParams(pageRequest,searchParams);
+        prepareFeatSearchParam(searchParams);
+        Page<T> page = function.apply(customSelectParam);
+        fillListFeatAfterQuery(page.getContent());
+        return page;
+    }
+
+    public List<T> customSelectAllWithFeatures(Function<SearchParams,List<T>> function, SearchParams searchParams){
+        prepareFeatSearchParam(searchParams);
+        List<T> list = function.apply(searchParams);
+        fillListFeatAfterQuery(list);
+        return list;
+    }
+
+    public T customSaveWithFeatures(Function<T,T> function,T entity){
+        prepareFeatEntity(entity);
+        function.apply(entity);
+        addFeatAfterEntitySave(entity);
+        return  entity;
+    }
+
+    public int customDeleteWithFeatures(Function<T,Integer> function,T entity){
+        Map param = new HashMap();
+        param.put("id",entity.getId());
+        prepareFeatDeleteParam(entity,param);
+        Integer count = function.apply(entity);
+        runFeatAfterEntityDelete(entity);
+        return  count;
+    }
 
     /***************************************************/
 
@@ -450,5 +483,7 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
         }
         return  allFeat.toArray(extensions);
     }
+
+
 
 }
