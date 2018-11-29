@@ -2,7 +2,7 @@ package com.yonyou.iuap.baseservice.intg.service;
 
 import cn.hutool.core.util.StrUtil;
 import com.yonyou.iuap.baseservice.entity.Model;
-import com.yonyou.iuap.baseservice.intg.support.PageRequestAndSearchParams;
+import com.yonyou.iuap.baseservice.persistence.support.PageRequestAndSearchParams;
 import com.yonyou.iuap.baseservice.intg.support.ServiceFeature;
 import com.yonyou.iuap.baseservice.intg.support.ServiceFeatureHolder;
 import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericMapper;
