@@ -37,7 +37,7 @@ public class MapperTest {
         PageRequest pagerequest = new PageRequest(1,100,new Sort("ts")){ };
         System.out.println(JSON.toJSONString(pagerequest, SerializerFeature.QuoteFieldNames));
         System.out.println(JSON.toJSONString(searchParams, SerializerFeature.QuoteFieldNames));
-        Set<String> whereStatement= new HashSet<>();
+        List<Map<String,Object>> whereStatement= new ArrayList<>();
         List<Map> result = statCommonMapper.findAll(pagerequest, searchParams, "duban", statStatement,whereStatement);
         System.out.println(result.toString());
     }
