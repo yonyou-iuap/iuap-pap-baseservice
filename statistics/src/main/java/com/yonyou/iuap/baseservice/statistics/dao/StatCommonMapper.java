@@ -26,7 +26,7 @@ public interface StatCommonMapper {
      */
     PageResult<Map> selectAllByPage(@Param("page") PageRequest pageRequest, @Param("condition") SearchParams searchParams,
                                     @Param("tableName") String tableName, @Param("statStatements") Set<String> statStatements,
-                                    @Param("whereStatements") List<Map<String,String>> whereStatements);
+                                    @Param("whereStatements") List<Map<String,Object>> whereStatements);
 
     /**
      * 直接查询所有分组数据
@@ -38,6 +38,6 @@ public interface StatCommonMapper {
      */
     List<Map> findAll(@Param("page") PageRequest pageRequest, @Param("condition") SearchParams searchParams,
                       @Param("tableName") String tableName, @Param("statStatements") Set<String> statStatements,
-                      @Param("whereStatements") List<Map<String,String>> whereStatements);
+                      @Param("whereStatements") List<Map<String,Object>> whereStatements);
 
 }

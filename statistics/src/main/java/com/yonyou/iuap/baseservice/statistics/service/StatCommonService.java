@@ -3,6 +3,7 @@ package com.yonyou.iuap.baseservice.statistics.service;
 import cn.hutool.core.util.ReflectUtil;
 import com.yonyou.iuap.baseservice.entity.LogicDel;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.matcher.MatcherFactory;
+import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.FieldUtil;
 import com.yonyou.iuap.baseservice.statistics.dao.StatCommonMapper;
 import com.yonyou.iuap.baseservice.statistics.support.StatFunctions;
 import com.yonyou.iuap.baseservice.statistics.support.StatModel;
@@ -56,10 +57,10 @@ public class StatCommonService {
                 statStatements.add(func + "(" + col + ") as " + m.getStatColumnsFields().get(col) + StringUtils.capitalize(func.name()));
             }
         }
-        List<Map<String,String>> whereList = new ArrayList<>();
+        List<Map<String,Object>> whereList = new ArrayList<>();
         // 解析模型特性,组装where 条件
         if(LogicDel.class.isAssignableFrom(m.getmClass())) {
-            Map<String ,String> whereStatement = new HashMap<>();
+            Map<String ,Object> whereStatement = new HashMap<>();
             whereStatement.put(key.name(),"dr");
             whereStatement.put(value.name(),"0");
             whereStatement.put(condition.name(),Match.EQ.name());
@@ -67,16 +68,16 @@ public class StatCommonService {
         }
         //where 条件的合法性校验,非法条件直接跳过
         if (searchParams.getSearchMap().get(whereParams.name()) != null) {
-            List<Map<String, String>> wheres = (List<Map<String, String>>) searchParams.getSearchMap().get(whereParams.name());
-            for (Map<String, String> statment : wheres) {
-                String keyStr = statment.get(key.name());
-                String valueStr = statment.get(value.name());
-                String conditionStr = statment.get(condition.name());
+            List<Map<String, Object>> wheres = (List<Map<String, Object>>) searchParams.getSearchMap().get(whereParams.name());
+            for (Map<String, Object> statment : wheres) {
+                Object keyStr = statment.get(key.name());
+                Object valueStr = statment.get(value.name());
+                Object conditionStr = statment.get(condition.name());
                 if (  StringUtils.isEmpty(keyStr)||StringUtils.isEmpty(valueStr) ){ //关键参数缺一不可
                     logger.info("reading incomplete whereParams [" + keyStr+":"+valueStr+"]");
                     continue;
                 }
-                Field keyField =ReflectUtil.getField( m.getmClass(),keyStr  );
+                Field keyField =ReflectUtil.getField( m.getmClass(),keyStr.toString()  );
                 if ( keyField==null){
                     logger.info("finding none field [" + keyStr+"] in model class["+m.getmClass()+"]!!");
                     continue;
@@ -84,11 +85,11 @@ public class StatCommonService {
                 if ( StringUtils.isEmpty(conditionStr)){
                     conditionStr = Match.EQ.name();
                 }
-                Map<String ,String> whereStatement = new HashMap<>();
-                whereStatement.put(key.name(),keyStr);
+                Map<String ,Object> whereStatement = new HashMap<>();
+                whereStatement.put(key.name(), FieldUtil.getColumnName(keyField));
                 whereStatement.put(value.name(),valueStr);
                 try {
-                    Match match=  Match.valueOf(conditionStr);
+                    Match match=  Match.valueOf(conditionStr.toString());
                     whereStatement.put(condition.name(),conditionStr);
                 } catch (IllegalArgumentException e) {
                     whereStatement.put(condition.name(),"OTHER");
@@ -144,13 +145,13 @@ public class StatCommonService {
     class ProcessResult {
         String tableName;
         Set<String> statStatements = new HashSet<>();
-        List<Map<String,String>> whereStatements = new ArrayList<>();
+        List<Map<String,Object>> whereStatements = new ArrayList<>();
 
-        public List<Map<String, String>> getWhereStatements() {
+        public List<Map<String, Object>> getWhereStatements() {
             return whereStatements;
         }
 
-        public void setWhereStatements(List<Map<String, String>> whereStatements) {
+        public void setWhereStatements(List<Map<String, Object>> whereStatements) {
             this.whereStatements = whereStatements;
         }
 
