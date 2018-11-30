@@ -57,13 +57,13 @@ public class StatCommonService {
                 statStatements.add(func + "(" + col + ") as " + m.getStatColumnsFields().get(col) + StringUtils.capitalize(func.name()));
             }
         }
-        List<Map<String,Object>> whereList = new ArrayList<>();
+        List<Map<String, Object>> whereList = new ArrayList<>();
         // 解析模型特性,组装where 条件
-        if(LogicDel.class.isAssignableFrom(m.getmClass())) {
-            Map<String ,Object> whereStatement = new HashMap<>();
-            whereStatement.put(key.name(),"dr");
-            whereStatement.put(value.name(),"0");
-            whereStatement.put(condition.name(),Match.EQ.name());
+        if (LogicDel.class.isAssignableFrom(m.getmClass())) {
+            Map<String, Object> whereStatement = new HashMap<>();
+            whereStatement.put(key.name(), "dr");
+            whereStatement.put(value.name(), "0");
+            whereStatement.put(condition.name(), Match.EQ.name());
             whereList.add(whereStatement);
         }
         //where 条件的合法性校验,非法条件直接跳过
@@ -73,26 +73,29 @@ public class StatCommonService {
                 Object keyStr = statment.get(key.name());
                 Object valueStr = statment.get(value.name());
                 Object conditionStr = statment.get(condition.name());
-                if (  StringUtils.isEmpty(keyStr)||StringUtils.isEmpty(valueStr) ){ //关键参数缺一不可
-                    logger.info("reading incomplete whereParams [" + keyStr+":"+valueStr+"]");
+                if (StringUtils.isEmpty(keyStr) || StringUtils.isEmpty(valueStr)) { //关键参数缺一不可
+                    logger.info("reading incomplete whereParams [" + keyStr + ":" + valueStr + "]");
                     continue;
                 }
-                Field keyField =ReflectUtil.getField( m.getmClass(),keyStr.toString()  );
-                if ( keyField==null){
-                    logger.info("finding none field [" + keyStr+"] in model class["+m.getmClass()+"]!!");
+                Field keyField = ReflectUtil.getField(m.getmClass(), keyStr.toString());
+                if (keyField == null) {
+                    logger.info("finding none field [" + keyStr + "] in model class[" + m.getmClass() + "]!!");
                     continue;
                 }
-                if ( StringUtils.isEmpty(conditionStr)){
+                if (StringUtils.isEmpty(conditionStr)) {
                     conditionStr = Match.EQ.name();
                 }
-                Map<String ,Object> whereStatement = new HashMap<>();
+                Map<String, Object> whereStatement = new HashMap<>();
                 whereStatement.put(key.name(), FieldUtil.getColumnName(keyField));
-                whereStatement.put(value.name(),valueStr);
+
                 try {
-                    Match match=  Match.valueOf(conditionStr.toString());
-                    whereStatement.put(condition.name(),conditionStr);
+                    Match match = Match.valueOf(conditionStr.toString());
+                    whereStatement.put(condition.name(), conditionStr);
+                    whereStatement.put(value.name(), valueStr);
                 } catch (IllegalArgumentException e) {
-                    whereStatement.put(condition.name(),"OTHER");
+                    //非规范范围的查询按，sql脚本方式改写valueStr
+                    whereStatement.put(condition.name(), "OTHER");
+                    whereStatement.put(value.name(), valueStr.toString().replace(keyStr.toString(), FieldUtil.getColumnName(keyField)));
                     logger.warn("reading conditon type of " + statment.get(condition));
                 }
                 whereList.add(whereStatement);
@@ -121,7 +124,7 @@ public class StatCommonService {
     public Page<Map> selectAllByPage(PageRequest pageRequest, SearchParams searchParams, String modelCode) {
 
         ProcessResult result = processServiceParams(pageRequest, searchParams, modelCode);
-        return statCommonMapper.selectAllByPage(pageRequest, searchParams, result.getTableName(), result.getStatStatements(),result.getWhereStatements()).getPage();
+        return statCommonMapper.selectAllByPage(pageRequest, searchParams, result.getTableName(), result.getStatStatements(), result.getWhereStatements()).getPage();
 
 
     }
@@ -135,7 +138,7 @@ public class StatCommonService {
      */
     public List<Map> findAll(PageRequest pageRequest, SearchParams searchParams, String modelCode) {
         ProcessResult result = processServiceParams(pageRequest, searchParams, modelCode);
-        return statCommonMapper.findAll(pageRequest, searchParams, result.getTableName(), result.getStatStatements(),result.getWhereStatements());
+        return statCommonMapper.findAll(pageRequest, searchParams, result.getTableName(), result.getStatStatements(), result.getWhereStatements());
 
     }
 
@@ -145,7 +148,7 @@ public class StatCommonService {
     class ProcessResult {
         String tableName;
         Set<String> statStatements = new HashSet<>();
-        List<Map<String,Object>> whereStatements = new ArrayList<>();
+        List<Map<String, Object>> whereStatements = new ArrayList<>();
 
         public List<Map<String, Object>> getWhereStatements() {
             return whereStatements;

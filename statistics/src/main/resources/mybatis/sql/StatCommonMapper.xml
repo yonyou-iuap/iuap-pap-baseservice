@@ -55,21 +55,21 @@
                     <if test="item.condition == 'RLIKE'">
                         and t.${item.key} LIKE CONCAT('${item.value}', '%')
                     </if>
-                    <!--<if test="item.condition == 'RANGE' and item.value!=null and item.value.size =2 ">-->
-                        <!--and t.${item.key} between-->
-                        <!--<foreach collection="item.value" item="v"  separator=" and ">-->
-                            <!--'#{v}'-->
-                        <!--</foreach>-->
-                    <!--</if>-->
-                    <!--<if test="item.condition == 'IN' and item.value!=null and item.value.size >0 ">-->
-                        <!--and t.${item.key} in(-->
-                        <!--<foreach collection="item.value" item="v"  separator=" , ">-->
-                            <!--'#{v}'-->
-                        <!--</foreach>-->
-                        <!--)-->
-                    <!--</if>-->
+                    <if test="item.condition == 'RANGE' and item.value!=null   ">
+                        and t.${item.key} between
+                        <foreach collection="item.value" item="valueItem1"  separator=" and ">
+                            '${valueItem1}'
+                        </foreach>
+                    </if>
+                    <if test="item.condition == 'IN' and item.value!=null  ">
+                        and t.${item.key} in(
+                        <foreach collection="item.value" item="valueItem2"  separator=" , ">
+                            '${valueItem2}'
+                        </foreach>
+                        )
+                    </if>
                     <if test="item.condition == 'OTHER'">
-                        and t.${item.key}  ${item.value}
+                        and   ${item.value}
                     </if>
                 </foreach>
             </if>
