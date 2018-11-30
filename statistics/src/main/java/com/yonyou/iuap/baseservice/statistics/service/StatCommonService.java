@@ -1,6 +1,7 @@
 package com.yonyou.iuap.baseservice.statistics.service;
 
 import cn.hutool.core.util.ReflectUtil;
+import com.google.common.collect.Lists;
 import com.yonyou.iuap.baseservice.entity.LogicDel;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.matcher.MatcherFactory;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.FieldUtil;
@@ -71,16 +72,16 @@ public class StatCommonService {
             List<Map<String, Object>> wheres = (List<Map<String, Object>>) searchParams.getSearchMap().get(whereParams.name());
             for (Map<String, Object> statment : wheres) {
                 Object keyStr = statment.get(key.name());
-                Object valueStr = statment.get(value.name());
+                Object valueObj = statment.get(value.name());
                 Object conditionStr = statment.get(condition.name());
-                if (StringUtils.isEmpty(keyStr) || StringUtils.isEmpty(valueStr)) { //关键参数缺一不可
-                    logger.info("reading incomplete whereParams [" + keyStr + ":" + valueStr + "]");
-                    continue;
+                if (StringUtils.isEmpty(keyStr) || StringUtils.isEmpty(valueObj)) { //关键参数缺一不可
+                    logger.warn("reading incomplete whereParams [" + keyStr + ":" + valueObj + "]");
+                    throw new RuntimeException("recieving incomplete whereParams [" + keyStr + ":" + valueObj + "]");
                 }
                 Field keyField = ReflectUtil.getField(m.getmClass(), keyStr.toString());
                 if (keyField == null) {
-                    logger.info("finding none field [" + keyStr + "] in model class[" + m.getmClass() + "]!!");
-                    continue;
+                    logger.warn("finding none field [" + keyStr + "] in model class[" + m.getmClass() + "]!!");
+                    throw new RuntimeException("thre is no field [" + keyStr + "] in model class[" + m.getmClass() + "]!!");
                 }
                 if (StringUtils.isEmpty(conditionStr)) {
                     conditionStr = Match.EQ.name();
@@ -90,12 +91,22 @@ public class StatCommonService {
 
                 try {
                     Match match = Match.valueOf(conditionStr.toString());
+                    if (match.equals(Match.RANGE)) {
+                        if (valueObj instanceof List && ((List) valueObj).size() == 2) {
+                            logger.debug("reading where conditon [RANGE] of [" + keyStr + ":" + valueObj + "]");
+                        } else {
+                            // 范围条件RANGE 需要valueObj必须是一个双值的list
+                            logger.warn("reading where conditon [RANGE] of wrong param [" + keyStr + ":" + valueObj + "]");
+                            throw new RuntimeException("recieving where conditon [RANGE] of wrong param [" + keyStr + ":" + valueObj + "]");
+                        }
+                    }
                     whereStatement.put(condition.name(), conditionStr);
-                    whereStatement.put(value.name(), valueStr);
+                    whereStatement.put(value.name(), valueObj);
+
                 } catch (IllegalArgumentException e) {
                     //非规范范围的查询按，sql脚本方式改写valueStr
                     whereStatement.put(condition.name(), "OTHER");
-                    whereStatement.put(value.name(), valueStr.toString().replace(keyStr.toString(), FieldUtil.getColumnName(keyField)));
+                    whereStatement.put(value.name(), valueObj.toString().replace(keyStr.toString(), FieldUtil.getColumnName(keyField)));
                     logger.warn("reading conditon type of " + statment.get(condition));
                 }
                 whereList.add(whereStatement);
