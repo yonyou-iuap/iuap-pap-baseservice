@@ -19,9 +19,20 @@
             <version>${pap.module.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.yonyou.iuap.baseservice</groupId>
+            <artifactId>iuap-pap-baseservice-multitenant</artifactId>
+            <version>${pap.module.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.yonyou.iuap.pap</groupId>
             <artifactId>eiap-plus-common</artifactId>
             <version>RELEASE</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.yonyou.iuap.baseservice</groupId>
+            <artifactId>iuap-pap-baseservice-ref</artifactId>
+            <version>3.5.5-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
 
