@@ -1,6 +1,7 @@
 package com.yonyou.iuap.baseservice.statistics;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.yonyou.iuap.baseservice.statistics.dao.StatCommonMapper;
 import com.yonyou.iuap.baseservice.statistics.support.StatParam;
@@ -34,7 +35,10 @@ public class MapperTest {
         groupBys.add("id");
         groupBys.add("ly_code");
         searchParams.addCondition(StatParam.groupParams.name(),groupBys);
-        PageRequest pagerequest = new PageRequest(1,100,new Sort("ts")){ };
+        PageRequest pagerequest = new PageRequest(1,100,new Sort(Sort.Direction.DESC,"ts")){ };
+        System.out.println("========================>========================>========================>========================>");
+        Sort sort = new Sort(Sort.Direction.DESC, "ts");
+        System.out.println(JSONObject.toJSONString(sort,SerializerFeature.BrowserCompatible));
         System.out.println(JSON.toJSONString(pagerequest, SerializerFeature.QuoteFieldNames));
         System.out.println(JSON.toJSONString(searchParams, SerializerFeature.QuoteFieldNames));
         List<Map<String,Object>> whereStatement= new ArrayList<>();

@@ -12,11 +12,13 @@ import com.yonyou.iuap.baseservice.statistics.support.StatModelResolver;
 import com.yonyou.iuap.baseservice.support.condition.Condition;
 import com.yonyou.iuap.baseservice.support.condition.Match;
 import com.yonyou.iuap.mvc.type.SearchParams;
+import com.yonyou.iuap.mybatis.dialect.impl.PgDialect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -58,8 +60,38 @@ public class StatCommonService {
                 statStatements.add(func + "(" + col + ") as " + m.getStatColumnsFields().get(col) + StringUtils.capitalize(func.name()));
             }
         }
-        List<Map<String, Object>> whereList = new ArrayList<>();
+        //解析排序条件sortMap
+        if (searchParams.getSearchMap().get(sortMap.name()) != null) {
+            List<Map<String, String>> sorts = (List<Map<String, String>>) searchParams.getSearchMap().get(sortMap.name());
+            List<Sort.Order> orders = new ArrayList<>();
+            for (Map sort : sorts) {
+                if (sort.keySet().size() > 0 && sort.keySet().toArray()[0] != null) {
+                    Field keyField = ReflectUtil.getField(m.getmClass(), sort.keySet().toArray()[0].toString());
+                    if (keyField==null){
+                        throw new RuntimeException("cannot find field "+sort.keySet().toArray()[0].toString()+" in  model [" + modelCode + "] ");
+                    }
+                    Sort.Order order =
+                            new Sort.Order(
+                                    Sort.Direction.valueOf(sort.get( sort.keySet().toArray()[0]).toString().toUpperCase()),
+                                    FieldUtil.getColumnName(keyField));
+                    orders.add(order);
+                }
+            }
+            result.setSort(new Sort(orders));
+        }
+        //解析groupParam
+        if (searchParams.getSearchMap().get(groupParams.name()) != null) {
+            List<String> groups = (List<String>) searchParams.getSearchMap().get(groupParams.name());
+            List<String> groupCols = new ArrayList<>();
+            for (String group : groups) {
+                Field keyField = ReflectUtil.getField(m.getmClass(), group);
+                groupCols.add(FieldUtil.getColumnName(keyField));
+            }
+            searchParams.getSearchMap().put(groupParams.name(), groupCols);
+        }
+
         // 解析模型特性,组装where 条件
+        List<Map<String, Object>> whereList = new ArrayList<>();
         if (LogicDel.class.isAssignableFrom(m.getmClass())) {
             Map<String, Object> whereStatement = new HashMap<>();
             whereStatement.put(key.name(), "dr");
@@ -135,6 +167,9 @@ public class StatCommonService {
     public Page<Map> selectAllByPage(PageRequest pageRequest, SearchParams searchParams, String modelCode) {
 
         ProcessResult result = processServiceParams(pageRequest, searchParams, modelCode);
+        if (result.getSort()!=null){
+            pageRequest= new PageRequest(pageRequest.getPageNumber(),pageRequest.getPageSize(),result.getSort());
+        }
         return statCommonMapper.selectAllByPage(pageRequest, searchParams, result.getTableName(), result.getStatStatements(), result.getWhereStatements()).getPage();
 
 
@@ -149,6 +184,9 @@ public class StatCommonService {
      */
     public List<Map> findAll(PageRequest pageRequest, SearchParams searchParams, String modelCode) {
         ProcessResult result = processServiceParams(pageRequest, searchParams, modelCode);
+        if (result.getSort()!=null){
+            pageRequest= new PageRequest(pageRequest.getPageNumber(),pageRequest.getPageSize(),result.getSort());
+        }
         return statCommonMapper.findAll(pageRequest, searchParams, result.getTableName(), result.getStatStatements(), result.getWhereStatements());
 
     }
@@ -157,6 +195,7 @@ public class StatCommonService {
      * 内部处理包装类
      */
     class ProcessResult {
+        Sort sort;
         String tableName;
         Set<String> statStatements = new HashSet<>();
         List<Map<String, Object>> whereStatements = new ArrayList<>();
@@ -167,6 +206,14 @@ public class StatCommonService {
 
         public void setWhereStatements(List<Map<String, Object>> whereStatements) {
             this.whereStatements = whereStatements;
+        }
+
+        public Sort getSort() {
+            return sort;
+        }
+
+        public void setSort(Sort sort) {
+            this.sort = sort;
         }
 
         public String getTableName() {
