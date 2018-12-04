@@ -2,13 +2,10 @@ package com.yonyou.iuap.baseservice.intg.service;
 
 import cn.hutool.core.util.StrUtil;
 import com.yonyou.iuap.baseservice.entity.Model;
-import com.yonyou.iuap.baseservice.persistence.support.PageRequestAndSearchParams;
+import com.yonyou.iuap.baseservice.persistence.support.*;
 import com.yonyou.iuap.baseservice.intg.support.ServiceFeature;
 import com.yonyou.iuap.baseservice.intg.support.ServiceFeatureHolder;
 import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericMapper;
-import com.yonyou.iuap.baseservice.persistence.support.DeleteFeatureExtension;
-import com.yonyou.iuap.baseservice.persistence.support.QueryFeatureExtension;
-import com.yonyou.iuap.baseservice.persistence.support.SaveFeatureExtension;
 import com.yonyou.iuap.baseservice.service.GenericService;
 import com.yonyou.iuap.mvc.type.SearchParams;
 import org.slf4j.Logger;
@@ -21,6 +18,7 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.function.Function;
 
 import static com.yonyou.iuap.baseservice.intg.support.ServiceFeature.LOGICAL_DEL;
@@ -423,34 +421,33 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
         return false;
     }
     /***************************************************/
-    public Page<T> customSelectPageWithFeatures(Function<PageRequestAndSearchParams,Page<T>> function, SearchParams searchParams, PageRequest pageRequest){
-        PageRequestAndSearchParams customSelectParam = new PageRequestAndSearchParams(pageRequest,searchParams);
-        prepareFeatSearchParam(searchParams);
-        Page<T> page = function.apply(customSelectParam);
+    public Page<T> customSelectPageWithFeatures(CustomSelectPageable<T> calling){
+        prepareFeatSearchParam(calling.getSearchParams());
+        Page<T> page = calling.doCunstomSelectPage();
         fillListFeatAfterQuery(page.getContent());
         return page;
     }
 
-    public List<T> customSelectAllWithFeatures(Function<SearchParams,List<T>> function, SearchParams searchParams){
-        prepareFeatSearchParam(searchParams);
-        List<T> list = function.apply(searchParams);
+    public List<T> customSelectListWithFeatures(CustomSelectListable<T> calling){
+        prepareFeatSearchParam(calling.getSearchParams());
+        List<T> list = calling.doCunstomSelectList();
         fillListFeatAfterQuery(list);
         return list;
     }
 
-    public T customSaveWithFeatures(Function<T,T> function,T entity){
-        prepareFeatEntity(entity);
-        function.apply(entity);
+    public T customSaveWithFeatures(CustomSaveable<T> calling){
+        prepareFeatEntity(calling.getEntity());
+        T entity = calling.doCustomSave();
         addFeatAfterEntitySave(entity);
         return  entity;
     }
 
-    public int customDeleteWithFeatures(Function<T,Integer> function,T entity){
+    public int customDeleteWithFeatures(CustomDeletable<T> calling){
         Map param = new HashMap();
-        param.put("id",entity.getId());
-        prepareFeatDeleteParam(entity,param);
-        Integer count = function.apply(entity);
-        runFeatAfterEntityDelete(entity);
+        param.put("id",calling.getEntity().getId());
+        prepareFeatDeleteParam(calling.getEntity(),param);
+        Integer count = calling.doCustomDelete();
+        runFeatAfterEntityDelete(calling.getEntity());
         return  count;
     }
 
