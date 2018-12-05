@@ -74,6 +74,7 @@ public class SearchParamUtil {
                 ;
                 statStatements.add(FieldUtil.getColumnName(keyField) + " as " + dis);
             }
+            result.setGroupFields(distincts);
         } else {
 
             /**
