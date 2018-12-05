@@ -26,6 +26,7 @@ public interface StatCommonMapper {
      */
     PageResult<Map> selectAllByPage(@Param("page") PageRequest pageRequest, @Param("condition") SearchParams searchParams,
                                     @Param("tableName") String tableName, @Param("statStatements") Set<String> statStatements,
+                                    @Param("groupStatements") Set<String> groupStatements,
                                     @Param("whereStatements") List<Map<String,Object>> whereStatements);
 
     /**
@@ -38,6 +39,7 @@ public interface StatCommonMapper {
      */
     List<Map> findAll(@Param("page") PageRequest pageRequest, @Param("condition") SearchParams searchParams,
                       @Param("tableName") String tableName, @Param("statStatements") Set<String> statStatements,
+                      @Param("groupStatements") Set<String> groupStatements,
                       @Param("whereStatements") List<Map<String,Object>> whereStatements);
 
 }

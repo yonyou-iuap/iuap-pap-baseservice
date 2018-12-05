@@ -90,15 +90,18 @@ public class SearchParamUtil {
         //解析groupParam
         if (searchParams.getSearchMap().get(groupParams.name()) != null) {
             List<String> groups = (List<String>) searchParams.getSearchMap().get(groupParams.name());
-            List<String> groupCols = new ArrayList<>();
+            Set<String> groupStatements = new HashSet<>();
+            Set<String> groupCols = new HashSet<>();
             for (String group : groups) {
                 Field keyField = ReflectUtil.getField(m.getmClass(), group);
                 if (keyField==null){
                     throw new RuntimeException("cannot find field "+group+" in  model [" + modelCode + "] ");
                 }
-                groupCols.add(FieldUtil.getColumnName(keyField)+" as "+group);
+                groupStatements.add(FieldUtil.getColumnName(keyField) + " as " + group);
+                groupCols.add(FieldUtil.getColumnName(keyField));
             }
-            searchParams.getSearchMap().put(groupParams.name(), groupCols);
+            searchParams.getSearchMap().put(groupParams.name(),groupCols);
+            result.setGroupStatements(groupStatements);
             result.setGroupFields(groups);
         }
 

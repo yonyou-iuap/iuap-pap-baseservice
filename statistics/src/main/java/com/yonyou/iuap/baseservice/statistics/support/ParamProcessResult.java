@@ -5,58 +5,67 @@ import org.springframework.data.domain.Sort;
 import java.util.*;
 
 public class ParamProcessResult {
-        StatModel stateModel;
-        Sort sort;
-        String tableName;
-        List<String> groupFields = new ArrayList<>();
-        Set<String> statStatements = new HashSet<>();
-        List<Map<String, Object>> whereStatements = new ArrayList<>();
+    private StatModel stateModel;
+    private Sort sort;
+    private String tableName;
+    private Set<String> groupStatements = new HashSet<>();
+    private List<String> groupFields = new ArrayList<>();
+    private Set<String> statStatements = new HashSet<>();
+    private List<Map<String, Object>> whereStatements = new ArrayList<>();
 
-public List<Map<String, Object>> getWhereStatements() {
+    public Set<String> getGroupStatements() {
+        return groupStatements;
+    }
+
+    public void setGroupStatements(Set<String> groupStatements) {
+        this.groupStatements = groupStatements;
+    }
+
+    public List<Map<String, Object>> getWhereStatements() {
         return whereStatements;
-        }
+    }
 
-public void setWhereStatements(List<Map<String, Object>> whereStatements) {
+    public void setWhereStatements(List<Map<String, Object>> whereStatements) {
         this.whereStatements = whereStatements;
-        }
+    }
 
-public List<String> getGroupFields() {
+    public List<String> getGroupFields() {
         return groupFields;
-        }
+    }
 
-public void setGroupFields(List<String> groupFields) {
+    public void setGroupFields(List<String> groupFields) {
         this.groupFields = groupFields;
-        }
+    }
 
-public StatModel getStateModel() {
+    public StatModel getStateModel() {
         return stateModel;
-        }
+    }
 
-public void setStateModel(StatModel stateModel) {
+    public void setStateModel(StatModel stateModel) {
         this.stateModel = stateModel;
-        }
+    }
 
-public Sort getSort() {
+    public Sort getSort() {
         return sort;
-        }
+    }
 
-public void setSort(Sort sort) {
+    public void setSort(Sort sort) {
         this.sort = sort;
-        }
+    }
 
-public String getTableName() {
+    public String getTableName() {
         return tableName;
-        }
+    }
 
-public void setTableName(String tableName) {
+    public void setTableName(String tableName) {
         this.tableName = tableName;
-        }
+    }
 
-public Set<String> getStatStatements() {
+    public Set<String> getStatStatements() {
         return statStatements;
-        }
+    }
 
-public void setStatStatements(Set<String> statStatements) {
+    public void setStatStatements(Set<String> statStatements) {
         this.statStatements = statStatements;
-        }
-        }
+    }
+}

@@ -45,9 +45,7 @@ public class StatCommonService {
         if (ppr.getSort() != null) {
             pageRequest = new PageRequest(pageRequest.getPageNumber(), pageRequest.getPageSize(), ppr.getSort());
         }
-
-        Page  page = statCommonMapper.selectAllByPage(pageRequest, searchParams, ppr.getTableName(), ppr.getStatStatements(), ppr.getWhereStatements()).getPage();
-
+        Page  page = statCommonMapper.selectAllByPage(pageRequest, searchParams, ppr.getTableName(), ppr.getStatStatements(),ppr.getGroupStatements(), ppr.getWhereStatements()).getPage();
         SearchParamUtil.processSelectList(page.getContent(),ppr,mapper);
 
         return page;
@@ -67,7 +65,7 @@ public class StatCommonService {
         if (ppr.getSort() != null) {
             pageRequest = new PageRequest(pageRequest.getPageNumber(), pageRequest.getPageSize(), ppr.getSort());
         }
-        List<Map> list = statCommonMapper.findAll(pageRequest, searchParams, ppr.getTableName(), ppr.getStatStatements(), ppr.getWhereStatements());
+        List<Map> list = statCommonMapper.findAll(pageRequest, searchParams, ppr.getTableName(), ppr.getStatStatements(),ppr.getGroupStatements(), ppr.getWhereStatements());
 
         SearchParamUtil.processSelectList(list,ppr,mapper);
         return list;

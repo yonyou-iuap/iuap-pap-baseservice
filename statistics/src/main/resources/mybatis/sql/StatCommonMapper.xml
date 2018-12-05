@@ -21,8 +21,8 @@
                 ${item}
             </foreach>
         </if>
-        <if test="condition.searchMap.groupParams!= null and condition.searchMap.groupParams.size > 0">
-            <foreach collection="condition.searchMap.groupParams" item="item" separator=" ">
+        <if test="groupStatements != null and groupStatements.size > 0">
+            <foreach collection="groupStatements" item="item" separator=" ">
                 ,${item}
             </foreach>
         </if>
