@@ -103,7 +103,7 @@
     </select>
 
 
-    <select id="findDistinct" resultType="String">
+    <select id="findDistinct" resultType="java.util.HashMap">
         select distinct
         <if test="statStatements!= null  and statStatements.size > 0 ">
             <foreach collection="statStatements" item="item" separator=",">
