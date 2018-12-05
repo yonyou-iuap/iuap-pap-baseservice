@@ -229,11 +229,16 @@ public class SearchParamUtil {
         Map<Field, Set<String>> idCache = new HashMap<>(); //缓存list中的所有entity属性参照内的id
         Map<Field, Reference> refCache = new HashMap<>();//缓存entity中的所有@Reference定义
         Map<Field, List<Map<String, Object>>> refDataCache = new HashMap<>();//缓存参照数据,用于最后的反写
+        boolean isFirst = true;
         for (Map statResult : selectList) {
             for (String fieldName : pr.getGroupFields()) {
                 Field field = ReflectUtil.getField(pr.getStateModel().getmClass(), fieldName);
                 Reference ref = field.getAnnotation(Reference.class);
                 if (ref != null) {
+                    if (isFirst) { //  提高缓存装载效率,仅加载一次
+                        refCache.put(field, ref); //将所有参照和field的关系缓存起来后续使用
+                        idCache.put(field,new HashSet<String>());
+                    }
                     refCache.put(field, ref); //将所有参照和field的关系缓存起来后续使用
                     if (null != statResult.get(fieldName)) {
                         String[] fieldIds = statResult.get(fieldName).toString().split(",");//兼容参照多选
@@ -241,6 +246,7 @@ public class SearchParamUtil {
                     }
                 }
             }
+            isFirst = false;
         }
         /**
          * @Step 2解析参照配置, 一次按需(idCache)加载参照数据

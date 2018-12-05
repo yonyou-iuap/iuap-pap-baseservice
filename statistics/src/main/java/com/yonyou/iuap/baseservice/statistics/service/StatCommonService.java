@@ -75,6 +75,7 @@ public class StatCommonService {
     public List<Map> findDistinct(SearchParams searchParams, String modelCode){
         ParamProcessResult ppr = SearchParamUtil.processServiceParams( searchParams, modelCode);
         List<Map> list = statCommonMapper.findDistinct( ppr.getStatStatements(), ppr.getTableName(), ppr.getWhereStatements());
+        SearchParamUtil.processSelectList(list,ppr,mapper);
         return  list;
     }
 
