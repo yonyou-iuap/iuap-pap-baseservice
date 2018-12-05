@@ -12,21 +12,8 @@
             </if>
         </if>
     </sql>
-
-    <sql id="selectClause">
-
-        SELECT
-        <if test="statStatements!= null and statStatements.size > 0">
-            <foreach collection="statStatements" item="item" separator=",">
-                ${item}
-            </foreach>
-        </if>
-        <if test="groupStatements != null and groupStatements.size > 0">
-            <foreach collection="groupStatements" item="item" separator=" ">
-                ,${item}
-            </foreach>
-        </if>
-        from ${tableName} t
+    
+    <sql id="whereClause">
         <where>
             1=1
             <if test="whereStatements != null and whereStatements.size>0 ">
@@ -73,8 +60,26 @@
                     </if>
                 </foreach>
             </if>
-
         </where>
+
+    </sql>
+
+    <sql id="selectClause">
+
+        SELECT
+        <if test="statStatements!= null and statStatements.size > 0">
+            <foreach collection="statStatements" item="item" separator=",">
+                ${item}
+            </foreach>
+        </if>
+        <if test="groupStatements != null and groupStatements.size > 0">
+            <foreach collection="groupStatements" item="item" separator=" ">
+                ,${item}
+            </foreach>
+        </if>
+        from ${tableName} t
+        <include refid="whereClause"/>
+        
         <if test="condition.searchMap.groupParams!= null and condition.searchMap.groupParams.size > 0">
             GROUP BY
             <foreach collection="condition.searchMap.groupParams" item="item" separator=",">
@@ -95,5 +100,17 @@
             resultType="java.util.HashMap">
         <include refid="selectClause"/>
         <include refid="orderClause"/>
+    </select>
+
+
+    <select id="findDistinct" resultType="String">
+        select distinct
+        <if test="statStatements!= null  and statStatements.size > 0 ">
+            <foreach collection="statStatements" item="item" separator=",">
+                ${item}
+            </foreach>
+        </if>
+        FROM ${tableName} t
+        <include refid="whereClause"/>
     </select>
 </mapper>

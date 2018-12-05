@@ -45,12 +45,11 @@ public class SearchParamUtil {
     /**
      * 根据模型编号（uri中取得），进行统计模型解析，并得到查询语句所需的关键参数
      *
-     * @param pageRequest
      * @param searchParams
      * @param modelCode
      * @return
      */
-    public static ParamProcessResult processServiceParams(PageRequest pageRequest, SearchParams searchParams, String modelCode) {
+    public static ParamProcessResult processServiceParams(SearchParams searchParams, String modelCode) {
         ParamProcessResult result = new ParamProcessResult();
 
         StatModel m = StatModelResolver.getStatModel(modelCode);
@@ -58,54 +57,85 @@ public class SearchParamUtil {
             throw new RuntimeException("calling model [" + modelCode + "] can not be resolved by Statistic Service!!");
         }
         result.setStateModel(m);
-        String tableName = m.getTableName();
+        result.setTableName(m.getTableName());
         Set<String> statStatements = new HashSet<>();
-        Map<String, StatFunctions[]> statColFuncs = m.getStatColumnsFunctions();
+        if (searchParams.getSearchMap().get(distinctParams.name()) != null) {
+            /**
+             * @Step 1.1
+             * distinct 查询与其他StatFunctions类型 具有互斥的关系，
+             * 所以，遇到distinct的入参，需要组织独立的查询脚本
+             */
+            List<String> distincts = (List<String>) searchParams.getSearchMap().get(distinctParams.name());
+            for (String dis : distincts) {
+                Field keyField = ReflectUtil.getField(m.getmClass(), dis);
+                if (keyField == null) {
+                    throw new RuntimeException("cannot find field " + distincts + " in  model [" + modelCode + "] ");
+                }
+                ;
+                statStatements.add(FieldUtil.getColumnName(keyField) + " as " + dis);
+            }
+        } else {
 
-
-        for (String col : statColFuncs.keySet()) {
-            for (StatFunctions func : statColFuncs.get(col)) {
-                statStatements.add(func + "(" + col + ") as " + m.getStatColumnsFields().get(col) + StringUtils.capitalize(func.name()));
+            /**
+             * @Step 1.2
+             * 根据业务实体上的注解，解析StatFunctions，构造 select部分的查询脚本
+             */
+            Map<String, StatFunctions[]> statColFuncs = m.getStatColumnsFunctions();
+            for (String col : statColFuncs.keySet()) {
+                for (StatFunctions func : statColFuncs.get(col)) {
+                    statStatements.add(func + "(" + col + ") as " + m.getStatColumnsFields().get(col) + StringUtils.capitalize(func.name()));
+                }
+            }
+            /**
+             * @Step 1.3
+             * 解析groupParam，构造 select部分和group by部分的查询脚本
+             */
+            if (searchParams.getSearchMap().get(groupParams.name()) != null) {
+                List<String> groups = (List<String>) searchParams.getSearchMap().get(groupParams.name());
+                Set<String> groupStatements = new HashSet<>();
+                Set<String> groupCols = new HashSet<>();
+                for (String group : groups) {
+                    Field keyField = ReflectUtil.getField(m.getmClass(), group);
+                    if (keyField == null) {
+                        throw new RuntimeException("cannot find field " + group + " in  model [" + modelCode + "] ");
+                    }
+                    groupStatements.add(FieldUtil.getColumnName(keyField) + " as " + group);
+                    groupCols.add(FieldUtil.getColumnName(keyField));
+                }
+                searchParams.getSearchMap().put(groupParams.name(), groupCols);
+                result.setGroupStatements(groupStatements);
+                result.setGroupFields(groups);
             }
         }
-        //解析排序条件sortMap
+        result.setStatStatements(statStatements);
+
+        /**
+         * @Step 2
+         * 解析排序条件sortMap
+         */
+
         if (searchParams.getSearchMap().get(sortMap.name()) != null) {
-            List<Map<String, String>> sorts = (List<Map<String, String>>) searchParams.getSearchMap().get(sortMap.name());
+            Map<String, String> sorts = (Map<String, String>) searchParams.getSearchMap().get(sortMap.name());
             List<Sort.Order> orders = new ArrayList<>();
-            for (Map sort : sorts) {
-                if (sort.keySet().size() > 0 && sort.keySet().toArray()[0] != null) {
-                    Field keyField = ReflectUtil.getField(m.getmClass(), sort.keySet().toArray()[0].toString());
-                    if (keyField==null){
-                        throw new RuntimeException("cannot find field "+sort.keySet().toArray()[0].toString()+" in  model [" + modelCode + "] ");
-                    }
-                    Sort.Order order =
-                            new Sort.Order(
-                                    Sort.Direction.valueOf(sort.get( sort.keySet().toArray()[0]).toString().toUpperCase()),
-                                    FieldUtil.getColumnName(keyField));
-                    orders.add(order);
+            for (String sortField : sorts.keySet()) {
+                Field keyField = ReflectUtil.getField(m.getmClass(), sortField);
+                if (keyField == null) {
+                    throw new RuntimeException("cannot find field " + sortField  + " in  model [" + modelCode + "] ");
                 }
+                Sort.Order order =
+                        new Sort.Order(
+                                Sort.Direction.valueOf(sorts.get(sortField).toUpperCase()),
+                                FieldUtil.getColumnName(keyField));
+                orders.add(order);
             }
             result.setSort(new Sort(orders));
         }
-        //解析groupParam
-        if (searchParams.getSearchMap().get(groupParams.name()) != null) {
-            List<String> groups = (List<String>) searchParams.getSearchMap().get(groupParams.name());
-            Set<String> groupStatements = new HashSet<>();
-            Set<String> groupCols = new HashSet<>();
-            for (String group : groups) {
-                Field keyField = ReflectUtil.getField(m.getmClass(), group);
-                if (keyField==null){
-                    throw new RuntimeException("cannot find field "+group+" in  model [" + modelCode + "] ");
-                }
-                groupStatements.add(FieldUtil.getColumnName(keyField) + " as " + group);
-                groupCols.add(FieldUtil.getColumnName(keyField));
-            }
-            searchParams.getSearchMap().put(groupParams.name(),groupCols);
-            result.setGroupStatements(groupStatements);
-            result.setGroupFields(groups);
-        }
 
-        // 解析模型特性,组装where 条件
+        /**
+         * @Step 3
+         * 解析模型特性,组装where 条件脚本
+         */
+
         List<Map<String, Object>> whereList = new ArrayList<>();
 
         //加入特性集成-逻辑删除
@@ -173,8 +203,6 @@ public class SearchParamUtil {
         }
 
         result.setWhereStatements(whereList);
-        result.setTableName(tableName);
-        result.setStatStatements(statStatements);
         return result;
 
     }

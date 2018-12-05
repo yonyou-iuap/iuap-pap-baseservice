@@ -41,7 +41,7 @@ public class StatCommonService {
      */
     public Page<Map> selectAllByPage(PageRequest pageRequest, SearchParams searchParams, String modelCode) {
 
-        ParamProcessResult ppr = SearchParamUtil.processServiceParams(pageRequest, searchParams, modelCode);
+        ParamProcessResult ppr = SearchParamUtil.processServiceParams( searchParams, modelCode);
         if (ppr.getSort() != null) {
             pageRequest = new PageRequest(pageRequest.getPageNumber(), pageRequest.getPageSize(), ppr.getSort());
         }
@@ -60,16 +60,22 @@ public class StatCommonService {
      * @param modelCode
      * @return 集合函数统计结果
      */
-    public List<Map> findAll(PageRequest pageRequest, SearchParams searchParams, String modelCode) {
-        ParamProcessResult ppr = SearchParamUtil.processServiceParams(pageRequest, searchParams, modelCode);
+    public List<Map> findAll(  SearchParams searchParams, String modelCode) {
+        ParamProcessResult ppr = SearchParamUtil.processServiceParams( searchParams, modelCode);
+        PageRequest pageRequest =null;
         if (ppr.getSort() != null) {
             pageRequest = new PageRequest(pageRequest.getPageNumber(), pageRequest.getPageSize(), ppr.getSort());
         }
         List<Map> list = statCommonMapper.findAll(pageRequest, searchParams, ppr.getTableName(), ppr.getStatStatements(),ppr.getGroupStatements(), ppr.getWhereStatements());
-
         SearchParamUtil.processSelectList(list,ppr,mapper);
         return list;
 
+    }
+
+    public List<Map> findDistinct(SearchParams searchParams, String modelCode){
+        ParamProcessResult ppr = SearchParamUtil.processServiceParams( searchParams, modelCode);
+        List<Map> list = statCommonMapper.findDistinct( ppr.getStatStatements(), ppr.getTableName(), ppr.getWhereStatements());
+        return  list;
     }
 
 

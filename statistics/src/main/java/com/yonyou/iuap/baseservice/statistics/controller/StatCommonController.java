@@ -30,24 +30,30 @@ public class StatCommonController extends BaseController {
     @RequestMapping(value = {"/page/{modelCode}"}, method = {RequestMethod.POST})
     @ResponseBody
     public Object page(@PathVariable String modelCode, PageRequest pageRequest,@RequestBody Map<String,Object> searchMap) {
-        logger.debug("StatCommonController getting searchParams:"+searchMap);
+        logger.debug("StatCommonController receiving searchParams:"+searchMap);
         SearchParams searchParams = new SearchParams();
         searchParams.setSearchMap(searchMap);
         Page  page = this.service.selectAllByPage(pageRequest, searchParams,modelCode);
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("data", page);
-        return this.buildMapSuccess(map);
+        return this.buildSuccess(page);
     }
 
     @RequestMapping(value = "/list/{modelCode}" ,method = RequestMethod.POST )
     @ResponseBody
-    public Object list( @PathVariable String modelCode, PageRequest pageRequest,@RequestBody Map<String,Object> searchMap) {
-        logger.debug("StatCommonController getting searchParams:"+searchMap);
+    public Object list( @PathVariable String modelCode,@RequestBody Map<String,Object> searchMap) {
+        logger.debug("StatCommonController receiving searchParams:"+searchMap);
         SearchParams searchParams = new SearchParams();
         searchParams.setSearchMap(searchMap);
-        List list = this.service.findAll(pageRequest, searchParams,modelCode);
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("data", list);
-        return this.buildMapSuccess(map);
+        List list = this.service.findAll( searchParams,modelCode);
+        return this.buildSuccess(list);
+    }
+
+    @RequestMapping(value = "/distinct/{modelCode}" ,method = RequestMethod.POST )
+    @ResponseBody
+    public Object distinct( @PathVariable String modelCode,@RequestBody Map<String,Object> searchMap) {
+        logger.debug("StatCommonController receiving searchParams:"+searchMap);
+        SearchParams searchParams = new SearchParams();
+        searchParams.setSearchMap(searchMap);
+        List list = this.service.findDistinct ( searchParams,modelCode);
+        return this.buildSuccess(list);
     }
 }

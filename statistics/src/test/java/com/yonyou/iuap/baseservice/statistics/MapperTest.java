@@ -41,9 +41,9 @@ public class MapperTest {
         System.out.println(JSONObject.toJSONString(sort,SerializerFeature.BrowserCompatible));
         System.out.println(JSON.toJSONString(pagerequest, SerializerFeature.QuoteFieldNames));
         System.out.println(JSON.toJSONString(searchParams, SerializerFeature.QuoteFieldNames));
-        List<Map<String,Object>> whereStatement= new ArrayList<>();
-        List<Map> result = statCommonMapper.findAll(pagerequest, searchParams, "duban", statStatement,whereStatement);
-        System.out.println(result.toString());
+//        List<Map<String,Object>> whereStatement= new ArrayList<>();
+//        List<Map> result = statCommonMapper.findAll( searchParams, "duban", statStatement,whereStatement);
+//        System.out.println(result.toString());
     }
 
 
