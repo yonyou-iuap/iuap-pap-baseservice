@@ -25,6 +25,7 @@ import cn.hutool.core.util.StrUtil;
  * @author houlf
  * 2018年6月13日
  */
+@SuppressWarnings("ALL")
 public class CodingUtil {
 	
 	private Logger log = LoggerFactory.getLogger(CodingUtil.class);
@@ -37,7 +38,7 @@ public class CodingUtil {
 	
 	/**
 	 * 为对象设置Code
-	 * @param entity
+	 * @param entity 业务实体
 	 */
 	public void buildCoding(Object entity) {
 		CodingEntity anno = entity.getClass().getDeclaredAnnotation(CodingEntity.class);
@@ -69,11 +70,9 @@ public class CodingUtil {
 
     /**
      * 提交前编码，否则前编码会回滚
-     * @param billObjCode
-     * @param entity
-     * @return
+     * @param billObjCode pap内编码对象的代号
      */
-    public String commitCode(String billObjCode, String billCode){
+    private void commitCode(String billObjCode, String billCode){
         Map<String,String> data = new HashMap<String,String>();
         data.put("billObjCode",billObjCode);
         data.put("pkAssign","");
@@ -90,16 +89,15 @@ public class CodingUtil {
             log.error("Error happened while committing code ："+JSON.toJSONString(data)+"，error reason："+errMsg);
             throw new BusinessException("Error happened while committing code ："+JSON.toJSONString(data)+"，error reason："+errMsg);
         }
-        return billCode;
     }
 
 	/**
 	 * 生成编码
-	 * @param billObjCode
-	 * @param entity
-	 * @return
+	 * @param billObjCode pap内编码对象的代号
+	 * @param entity 业务实体
+	 * @return 编码引擎生成值
 	 */
-    public String genCode(String billObjCode, Object entity){
+    private String genCode(String billObjCode, Object entity){
     	String billVo = JSONObject.toJSONString(entity);
         Map<String,String> data = new HashMap<String,String>();
         data.put("billObjCode",billObjCode);
@@ -124,13 +122,12 @@ public class CodingUtil {
     /**
      * 单据退号，以保证单据号连号的业务需要
      * @param billObjCode 编码对象code
-     * @param entity
+     * @param entity 业务实体
      * @param code 编码字段
-     * @return
      */
-    public void returnCode(String billObjCode, Object entity, String code){
+    private void returnCode(String billObjCode, Object entity, String code){
         String billVo = JSONObject.toJSONString(entity);
-        Map<String,String> data = new HashMap<String,String>();
+        Map<String,String> data = new HashMap<>();
         data.put("billObjCode",billObjCode);
         data.put("pkAssign","");
         data.put("billVo",billVo);
