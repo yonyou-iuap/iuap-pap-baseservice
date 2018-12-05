@@ -55,13 +55,44 @@ public class CodingUtil {
 		if(codingField != null) {
 			CodingField annatation = codingField.getAnnotation(CodingField.class);
 			if(ReflectUtil.getFieldValue(entity,codingField)==null|| "".equals(ReflectUtil.getFieldValue(entity,codingField) ) ){
+                //后编码模式下，编码生效时需要调用取码服务
                 String code = CodingUtil.inst().genCode(annatation.code(), entity);
 			    ReflectUtil.setFieldValue(entity, codingField, code);
-			}
+			}else{
+			    //前编码模式下，编码生效时需要commit
+                Object preCode = ReflectUtil.getFieldValue(entity, codingField);
+                CodingUtil.inst().commitCode(annatation.code(),preCode.toString());
+            }
 
 		}
 	}
-	
+
+    /**
+     * 提交前编码，否则前编码会回滚
+     * @param billObjCode
+     * @param entity
+     * @return
+     */
+    public String commitCode(String billObjCode, String billCode){
+        Map<String,String> data = new HashMap<String,String>();
+        data.put("billObjCode",billObjCode);
+        data.put("pkAssign","");
+        data.put("billCode",billCode);
+
+        //调用编号生成服务
+        String commitCodeUrl = PropertyUtil.getPropertyByKey("billcodeservice.base.url")+"/billcoderest/commitPreBillCode";
+        JSONObject billCodeInfo = RestUtils.getInstance().doPost(commitCodeUrl,data,JSONObject.class);
+
+        String getFlag = billCodeInfo.getString("status");
+
+        if ("failed".equalsIgnoreCase(getFlag)){
+            String errMsg = billCodeInfo.getString("msg");
+            log.error("Error happened while committing code ："+JSON.toJSONString(data)+"，error reason："+errMsg);
+            throw new BusinessException("Error happened while committing code ："+JSON.toJSONString(data)+"，error reason："+errMsg);
+        }
+        return billCode;
+    }
+
 	/**
 	 * 生成编码
 	 * @param billObjCode
