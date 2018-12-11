@@ -201,7 +201,7 @@ public class SearchParamUtil {
 
                 } catch (IllegalArgumentException e) {
                     //非规范范围的查询按，sql脚本方式改写valueStr
-                    whereStatement.put(condition.name(), "OTHER");
+                    whereStatement.put(condition.name(), conditionStr.toString());
                     whereStatement.put(value.name(), valueObj.toString().replace(keyStr.toString(), FieldUtil.getColumnName(keyField)));
                     logger.warn("reading conditon type of " + statment.get(condition));
                 }
