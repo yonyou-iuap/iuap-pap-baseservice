@@ -25,7 +25,9 @@ import java.util.*;
 
 
 /**
- * 通用参照服务,基于ref.XML解析,生成动态sql检索,此配置文件应部署在业务项目中,例如iuap-pap-quickStart/src/main/resources/ref.xml
+ * 通用本地参照服务，基于ref.XML解析,生成动态sql检索,此配置文件应部署在业务项目中,例如iuap-pap-quickStart/src/main/resources/ref.xml
+ * <br>
+ * 作为可插拔ServiceFeature#REFERENCE特性的默认实现，仅支持数据库集中存储式的参照id解析，远程参照id解析请参考RefRemoteService
  * @author leon
  * @Date 2018-07-11
  */
@@ -149,8 +151,10 @@ public  class RefCommonService<T extends Model>  implements QueryFeatureExtensio
     }
 
     /**
-     * 参照数据加载,根据 @See  com.yonyou.iuap.baseservice.entity.annotation.Reference
-     * 中定义的参照参数,将参照数据中检索出来的值写到对应的entity属性中,以便前端展示
+     *
+     * 参照数据加载<p>根据Reference
+     * 中定义的参照参数,将参照表中检索出来的值反写到对应的entity指定得属性中,以便前端展示
+     * @see  com.yonyou.iuap.baseservice.entity.annotation.Reference
      * @param list 未装填参照的原始list
      * @return 重新装填后的结果
      */
