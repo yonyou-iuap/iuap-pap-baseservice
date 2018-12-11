@@ -117,19 +117,25 @@ public class SearchParamUtil {
 
         if (searchParams.getSearchMap().get(sortMap.name()) != null) {
             Map<String, String> sorts = (Map<String, String>) searchParams.getSearchMap().get(sortMap.name());
-            List<Sort.Order> orders = new ArrayList<>();
-            for (String sortField : sorts.keySet()) {
-                Field keyField = ReflectUtil.getField(m.getmClass(), sortField);
-                if (keyField == null) {
-                    throw new RuntimeException("cannot find field " + sortField  + " in  model [" + modelCode + "] ");
+            if (sorts==null || sorts.isEmpty()){
+                logger.info("receiving none sort param in sortMap.");
+            }else
+            {
+                List<Sort.Order> orders = new ArrayList<>();
+                for (String sortField : sorts.keySet()) {
+                    Field keyField = ReflectUtil.getField(m.getmClass(), sortField);
+                    if (keyField == null) {
+                        throw new RuntimeException("cannot find field " + sortField  + " in  model [" + modelCode + "] ");
+                    }
+                    Sort.Order order =
+                            new Sort.Order(
+                                    Sort.Direction.valueOf(sorts.get(sortField).toUpperCase()),
+                                    FieldUtil.getColumnName(keyField));
+                    orders.add(order);
                 }
-                Sort.Order order =
-                        new Sort.Order(
-                                Sort.Direction.valueOf(sorts.get(sortField).toUpperCase()),
-                                FieldUtil.getColumnName(keyField));
-                orders.add(order);
+                result.setSort(new Sort(orders));
             }
-            result.setSort(new Sort(orders));
+
         }
 
         /**
