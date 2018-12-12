@@ -153,8 +153,8 @@ public class RefRemoteService<T extends Model> implements QueryFeatureExtension<
         private List<String> idCache = new ArrayList<>(); //缓存每套refcode下用到的所有参照表id值
         private Set<Field> fieldCache = new HashSet<>();//缓存每套refcode下打注解的field
         private List<Map<String, Object>> refDataCache = new ArrayList<>(); //缓存每套refCode下的id到name的远程查询结果
-        private Map<String, String[]> fieldIdCache = new HashMap<>(); //缓存实体中每个field对应的id值
-        private Map<String, List<Map<String, Object>>> fieldRefDataCache = new HashMap<>(); //缓存实体中每个field的ids对应的refDataCache里面的值
+        private Map<String, String[]> fieldIdCache = new HashMap<>(); //缓存实体中每个field对应的id值,key为hashcode
+        private Map<String, List<Map<String, Object>>> fieldRefDataCache = new HashMap<>(); //缓存实体中每个field的ids对应的refDataCache里面的值,key为hashcode
 
 
         public  List<Map<String, Object>>  getFieldRefDataCache(String hasCode) {
@@ -213,7 +213,7 @@ public class RefRemoteService<T extends Model> implements QueryFeatureExtension<
             if (refDataCache==null || refDataCache.size()==0){
                 return;
             }
-            for (Map<String, Object> refData : refDataCache) {//取出参照缓存数据集
+            for (Map<String, Object> refData : refDataCache) {//取出参照缓存数据集，进行分组归纳，以每个entity.field为分组依据,
                 for (String fkey : fieldIdCache.keySet()) {
                     if (fieldIdCache.get(fkey)==null){
                         continue;
@@ -221,12 +221,17 @@ public class RefRemoteService<T extends Model> implements QueryFeatureExtension<
                     List<Map<String,Object>> refDatas = new ArrayList<>();
                     for (String id : fieldIdCache.get(fkey)) {
                         for (String refDataKey:refData.keySet()){
-                            if (  refDataKey.equalsIgnoreCase("ID") && refData.get(refDataKey).equals(id) ){
+                            if (  refDataKey.equalsIgnoreCase("ID") && id.equals( refData.get(refDataKey))){
                                 refDatas.add(refData);
                             }
                         }
                     }
-                    fieldRefDataCache.put(fkey,refDatas);
+                    if (fieldRefDataCache.containsKey(fkey)){//防止缓存的正确值被覆盖掉
+                        fieldRefDataCache.get(fkey).addAll(refDatas);
+                    }else{
+                        fieldRefDataCache.put(fkey,refDatas);
+                    }
+
                 }
             }
         }
