@@ -25,6 +25,7 @@ import java.util.*;
  * @see RefCommonService
  * @see com.yonyou.iuap.baseservice.entity.annotation.Reference
  */
+@SuppressWarnings("ALL")
 public class RefRemoteService<T extends Model> implements QueryFeatureExtension<T> {
     private static Logger logger = LoggerFactory.getLogger(RefRemoteService.class);
     private Class modelClass;
