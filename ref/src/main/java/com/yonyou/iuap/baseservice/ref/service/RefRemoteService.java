@@ -11,6 +11,7 @@ import com.yonyou.iuap.mvc.type.SearchParams;
 import com.yonyou.iuap.pap.base.ref.utils.RefIdToNameUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -26,6 +27,7 @@ import java.util.*;
  * @see com.yonyou.iuap.baseservice.entity.annotation.Reference
  */
 @SuppressWarnings("ALL")
+@Service
 public class RefRemoteService<T extends Model> implements QueryFeatureExtension<T> {
     private static Logger logger = LoggerFactory.getLogger(RefRemoteService.class);
     private Class modelClass;
