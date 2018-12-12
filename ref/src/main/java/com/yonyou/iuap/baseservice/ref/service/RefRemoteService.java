@@ -48,7 +48,7 @@ public class RefRemoteService<T extends Model> implements QueryFeatureExtension<
 
     /**
      * 参照数据加载<p>根据Reference
-     * 中定义的参照参数,将参照表中检索出来的值反写到对应的entity指定得属性中,以便前端展示
+     * 中定义的参照参数,将参照表中检索出来的值反写到对应的entity指定得属性中,直接返回给前端,省却跨库join的麻烦
      *
      * @param list 未装填参照的原始list
      * @return 重新装填后的结果
@@ -112,11 +112,11 @@ public class RefRemoteService<T extends Model> implements QueryFeatureExtension<
          */
         for (Object entity : list) { //遍历结果集
             for (String refCode : allCache.keySet()) {
-                if (!allCache.get(refCode).hasRefDataCache()) {
-                    continue;//没有参照数据集缓存,就不用后面的反写了,直接下一个参照refcode
+                if (allCache.get(refCode).hasNoRefDataCache()) {
+                    continue;//没有参照数据集缓存,就不用后面的反写了,直接下一个refcode
                 }
                 ReferenceCache cache = allCache.get(refCode);
-                for (Field refField : cache.getFieldCache()) {
+                for (Field refField : cache.getFieldCache()) {//直接从缓存的field中遍历,省却没有@Reference的field
                     String hasCodeKey=entity.hashCode() +""+ refField.hashCode();
                     String[] fieldIds = cache.getCachedFieldIds(hasCodeKey);
                     if (fieldIds == null) {
@@ -226,8 +226,8 @@ public class RefRemoteService<T extends Model> implements QueryFeatureExtension<
             }
         }
 
-        public boolean hasRefDataCache() {
-            return refDataCache != null && refDataCache.size() > 0;
+        public boolean hasNoRefDataCache() {
+            return refDataCache == null || refDataCache.size() == 0;
         }
     }
 }
