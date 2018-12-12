@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * 查询参照数据mybatis
  * @author xiadlc
- *
+ * @deprecated 推荐PAP3.5.5以后使用pap_base_ref里的com.yonyou.iuap.pap.base.ref.dao.mapper.RefBaseCommonMapper
  * 
  */
 @MyBatisRepository

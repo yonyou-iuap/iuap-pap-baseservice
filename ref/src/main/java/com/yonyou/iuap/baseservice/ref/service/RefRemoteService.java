@@ -18,11 +18,11 @@ import java.util.*;
 /**
  * 远程参照反写服务,作为可插拔ServiceFeature#REMOTE_REFERENCE特性的默认实现，用于多参照微服务之间RPC调用，解决id转name问题，继续依赖Reference注解
  * <br>
- * 数据库集中存储式请参考RefCommonService
+ * 数据库集中存储式请参考com.yonyou.iuap.pap.base.ref.service.RefBaseCommonService
  *
  * @author leon
  * @date 2018-12-11
- * @see RefCommonService
+ * @see com.yonyou.iuap.pap.base.ref.service.RefBaseCommonService
  * @see com.yonyou.iuap.baseservice.entity.annotation.Reference
  */
 @SuppressWarnings("ALL")

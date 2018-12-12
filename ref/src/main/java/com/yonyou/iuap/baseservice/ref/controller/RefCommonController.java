@@ -7,10 +7,10 @@ import com.yonyou.iuap.baseservice.entity.RefParamVO;
 import com.yonyou.iuap.baseservice.persistence.utils.RefXMLParse;
 import com.yonyou.iuap.baseservice.persistence.utils.RefXmlConstract;
 import com.yonyou.iuap.baseservice.ref.service.RefCommonService;
-import com.yonyou.iuap.baseservice.ref.utils.RefUitls;
 import com.yonyou.iuap.i18n.MessageSourceUtil;
-import com.yonyou.iuap.ref.model.RefVertion;
-import com.yonyou.iuap.ref.model.RefViewModelVO;
+import com.yonyou.iuap.pap.base.ref.entity.RefVertion;
+import com.yonyou.iuap.pap.base.ref.entity.RefViewModelVO;
+import com.yonyou.iuap.pap.base.ref.utils.RefUitls;
 import com.yonyou.iuap.wb.utils.JsonResponse;
 import com.yonyou.uap.ieop.security.datapermission.DataPermissionCenter;
 import org.apache.commons.collections4.CollectionUtils;
@@ -36,6 +36,7 @@ import java.util.*;
  * @author leon
  * 2018年7月11日
  * @update 2018-7-25 移除了对平台uitemplate_common的依赖
+ * @deprecated PAP3.5.5以后推荐使用pap_base_ref里的com.yonyou.iuap.pap.base.ref.controller.RefBaseCommonController
  */
 @Controller
 @RequestMapping(value = "/common")

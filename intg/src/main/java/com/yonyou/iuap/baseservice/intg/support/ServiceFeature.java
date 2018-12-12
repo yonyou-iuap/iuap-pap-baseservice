@@ -10,7 +10,7 @@ public enum ServiceFeature {
     ATTACHMENT("com.yonyou.iuap.baseservice.attachment.service.AtCommonService"), //附件特性
     MULTI_TENANT("com.yonyou.iuap.baseservice.multitenant.service.MultenCommonService"),//多租户隔离特性
     LOGICAL_DEL("com.yonyou.iuap.baseservice.intg.service.DrCommonService"),//逻辑删除特性
-    REFERENCE("com.yonyou.iuap.baseservice.ref.service.RefCommonService"),//本地参照特性
+    REFERENCE("com.yonyou.iuap.pap.base.ref.service.RefBaseCommonService"),//本地参照特性
     REMOTE_REFERENCE("com.yonyou.iuap.baseservice.ref.service.RefRemoteService"),//远程参照解析特性
     BPM("com.yonyou.iuap.baseservice.bpm.service.BpmCommonService"),//流程特性
     DATA_PERMISSION("com.yonyou.iuap.baseservice.datapermission.service.DpCommonService"),//数据权限特性
