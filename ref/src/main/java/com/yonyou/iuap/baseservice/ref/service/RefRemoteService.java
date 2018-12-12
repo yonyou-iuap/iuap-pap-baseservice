@@ -220,8 +220,10 @@ public class RefRemoteService<T extends Model> implements QueryFeatureExtension<
                     }
                     List<Map<String,Object>> refDatas = new ArrayList<>();
                     for (String id : fieldIdCache.get(fkey)) {
-                        if (refData.get("ID") != null && refData.get("ID").toString().equals(id)) {
-                            refDatas.add(refData);
+                        for (String refDataKey:refData.keySet()){
+                            if (  refDataKey.equalsIgnoreCase("ID") && refData.get(refDataKey).equals(id) ){
+                                refDatas.add(refData);
+                            }
                         }
                     }
                     fieldRefDataCache.put(fkey,refDatas);
