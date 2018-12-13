@@ -2,6 +2,7 @@ package com.yonyou.iuap.baseservice.ref.service;
 
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
+import com.google.common.collect.Lists;
 import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.entity.RefParamVO;
 import com.yonyou.iuap.baseservice.entity.annotation.Reference;
@@ -218,23 +219,20 @@ public class RefRemoteService<T extends Model> implements QueryFeatureExtension<
                     if (fieldIdCache.get(fkey)==null){
                         continue;
                     }
-                    List<Map<String,Object>> refDatas = new ArrayList<>();
-                    for (String id : fieldIdCache.get(fkey)) {
+                    Map<String,Object>[] refDatas = new HashMap[fieldIdCache.get(fkey).length];
+                    for (int i = 0; i <fieldIdCache.get(fkey).length ; i++) {
+                        String id = fieldIdCache.get(fkey)[i];
                         for (String refDataKey:refData.keySet()){
-                            if (  refDataKey.equalsIgnoreCase("ID") && id.equals( refData.get(refDataKey))){//新参照标准中返回数据都有id字段
-                                refDatas.add(refData);
-                            }
-                            if (  refDataKey.equalsIgnoreCase("refpk") && id.equals( refData.get(refDataKey))){//新旧过渡阶段会有部分参照返回数据没有id，只有refpk
-                                refDatas.add(refData);
+                            if ( ( refDataKey.equalsIgnoreCase("ID") || refDataKey.equalsIgnoreCase("refpk")   )&& id.equals( refData.get(refDataKey))){//新参照标准中返回数据都有id字段,旧的则只有refpk
+                                refDatas[i]=refData;
                             }
                         }
                     }
                     if (fieldRefDataCache.containsKey(fkey)){//防止缓存的正确值被覆盖掉
-                        fieldRefDataCache.get(fkey).addAll(refDatas);
+                        fieldRefDataCache.get(fkey).addAll(Arrays.asList(refDatas));
                     }else{
-                        fieldRefDataCache.put(fkey,refDatas);
+                        fieldRefDataCache.put(fkey, Arrays.asList(refDatas));
                     }
-
                 }
             }
         }
