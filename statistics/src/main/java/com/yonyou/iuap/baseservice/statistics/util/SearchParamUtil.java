@@ -299,7 +299,11 @@ public class SearchParamUtil {
                                     }
                                 }
                             }
-                            refDataCache.put(field, refFieldData);
+                            if (refDataCache.containsKey(field)){//防止缓存的正确值被覆盖掉
+                                refDataCache.get(field).addAll(refFieldData);
+                            }else{
+                                refDataCache.put(field, refFieldData);
+                            }
                         }
                     }
                 } catch (Exception e) {
@@ -319,10 +323,10 @@ public class SearchParamUtil {
                 if (refDataCache.get(refField) == null) {
                     continue;//没有参照数据缓存,就不用后面的反写了,直接下一个参照字段
                 }
-                String refFieldValue = statResult.get(refField.getName()).toString();//取参照字段值
-                if (refFieldValue == null) {
+                if (statResult.get(refField.getName()) == null) {
                     continue; // 参照field id值为空,则跳过本field数据解析
                 }
+                String refFieldValue = statResult.get(refField.getName()).toString();//取参照字段值
                 Reference refAnnotation = refCache.get(refField);
                 String[] mutiRefIds = refFieldValue.split(",");     //参照字段值转数组
                 String[] mutiRefValues = new String[mutiRefIds.length];  //定义结果载体
