@@ -17,6 +17,7 @@ import com.yonyou.iuap.baseservice.statistics.support.StatModelResolver;
 import com.yonyou.iuap.baseservice.support.condition.Match;
 import com.yonyou.iuap.context.InvocationInfoProxy;
 import com.yonyou.iuap.mvc.type.SearchParams;
+import com.yonyou.iuap.pap.base.ref.utils.RefIdToNameUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
@@ -117,15 +118,14 @@ public class SearchParamUtil {
 
         if (searchParams.getSearchMap().get(sortMap.name()) != null) {
             Map<String, String> sorts = (Map<String, String>) searchParams.getSearchMap().get(sortMap.name());
-            if (sorts==null || sorts.isEmpty()){
+            if (sorts == null || sorts.isEmpty()) {
                 logger.info("receiving none sort param in sortMap.");
-            }else
-            {
+            } else {
                 List<Sort.Order> orders = new ArrayList<>();
                 for (String sortField : sorts.keySet()) {
                     Field keyField = ReflectUtil.getField(m.getmClass(), sortField);
                     if (keyField == null) {
-                        throw new RuntimeException("cannot find field " + sortField  + " in  model [" + modelCode + "] ");
+                        throw new RuntimeException("cannot find field " + sortField + " in  model [" + modelCode + "] ");
                     }
                     Sort.Order order =
                             new Sort.Order(
@@ -244,7 +244,7 @@ public class SearchParamUtil {
                 if (ref != null) {
                     if (isFirst) { //  提高缓存装载效率,仅加载一次
                         refCache.put(field, ref); //将所有参照和field的关系缓存起来后续使用
-                        idCache.put(field,new HashSet<String>());
+                        idCache.put(field, new HashSet<String>());
                     }
                     refCache.put(field, ref); //将所有参照和field的关系缓存起来后续使用
                     if (null != statResult.get(fieldName)) {
@@ -258,24 +258,62 @@ public class SearchParamUtil {
         /**
          * @Step 2解析参照配置, 一次按需(idCache)加载参照数据
          */
-
+//        Map<String,List> remoteRefs = new HashMap<>();
         for (Field field : refCache.keySet()) {
             RefParamVO refParamVO = RefXMLParse.getInstance().getReParamConfig(refCache.get(field).code());
-            RefParamConfig refParamConfig = refParamVO.getRefParamConfigTable() == null ? refParamVO.getRefParamConfigTableTree() : refParamVO.getRefParamConfigTable();
-            if (refParamVO == null || refParamConfig == null) {
-                logger.warn("参照XML配置错误:" + refCache.get(field).code());
-                continue;
-            }
+            List<Map<String, Object>> refContents = null;
             List<String> setList = new ArrayList<>(idCache.get(field));
-            if (setList == null || setList.size() == 0) {
+            if (setList == null || setList.size() == 0) {//无ID直接跳过下个field
                 continue;
             }
-            List<Map<String, Object>> refContents =
-                    mapper.findRefListByIds(refParamConfig.getTableName(),
-                            refParamConfig.getId(), refParamConfig.getExtension(), setList);
+            if (refParamVO == null) {//远程参照
+                try {
+                    refContents  = RefIdToNameUtil.convertIdToName(refCache.get(field).code(), setList  );//调用pap——base——ref的工具类进行远程调用
+                } catch (Exception e) {
+                    logger.error("remote ref-id2name service calling error：" +refCache.get(field).code(), e);
+                }
+//                if (remoteRefs.containsKey(refCache.get(field).code() )){
+//                    remoteRefs.get(refCache.get(field).code()).addAll(setList );
+//                }else{
+//                    remoteRefs.put(refCache.get(field).code(),setList);
+//                }
+            } else {//内部参照
+                RefParamConfig refParamConfig = refParamVO.getRefParamConfigTable() == null ? refParamVO.getRefParamConfigTableTree() : refParamVO.getRefParamConfigTable();
+                if (refParamVO == null || refParamConfig == null) {
+                    logger.warn("参照XML配置错误:" + refCache.get(field).code());
+                    continue;
+                }
+                refContents =
+                        mapper.findRefListByIds(refParamConfig.getTableName(),
+                                refParamConfig.getId(), refParamConfig.getExtension(), setList);
+            }
+
             if (null != refContents && refContents.size() > 0)
                 refDataCache.put(field, refContents);//将所有参照数据集和field的关系缓存起来后续使用
         }
+
+
+//        if (remoteRefs.size()>0){
+//            for (String refCode :remoteRefs.keySet())
+//            {
+//                try {
+//                    List<Map<String, Object>> refContents  = RefIdToNameUtil.convertIdToName(refCode, remoteRefs.get(refCode) );//调用pap——base——ref的工具类进行远程调用
+//                    for (Field field : refCache.keySet()) {
+//                        if (refCache.get(field).code().equals(refCode)){
+//                            for (Map refContent :refContents){
+//                                if (idCache.get(field)   refContent.get("ID")  )
+//
+//                                    refDataCache.put(field,refContents);
+//                            }
+//                        }
+//                    }
+//                } catch (Exception e) {
+//                    logger.error("remote ref-id2name service calling error：" +refCode, e);
+//                }
+//            }
+//        }
+
+
 
         /**
          * @Step 3 逐条遍历业务结果集,向entity参照指定属性写入参照值
