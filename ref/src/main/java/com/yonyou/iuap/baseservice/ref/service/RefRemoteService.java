@@ -219,19 +219,25 @@ public class RefRemoteService<T extends Model> implements QueryFeatureExtension<
                     if (fieldIdCache.get(fkey)==null){
                         continue;
                     }
-                    Map<String,Object>[] refDatas = new HashMap[fieldIdCache.get(fkey).length];
-                    for (int i = 0; i <fieldIdCache.get(fkey).length ; i++) {
-                        String id = fieldIdCache.get(fkey)[i];
-                        for (String refDataKey:refData.keySet()){
-                            if ( ( refDataKey.equalsIgnoreCase("ID") || refDataKey.equalsIgnoreCase("refpk")   )&& id.equals( refData.get(refDataKey))){//新参照标准中返回数据都有id字段,旧的则只有refpk
-                                refDatas[i]=refData;
+
+                    List<Map<String,Object>> refDatas = new ArrayList<>();//新参照标准中返回数据都有id字段,旧的则只有refpk
+                    for (String id : fieldIdCache.get(fkey)) {
+                        boolean isIdHit = false;
+                        for (String refDataKey:refData.keySet()){//解决大小写适配问题
+                            if (  refDataKey.equalsIgnoreCase("ID") && id.equals( refData.get(refDataKey))){
+                                isIdHit=true;
+                                refDatas.add(refData);
+                                break;//命中后直接跳出
                             }
+                        }
+                        if (!isIdHit  && id.equals( refData.get("refpk"))){
+                            refDatas.add(refData);
                         }
                     }
                     if (fieldRefDataCache.containsKey(fkey)){//防止缓存的正确值被覆盖掉
-                        fieldRefDataCache.get(fkey).addAll(Arrays.asList(refDatas));
+                        fieldRefDataCache.get(fkey).addAll(refDatas);
                     }else{
-                        fieldRefDataCache.put(fkey, Arrays.asList(refDatas));
+                        fieldRefDataCache.put(fkey, refDatas);
                     }
                 }
             }
