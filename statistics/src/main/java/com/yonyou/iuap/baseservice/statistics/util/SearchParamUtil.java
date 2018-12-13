@@ -256,63 +256,60 @@ public class SearchParamUtil {
             isFirst = false;
         }
         /**
-         * @Step 2解析参照配置, 一次按需(idCache)加载参照数据
+         * @Step 2解析参照配置, 一次按需(idCache)加载参照数据(远程与本地略有不同)
          */
-//        Map<String,List> remoteRefs = new HashMap<>();
+        Map<String, List> remoteRefs = new HashMap<>();
         for (Field field : refCache.keySet()) {
-            RefParamVO refParamVO = RefXMLParse.getInstance().getReParamConfig(refCache.get(field).code());
-            List<Map<String, Object>> refContents = null;
             List<String> setList = new ArrayList<>(idCache.get(field));
-            if (setList == null || setList.size() == 0) {//无ID直接跳过下个field
+            if (setList == null || setList.size() == 0) {//无ID直接跳过，进入下个field
                 continue;
             }
-            if (refParamVO == null) {//远程参照
-                try {
-                    refContents  = RefIdToNameUtil.convertIdToName(refCache.get(field).code(), setList  );//调用pap——base——ref的工具类进行远程调用
-                } catch (Exception e) {
-                    logger.error("remote ref-id2name service calling error：" +refCache.get(field).code(), e);
+            String refCode=refCache.get(field).code();
+            RefParamVO refParamVO = RefXMLParse.getInstance().getReParamConfig(refCode);
+
+            List<Map<String, Object>> refContents = null;
+            if (refParamVO == null) {//远程参照先集中查询参数
+                if (remoteRefs.containsKey( refCode)) {
+                    remoteRefs.get(refCode).addAll(setList);
+                } else {
+                    remoteRefs.put(refCode, setList);
                 }
-//                if (remoteRefs.containsKey(refCache.get(field).code() )){
-//                    remoteRefs.get(refCache.get(field).code()).addAll(setList );
-//                }else{
-//                    remoteRefs.put(refCache.get(field).code(),setList);
-//                }
-            } else {//内部参照
+            } else {//内部参照直接加载数据库
                 RefParamConfig refParamConfig = refParamVO.getRefParamConfigTable() == null ? refParamVO.getRefParamConfigTableTree() : refParamVO.getRefParamConfigTable();
                 if (refParamVO == null || refParamConfig == null) {
-                    logger.warn("参照XML配置错误:" + refCache.get(field).code());
+                    logger.warn("ref.XML config error:" + refCache.get(field).code());
                     continue;
                 }
                 refContents =
                         mapper.findRefListByIds(refParamConfig.getTableName(),
                                 refParamConfig.getId(), refParamConfig.getExtension(), setList);
             }
-
             if (null != refContents && refContents.size() > 0)
                 refDataCache.put(field, refContents);//将所有参照数据集和field的关系缓存起来后续使用
         }
+        if (remoteRefs.size() > 0) {//利用总结好的参数一次性调用远程参照服务
+            for (String refCode : remoteRefs.keySet()) {
+                try {
+                    List<Map<String, Object>> refContents = RefIdToNameUtil.convertIdToName(refCode, remoteRefs.get(refCode));//调用pap——base——ref的工具类进行远程调用
+                    for (Map refContent : refContents) { //遍历结果集，找对应的field，分配反写值
+                        for (Field field : refCache.keySet()) {
+                            List<Map<String, Object>> refFieldData = new ArrayList<>();
+                            if (refCache.get(field).code().equals(refCode)) {
+                                for (String id: idCache.get(field)){
+                                    if (id.equals( refContent.get("ID") ) || id.equals( refContent.get("id") )|| id.equals( refContent.get("refpk"))   ){
+                                        refFieldData.add(refContent);
+                                    }
+                                }
+                            }
+                            refDataCache.put(field, refFieldData);
+                        }
 
-
-//        if (remoteRefs.size()>0){
-//            for (String refCode :remoteRefs.keySet())
-//            {
-//                try {
-//                    List<Map<String, Object>> refContents  = RefIdToNameUtil.convertIdToName(refCode, remoteRefs.get(refCode) );//调用pap——base——ref的工具类进行远程调用
-//                    for (Field field : refCache.keySet()) {
-//                        if (refCache.get(field).code().equals(refCode)){
-//                            for (Map refContent :refContents){
-//                                if (idCache.get(field)   refContent.get("ID")  )
-//
-//                                    refDataCache.put(field,refContents);
-//                            }
-//                        }
-//                    }
-//                } catch (Exception e) {
-//                    logger.error("remote ref-id2name service calling error：" +refCode, e);
-//                }
-//            }
-//        }
-
+                    }
+                } catch (Exception e) {
+                    logger.error("remote ref-id2name service calling error：" + refCode, e);
+                }
+            }
+        }
 
 
         /**
