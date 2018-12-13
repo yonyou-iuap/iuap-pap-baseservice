@@ -221,7 +221,10 @@ public class RefRemoteService<T extends Model> implements QueryFeatureExtension<
                     List<Map<String,Object>> refDatas = new ArrayList<>();
                     for (String id : fieldIdCache.get(fkey)) {
                         for (String refDataKey:refData.keySet()){
-                            if (  refDataKey.equalsIgnoreCase("ID") && id.equals( refData.get(refDataKey))){
+                            if (  refDataKey.equalsIgnoreCase("ID") && id.equals( refData.get(refDataKey))){//新参照标准中返回数据都有id字段
+                                refDatas.add(refData);
+                            }
+                            if (  refDataKey.equalsIgnoreCase("refpk") && id.equals( refData.get(refDataKey))){//新旧过渡阶段会有部分参照返回数据没有id，只有refpk
                                 refDatas.add(refData);
                             }
                         }
