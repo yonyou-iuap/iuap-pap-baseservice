@@ -2,7 +2,6 @@ package com.yonyou.iuap.baseservice.ref.service;
 
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
-import com.google.common.collect.Lists;
 import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.entity.RefParamVO;
 import com.yonyou.iuap.baseservice.entity.annotation.Reference;
