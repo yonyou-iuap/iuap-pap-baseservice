@@ -26,13 +26,13 @@
         <dependency>
             <groupId>com.yonyou.iuap.pap</groupId>
             <artifactId>eiap-plus-common</artifactId>
-            <version>RELEASE</version>
+            <version>${eiap.module.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.yonyou.iuap.baseservice</groupId>
             <artifactId>iuap-pap-baseservice-ref</artifactId>
-            <version>3.5.5-SNAPSHOT</version>
+            <version>${pap.module.version}</version>
             <scope>compile</scope>
         </dependency>
 
