@@ -164,8 +164,6 @@ public class SearchParamUtil {
         //where 条件的合法性校验,非法条件直接跳过
         if (searchParams.getSearchMap().get(whereParams.name()) != null) {
             List<Map<String, Object>> wheres = (List<Map<String, Object>>) searchParams.getSearchMap().get(whereParams.name());
-
-
             for (Map<String, Object> statment : wheres) {
                 Object keyStr = statment.get(key.name());
                 Object valueObj = statment.get(value.name());
@@ -276,7 +274,7 @@ public class SearchParamUtil {
                 }
             } else {//内部参照直接加载数据库
                 RefParamConfig refParamConfig = refParamVO.getRefParamConfigTable() == null ? refParamVO.getRefParamConfigTableTree() : refParamVO.getRefParamConfigTable();
-                if (refParamVO == null || refParamConfig == null) {
+                if ( refParamConfig == null) {
                     logger.warn("ref.XML config error:" + refCache.get(field).code());
                     continue;
                 }
@@ -290,7 +288,7 @@ public class SearchParamUtil {
         if (remoteRefs.size() > 0) {//利用总结好的参数一次性调用远程参照服务
             for (String refCode : remoteRefs.keySet()) {
                 try {
-                    List<Map<String, Object>> refContents = RefIdToNameUtil.convertIdToName(refCode, remoteRefs.get(refCode));//调用pap——base——ref的工具类进行远程调用
+                    List<Map<String, Object>> refContents = RefIdToNameUtil.convertIdToName(refCode, remoteRefs.get(refCode));//调用pap—base—ref的工具类进行远程调用
                     for (Map refContent : refContents) { //遍历结果集，找对应的field，分配反写值
                         for (Field field : refCache.keySet()) {
                             List<Map<String, Object>> refFieldData = new ArrayList<>();
@@ -303,14 +301,12 @@ public class SearchParamUtil {
                             }
                             refDataCache.put(field, refFieldData);
                         }
-
                     }
                 } catch (Exception e) {
                     logger.error("remote ref-id2name service calling error：" + refCode, e);
                 }
             }
         }
-
 
         /**
          * @Step 3 逐条遍历业务结果集,向entity参照指定属性写入参照值
@@ -337,7 +333,7 @@ public class SearchParamUtil {
                     List<Map<String, Object>> refDatas = refDataCache.get(refField);//取出参照缓存数据集
                     for (Map<String, Object> refData : refDatas) {
                         for (int j = 0; j < mutiRefIds.length; j++) {//多值参照时,循环匹配拿到结果进行反写
-                            if (refData.get("ID") != null && refData.get("ID").toString().equals(mutiRefIds[j])) { //数据库适配时 mysql也要将此字段as ID
+                            if (  mutiRefIds[j].equals(refData.get("ID"))  || mutiRefIds[j].equals(refData.get("id")) || mutiRefIds[j].equals(refData.get("refpk"))  ) { //数据库适配时 mysql也要将此字段as ID
                                 for (String columnKey : refData.keySet()) {//解决大小写适配问题
                                     if (columnKey.equalsIgnoreCase(srcCol))
                                         mutiRefValues[j] = String.valueOf(refData.get(columnKey));
@@ -345,8 +341,7 @@ public class SearchParamUtil {
                             }
                         }
                     }
-                    String fieldValue = ArrayUtil.join(mutiRefValues, ",");
-                    statResult.put(desField, fieldValue);//执行反写
+                    statResult.put(desField, ArrayUtil.join(mutiRefValues, ","));//执行反写
                 }
             }
         }
