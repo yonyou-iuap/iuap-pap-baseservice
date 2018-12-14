@@ -23,7 +23,7 @@ import java.util.function.Function;
 
 import static com.yonyou.iuap.baseservice.intg.support.ServiceFeature.LOGICAL_DEL;
 
-/**TODO 增加可扩展领域范围的方法,并默认提供特性集成
+/**
  * 特性集成服务,用于GenericService所有服务接口集成多种组件特性
  * 默认支持
  *      <p>REFERENCE-参照

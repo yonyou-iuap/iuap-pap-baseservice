@@ -7,6 +7,7 @@ import java.util.Map;
 /**
  * @author jhb
  */
+@SuppressWarnings("ALL")
 public class Bean2MapUtils {
 
 	public static Map<String, Object> bean2Map(Object obj) throws IllegalArgumentException {
@@ -14,7 +15,7 @@ public class Bean2MapUtils {
 			return null;
 		}
 
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 
 		Field[] declaredFields = obj.getClass().getDeclaredFields();
 		try {
@@ -23,7 +24,6 @@ public class Bean2MapUtils {
 					map.put(field.getName(), field.get(obj));
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -50,7 +50,6 @@ public class Bean2MapUtils {
 
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

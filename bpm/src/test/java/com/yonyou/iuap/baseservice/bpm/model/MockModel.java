@@ -102,20 +102,20 @@ public class MockModel implements BpmModel
 
 
     @Column(name="create_time")
-    protected String createTime;
+    private String createTime;
 
     @Column(name="create_user")
-    protected String createUser;
+    private String createUser;
 
     @Column(name="last_modified")
-    protected String lastModified;
+    private String lastModified;
 
     @Column(name="last_modify_user")
-    protected String lastModifyUser;
+    private String lastModifyUser;
 
     @Version
     @Column(name="ts")
-    protected String ts;
+    private String ts;
 
 
     public String getCreateTime() {
@@ -159,15 +159,15 @@ public class MockModel implements BpmModel
     }
 
     @Column(name="bpm_state")
-    protected Integer bpmState;			//流程状态：参考BpmExUtil
+    private Integer bpmState;			//流程状态：参考BpmExUtil
     @Column(name="bpm_task_key")
-    protected String taskKey;			//流程及节点定义：例如ApproveUserTask
+    private String taskKey;			//流程及节点定义：例如ApproveUserTask
     @Column(name="bpm_taskid")
-    protected String taskId;			//流程当前环节任务id
+    private String taskId;			//流程当前环节任务id
     @Column(name="bpm_process_instance")
-    protected String processInstanceId;	//流程实例id
+    private String processInstanceId;	//流程实例id
 //    @Column(name="bpm_process_define")
-    protected String processDefineCode;	//流程定义id
+    private String processDefineCode;	//流程定义id
 
     public String getTaskKey() {
         return taskKey;
@@ -203,13 +203,11 @@ public class MockModel implements BpmModel
     }
 
 	public String getComment() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public void setComment(String comment) {
-		// TODO Auto-generated method stub
-		
+
 	}
 
  
