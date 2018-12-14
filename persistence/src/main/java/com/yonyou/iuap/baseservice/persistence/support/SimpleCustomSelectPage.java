@@ -5,7 +5,7 @@ import com.yonyou.iuap.mvc.type.SearchParams;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-public  abstract class AbsCustomSelectPage<T extends Model> implements CustomSelectPageable   {
+public  abstract class SimpleCustomSelectPage<T extends Model> implements CustomSelectPageable<T>   {
 
     protected SearchParams searchParams;
     protected PageRequest pageRequest;
@@ -18,7 +18,7 @@ public  abstract class AbsCustomSelectPage<T extends Model> implements CustomSel
         return pageRequest;
     }
 
-    public AbsCustomSelectPage(SearchParams searchParams, PageRequest pageRequest) {
+    public SimpleCustomSelectPage(SearchParams searchParams, PageRequest pageRequest) {
         this.searchParams = searchParams;
         this.pageRequest = pageRequest;
     }

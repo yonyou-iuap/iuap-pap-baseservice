@@ -5,8 +5,7 @@ import com.yonyou.iuap.baseservice.intg.service.DrCommonService;
 import com.yonyou.iuap.baseservice.intg.service.GenericIntegrateService;
 import com.yonyou.iuap.baseservice.intg.support.ServiceFeature;
 import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericMapper;
-import com.yonyou.iuap.baseservice.persistence.support.AbsCustomSelectPage;
-import com.yonyou.iuap.baseservice.persistence.support.CustomSelectPageable;
+import com.yonyou.iuap.baseservice.persistence.support.SimpleCustomSelectPage;
 import com.yonyou.iuap.mvc.type.SearchParams;
 import com.yonyou.iuap.mybatis.type.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.concurrent.Callable;
 
-@SuppressWarnings("ALL")
 public class MockService extends GenericIntegrateService<MockEntity> {
     @Override
     protected ServiceFeature[] getFeats() {
@@ -27,15 +23,15 @@ public class MockService extends GenericIntegrateService<MockEntity> {
     @Autowired
     DrCommonService drCommonService;
     @Autowired
-    GenericMapper mapper;
+    GenericMapper<MockEntity> mapper;
 
     public Page doSomeService(){
 
-       return  super.customSelectPageWithFeatures(new AbsCustomSelectPage<MockEntity>(new SearchParams(), new PageRequest(1, 100)) {
+       return  super.customSelectPageWithFeatures(new SimpleCustomSelectPage<MockEntity>(new SearchParams(), new PageRequest(1, 100)) {
             @Override
-            public Page doCunstomSelectPage() {
-                PageResult resul = mapper.selectAllByPage(getPageRequest(), getSearchParams());
-                return resul.getPage();
+            public Page<MockEntity> doCustomSelectPage() {
+                PageResult<MockEntity> result = mapper.selectAllByPage(pageRequest, searchParams);
+                return result.getPage();
             }
         });
     }

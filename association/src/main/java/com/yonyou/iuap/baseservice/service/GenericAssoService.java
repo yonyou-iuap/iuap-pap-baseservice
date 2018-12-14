@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,19 +51,18 @@ public abstract class GenericAssoService<T extends Model> extends GenericIntegra
         for (Class assoKey:subServices.keySet() ){
             String sublistKey = StringUtils.uncapitalize(assoKey.getSimpleName())+"List";
             List<Map> subEntities=vo.getList(sublistKey);
+            List<T> listEntity = new ArrayList<>();
             if ( subEntities !=null && subEntities.size()>0 ){
                 for (Map subEntity:subEntities){
                     subEntity.put(annotation.fkName(),newEntity.getId());//外键保存
-                    String mj=  JSONObject.toJSONString(subEntity);
-                    Model entity = (Model) JSON.parseObject(mj,assoKey,Feature.IgnoreNotMatch);
+                    T entity = (T) JSON.parseObject(JSONObject.toJSONString(subEntity),assoKey,Feature.IgnoreNotMatch);
                     if (entity.getId()!=null&&  subEntity.get("dr")!=null && subEntity.get("dr").toString().equalsIgnoreCase("1")){
                         subServices.get(assoKey).delete(entity.getId());
                     }else
-                        subServices.get(assoKey).save(entity);
+                        listEntity.add(entity);
                 }
-
             }
-
+            subServices.get(assoKey).saveBatch(listEntity);//改为批量保存
         }
         return  newEntity ;
     }

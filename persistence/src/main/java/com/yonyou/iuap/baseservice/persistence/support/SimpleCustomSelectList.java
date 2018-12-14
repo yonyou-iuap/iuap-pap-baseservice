@@ -1,9 +1,10 @@
 package com.yonyou.iuap.baseservice.persistence.support;
 
+import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.mvc.type.SearchParams;
 import org.springframework.data.domain.PageRequest;
 
-public  abstract  class AbsCustomSelectList implements  CustomSelectListable{
+public  abstract  class SimpleCustomSelectList<T extends Model> implements  CustomSelectListable<T>{
 
     protected SearchParams searchParams;
     protected PageRequest pageRequest;
@@ -16,7 +17,7 @@ public  abstract  class AbsCustomSelectList implements  CustomSelectListable{
         return pageRequest;
     }
 
-    public AbsCustomSelectList(SearchParams searchParams, PageRequest pageRequest) {
+    public SimpleCustomSelectList(SearchParams searchParams, PageRequest pageRequest) {
         this.searchParams = searchParams;
         this.pageRequest = pageRequest;
     }

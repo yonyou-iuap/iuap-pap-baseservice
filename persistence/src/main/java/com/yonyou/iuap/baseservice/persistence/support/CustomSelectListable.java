@@ -12,5 +12,5 @@ public interface CustomSelectListable<T extends Model> {
 
     PageRequest getPageRequest();
 
-    List<T> doCunstomSelectList();
+    List<T> doCustomSelectList();
 }

@@ -32,6 +32,9 @@ public interface GenericMapper<T extends Model> {
 	@MethodMapper(type=SqlCommandType.INSERT)
     public int insert(T entity);
 
+    @MethodMapper(type=SqlCommandType.INSERT,isBatch = true)
+    public int insertBatch(List<T> list);
+
     @MethodMapper(type=SqlCommandType.INSERT,isSelective = true)
     public int insertSelective(T entity);
 

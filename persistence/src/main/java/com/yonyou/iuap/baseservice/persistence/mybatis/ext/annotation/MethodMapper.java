@@ -11,8 +11,9 @@ import org.apache.ibatis.mapping.SqlCommandType;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MethodMapper {
 
-	public SqlCommandType type();
+	 SqlCommandType type();
 
-	public boolean isSelective() default false;
+	 boolean isSelective() default false;
+     boolean isBatch() default false;
 
 }

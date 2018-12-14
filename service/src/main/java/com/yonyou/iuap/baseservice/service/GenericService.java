@@ -1,14 +1,15 @@
 package com.yonyou.iuap.baseservice.service;
 
-import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.persistence.Id;
-
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson.JSON;
+import com.yonyou.iuap.baseservice.entity.Model;
+import com.yonyou.iuap.baseservice.entity.annotation.CodingEntity;
+import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericMapper;
+import com.yonyou.iuap.baseservice.service.util.CodingUtil;
+import com.yonyou.iuap.baseservice.support.generator.GeneratorManager;
+import com.yonyou.iuap.context.InvocationInfoProxy;
+import com.yonyou.iuap.mvc.type.SearchParams;
 import org.apache.http.client.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,25 +17,15 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-import com.alibaba.fastjson.JSON;
-import com.yonyou.iuap.baseservice.entity.Model;
-import com.yonyou.iuap.baseservice.entity.annotation.CodingEntity;
-import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.EntityUtil;
-import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericMapper;
-import com.yonyou.iuap.baseservice.service.util.CodingUtil;
-import com.yonyou.iuap.baseservice.support.generator.GeneratorManager;
-import com.yonyou.iuap.context.InvocationInfoProxy;
-import com.yonyou.iuap.mvc.type.SearchParams;
-
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.ReflectUtil;
-import cn.hutool.core.util.StrUtil;
+import java.io.Serializable;
+import java.util.*;
 
 /** 
  * 说明：基础Service基类
  * @author houlf
  * 2018年6月12日
  */
+@SuppressWarnings("ALL")
 public abstract class GenericService<T extends Model>{
 	
 	private Logger log = LoggerFactory.getLogger(GenericService.class);
@@ -135,18 +126,35 @@ public abstract class GenericService<T extends Model>{
 	
 	/**
 	 * 批量保存
-	 * @param listEntity
+	 * @param listEntity 待保存业务实体列表
 	 */
 	public void saveBatch(List<T> listEntity){
-		for(int i=0; i<listEntity.size(); i++) {
-			this.save(listEntity.get(i));
-		}
+        List<T> insertList = new ArrayList<>();
+        for (int i = 0; i < listEntity.size(); i++) {
+            if (listEntity.get(i) != null && listEntity.get(i).getId() == null) {
+                insertList.add( getPrepared4Insert(listEntity.get(i)  ) );
+            } else {
+                save(listEntity.get(i)); //防止更新异常的错误无法追踪，继续保持单条update的模式
+            }
+        }
+        if (insertList.size() > 0) {
+            insertBatch(insertList);
+        }
 	}
+
+    /**
+     *  批量全量插入
+     * @param listEntity 待插入保存业务实体列表
+     * @return
+     */
+	public int insertBatch(List<T> listEntity){
+        return genericMapper.insertBatch(listEntity);
+    }
 	
 	/**
 	 * 新增保存数据
-	 * @param entity
-	 * @return
+	 * @param entity 待插入实体
+	 * @return 插入保存后实体
 	 */
 	public T insert(T entity) {
 		return executeInsert(entity,false);
@@ -154,8 +162,8 @@ public abstract class GenericService<T extends Model>{
 
     /**
      * 新增保存数据,跳过空值字段
-     * @param entity
-     * @return
+     * @param entity 待插入实体
+     * @return 插入保存后实体
      */
     public T insertSelective(T entity) {
         return executeInsert(entity,true);
@@ -163,37 +171,49 @@ public abstract class GenericService<T extends Model>{
 
     /**
      * 实际insert执行
-     * @param entity
-     * @param isSelective
-     * @return
+     * @param entity 待插入实体
+     * @param isSelective  是否可选性插入标识
+     * @return 插入保存后实体
      */
     protected T executeInsert(T entity,boolean isSelective) {
-        if(entity != null) {
-            //ID为空的情况下，生成生成主键
-            if(entity.getId()==null || StrUtil.isBlankIfStr(entity.getId())) {
-                this.genAndSetEntityId(entity);
-            }
-            String now = DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss SSS");
-            entity.setCreateTime(now);
-            entity.setCreateUser(InvocationInfoProxy.getUserid());
-            entity.setLastModified(now);
-            entity.setLastModifyUser(InvocationInfoProxy.getUserid());
-            entity.setTs(now);
-
-            if(entity.getClass().getAnnotation(CodingEntity.class)!=null) {
-                CodingUtil.inst(). buildCoding(entity);		//按编码规则设置编码
-            }
-            if (isSelective){
+        if (entity != null) {
+            getPrepared4Insert(entity);
+            if (isSelective) {
                 this.genericMapper.insertSelective(entity);
-                BeanUtils.copyProperties(this.findById(entity.getId()),entity);//insertSelective之后的信息完整化回传
-            }
-            else
+                BeanUtils.copyProperties(this.findById(entity.getId()), entity);//insertSelective之后的信息完整化回传
+            } else
                 this.genericMapper.insert(entity);
-            log.info("新增保存数据：\r\n"+JSON.toJSONString(entity));
+            log.info("新增保存数据：\r\n" + JSON.toJSONString(entity));
             return entity;
-        }else {
+        } else {
             throw new RuntimeException("新增保存数据出错，对象为空!");
         }
+    }
+
+
+    /**
+     * get entity prepared for final insert, adding field value such as: id,ts,createTime，coding field ...
+     * @param entity
+     * @return
+     */
+
+    protected T getPrepared4Insert(T entity) {
+        //ID为空的情况下，生成生成主键
+        if (entity.getId() == null || StrUtil.isBlankIfStr(entity.getId())) {
+            this.genAndSetEntityId(entity);
+        }
+        String now = DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss SSS");
+        entity.setCreateTime(now);
+        entity.setCreateUser(InvocationInfoProxy.getUserid());
+        entity.setLastModified(now);
+        entity.setLastModifyUser(InvocationInfoProxy.getUserid());
+        entity.setTs(now);
+
+        if (entity.getClass().getAnnotation(CodingEntity.class) != null) {
+            CodingUtil.inst().buildCoding(entity);        //按编码规则设置编码
+        }
+        return entity;
+
     }
 
 	/**
@@ -285,15 +305,6 @@ public abstract class GenericService<T extends Model>{
 		if(entity.getId()==null || StrUtil.isBlankIfStr(entity.getId())) {
 		    Serializable id = GeneratorManager.generateID(entity);
             entity.setId(id);
-//		    Field[] fieldArray = EntityUtil.getEntityFields(entity.getClass());
-//		    for(Field curField : fieldArray){
-//		    	if(curField.getAnnotation(Id.class)!=null) {
-//				    ReflectUtil.setFieldValue(entity, curField.getName(), id);
-//				    return;
-//		    	}
-//		    }
-//		    log.error("设置id出错，未找到Id Field：" + entity.getClass());
-//		    throw new RuntimeException("设置id出错，未找到@Id Field，请检查类定义");
 		}
 	}
 

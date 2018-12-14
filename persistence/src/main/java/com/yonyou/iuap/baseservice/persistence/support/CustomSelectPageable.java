@@ -9,5 +9,5 @@ public interface CustomSelectPageable<T extends Model>   {
 
     SearchParams getSearchParams();
     PageRequest getPageRequest();
-    Page<T> doCunstomSelectPage();
+    Page<T> doCustomSelectPage();
 }

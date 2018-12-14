@@ -7,11 +7,11 @@ import com.yonyou.iuap.baseservice.attachment.entity.AttachmentEntity;
 import com.yonyou.iuap.baseservice.attachment.entity.Attachmentable;
 import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericExMapper;
 import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericMapper;
-import com.yonyou.iuap.baseservice.ref.service.RefCommonService;
 import com.yonyou.iuap.baseservice.service.GenericService;
 import com.yonyou.iuap.baseservice.support.generator.GeneratorManager;
 import com.yonyou.iuap.context.InvocationInfoProxy;
 import com.yonyou.iuap.mvc.type.SearchParams;
+import com.yonyou.iuap.pap.base.ref.service.RefBaseCommonService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("ALL")
 public class GenericAtService<T extends Attachmentable> extends GenericService<T>   {
 
     private Logger log = LoggerFactory.getLogger(GenericAtService.class);
@@ -31,7 +32,7 @@ public class GenericAtService<T extends Attachmentable> extends GenericService<T
     @Autowired
     private AttachmentMapper atMapper;
     @Autowired
-    private RefCommonService rfService;
+    private RefBaseCommonService rfService;
 
 	protected GenericMapper mapper;
 

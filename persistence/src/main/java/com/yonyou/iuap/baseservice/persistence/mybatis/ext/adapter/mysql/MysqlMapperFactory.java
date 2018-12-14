@@ -79,6 +79,11 @@ public class MysqlMapperFactory implements AutoMapperFactory{
     }
 
     @Override
+    public String parseSQL4BatchInsert(Method method, Class<?> entityClazz) {
+        return new MysqlBatchInsertTemplate().parseSQL(method,entityClazz);
+    }
+
+    @Override
     public String parseSQL4UpdateSelective(Method method, Class<?> entityClazz) {
         return new MysqlUpdateSelectiveTemplate().parseSQL(method,entityClazz);
     }

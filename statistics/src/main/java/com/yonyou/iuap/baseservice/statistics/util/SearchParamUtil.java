@@ -118,22 +118,25 @@ public class SearchParamUtil {
 
         if (searchParams.getSearchMap().get(sortMap.name()) != null) {
             List<Map<String, String>> sorts = (List<Map<String, String>>) searchParams.getSearchMap().get(sortMap.name());
-            List<Sort.Order> orders = new ArrayList<>();
-            for (Map sort : sorts) {
-                if (sort.keySet().size() > 0 && sort.keySet().toArray()[0] != null) {
-                    Field keyField = ReflectUtil.getField(m.getmClass(), sort.keySet().toArray()[0].toString());
-                    if (keyField==null){
-                        throw new RuntimeException("cannot find field "+sort.keySet().toArray()[0].toString()+" in  model [" + modelCode + "] ");
+            if (sorts.size()>0){
+                List<Sort.Order> orders = new ArrayList<>();
+                for (Map sort : sorts) {
+                    if (sort.keySet().size() > 0 && sort.keySet().toArray()[0] != null) {
+                        Field keyField = ReflectUtil.getField(m.getmClass(), sort.keySet().toArray()[0].toString());
+                        if (keyField==null){
+                            throw new RuntimeException("cannot find field "+sort.keySet().toArray()[0].toString()+" in  model [" + modelCode + "] ");
+                        }
+                        Sort.Order order =
+                                new Sort.Order(
+                                        Sort.Direction.valueOf(sort.get( sort.keySet().toArray()[0]).toString().toUpperCase()),
+                                        FieldUtil.getColumnName(keyField));
+                        orders.add(order);
                     }
-                    Sort.Order order =
-                            new Sort.Order(
-                                    Sort.Direction.valueOf(sort.get( sort.keySet().toArray()[0]).toString().toUpperCase()),
-                                    FieldUtil.getColumnName(keyField));
-                    orders.add(order);
                 }
+                result.setSort(new Sort(orders));
+            }else {
+                logger.debug("receiving none sort param in sortMap of querying =>"+modelCode);
             }
-            result.setSort(new Sort(orders));
-
         }
 
         /**
