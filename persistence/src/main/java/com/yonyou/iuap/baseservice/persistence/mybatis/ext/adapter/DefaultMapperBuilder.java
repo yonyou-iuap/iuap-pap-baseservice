@@ -104,6 +104,8 @@ public class DefaultMapperBuilder implements MapperBuilder{
 			}else if(methodMapper.type() == SqlCommandType.INSERT) {
                 if (methodMapper.isSelective())
                     return mapperFactory.parseSQL4InsertSelective(method, entityClazz);
+                else if (methodMapper.isBatch())
+                    return  mapperFactory.parseSQL4BatchInsert(method,entityClazz);
                 else
 				    return this.mapperFactory.parseSQL4Insert(method, entityClazz);
 			}else if(methodMapper.type() == SqlCommandType.DELETE) {

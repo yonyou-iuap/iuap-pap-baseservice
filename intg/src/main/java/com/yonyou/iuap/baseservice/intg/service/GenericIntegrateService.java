@@ -240,6 +240,28 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
         }
     }
 
+
+    /**
+     *  批量全量插入
+     * @param listEntity 待插入保存业务实体列表
+     * @return
+     */
+    @Override
+    public int insertBatch(List<T> listEntity){
+        for(T entity: listEntity ){
+            prepareFeatEntity(entity);
+        }
+        int savedCnt=  super.insertBatch(listEntity);
+        if (savedCnt!= listEntity.size()){
+            throw  new RuntimeException("batch insert error!");
+        }
+        for(T entity: listEntity ){
+            addFeatAfterEntitySave(entity);
+        }
+        return savedCnt;
+    }
+
+
     /**
      * 保存数据,将GenericService.save中的全值保存方式切换为selective方式
      * 不需埋点,因为其后续会调用executeInsert或executeUpdate的埋点
