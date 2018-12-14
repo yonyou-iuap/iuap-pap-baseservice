@@ -117,24 +117,22 @@ public class SearchParamUtil {
          */
 
         if (searchParams.getSearchMap().get(sortMap.name()) != null) {
-            Map<String, String> sorts = (Map<String, String>) searchParams.getSearchMap().get(sortMap.name());
-            if (sorts == null || sorts.isEmpty()) {
-                logger.info("receiving none sort param in sortMap.");
-            } else {
-                List<Sort.Order> orders = new ArrayList<>();
-                for (String sortField : sorts.keySet()) {
-                    Field keyField = ReflectUtil.getField(m.getmClass(), sortField);
-                    if (keyField == null) {
-                        throw new RuntimeException("cannot find field " + sortField + " in  model [" + modelCode + "] ");
+            List<Map<String, String>> sorts = (List<Map<String, String>>) searchParams.getSearchMap().get(sortMap.name());
+            List<Sort.Order> orders = new ArrayList<>();
+            for (Map sort : sorts) {
+                if (sort.keySet().size() > 0 && sort.keySet().toArray()[0] != null) {
+                    Field keyField = ReflectUtil.getField(m.getmClass(), sort.keySet().toArray()[0].toString());
+                    if (keyField==null){
+                        throw new RuntimeException("cannot find field "+sort.keySet().toArray()[0].toString()+" in  model [" + modelCode + "] ");
                     }
                     Sort.Order order =
                             new Sort.Order(
-                                    Sort.Direction.valueOf(sorts.get(sortField).toUpperCase()),
+                                    Sort.Direction.valueOf(sort.get( sort.keySet().toArray()[0]).toString().toUpperCase()),
                                     FieldUtil.getColumnName(keyField));
                     orders.add(order);
                 }
-                result.setSort(new Sort(orders));
             }
+            result.setSort(new Sort(orders));
 
         }
 
