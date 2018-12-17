@@ -79,6 +79,11 @@ public class OracleMapperFactory implements AutoMapperFactory{
     }
 
     @Override
+    public String parseSQL4BatchInsert(Method method, Class<?> entityClazz) {
+        return new OracleBatchInsertTemplate().parseSQL(method,entityClazz);
+    }
+
+    @Override
     public String parseSQL4UpdateSelective(Method method, Class<?> entityClazz) {
         return new OracleUpdateSelectiveTemplate().parseSQL(method,entityClazz);
     }

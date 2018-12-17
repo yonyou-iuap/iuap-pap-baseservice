@@ -70,7 +70,7 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
         for (String feat:feats){
            QueryFeatureExtension instance = ServiceFeatureHolder.getQueryExtension(feat);
            if (instance==null){
-                log.info(LOG_TEMPLATE, feat,QueryFeatureExtension.class.getSimpleName());
+                log.debug(LOG_TEMPLATE, feat,QueryFeatureExtension.class.getSimpleName());
            }else{
                searchParams= instance.prepareQueryParam(searchParams,getModelClass());
            }
@@ -93,7 +93,7 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
         for (String feat:feats){
             QueryFeatureExtension instance = ServiceFeatureHolder.getQueryExtension(feat);
             if (instance==null){
-                log.info(LOG_TEMPLATE, feat,QueryFeatureExtension.class);
+                log.debug(LOG_TEMPLATE, feat,QueryFeatureExtension.class);
             }else{
                 list= instance.afterListQuery(list);
             }
@@ -206,7 +206,7 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
         for (String feat:feats){
             SaveFeatureExtension instance = ServiceFeatureHolder.getSaveExtension(feat);
             if (instance==null){
-                log.info(LOG_TEMPLATE, feat,SaveFeatureExtension.class);
+                log.debug(LOG_TEMPLATE, feat,SaveFeatureExtension.class);
             }else{
                 instance.prepareEntityBeforeSave(entity);
             }
@@ -227,7 +227,7 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
         for (String feat:feats){
             SaveFeatureExtension instance = ServiceFeatureHolder.getSaveExtension(feat);
             if (instance==null){
-                log.info(LOG_TEMPLATE, feat,SaveFeatureExtension.class);
+                log.debug(LOG_TEMPLATE, feat,SaveFeatureExtension.class);
             }else{
                 instance.afterEntitySave(entity);
             }
@@ -342,7 +342,7 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
         for (String feat:feats){
             DeleteFeatureExtension instance = ServiceFeatureHolder.getDeleteExtension(feat);
             if (instance==null){
-                log.info(LOG_TEMPLATE, feat,DeleteFeatureExtension.class);
+                log.debug(LOG_TEMPLATE, feat,DeleteFeatureExtension.class);
             }else{
                 instance.prepareDeleteParams(entity,params);
             }
@@ -363,7 +363,7 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
         for (String feat : feats) {
             DeleteFeatureExtension instance = ServiceFeatureHolder.getDeleteExtension(feat);
             if (instance == null) {
-                log.info(LOG_TEMPLATE, feat,DeleteFeatureExtension.class);
+                log.debug(LOG_TEMPLATE, feat,DeleteFeatureExtension.class);
             } else {
                 instance.afterDeteleEntity(entity);
             }
@@ -415,7 +415,7 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
         if (ls!=null&&ls.size()>0){
             return  this.delete(ls.get(0));
         }else{
-            log.info("删除失败,无id为{}的数据",id);
+            log.debug("删除失败,无id为{}的数据",id);
 //            throw new RuntimeException("删除失败,无id为{}的数据");
             return 0;
         }
