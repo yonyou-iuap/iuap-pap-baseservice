@@ -27,18 +27,16 @@ import java.io.Serializable;
  * @author leon
  * 2018年7月11日
  */
-@SuppressWarnings("all")
+
 @Transactional
 public abstract  class GenericAssoController<T extends Model> extends BaseController {
     private Logger log = LoggerFactory.getLogger(GenericAssoController.class);
 
-//    @Autowired
-//    RefCommonService refService;
 
     /**
      * 主子表合并处理--主表单条查询
-     * @param pageRequest
-     * @param searchParams
+     * @param pageRequest 分页参数
+     * @param searchParams 查询参数
      * @return GenericAssoVo ,entity中保存的是单条主表数据,sublist中保存的是字表数据,一次性全部加载
      */
     @RequestMapping(value = "/getAssoVo")
@@ -73,7 +71,7 @@ public abstract  class GenericAssoController<T extends Model> extends BaseContro
     /**
      * 主子表合并处理--主表单条删除,若取消级联删除请在主实体上注解改为@Associative(fkName = "${fkName}",deleteCascade = false)
      * @see GenericAssoController
-     * @param entity 待删除业务实体
+     * @param entities 待删除业务实体
      * @return 删除成功的实体
      */
     @RequestMapping(value = "/deleAssoVo")

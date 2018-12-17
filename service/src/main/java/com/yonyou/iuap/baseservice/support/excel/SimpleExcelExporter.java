@@ -1,14 +1,12 @@
 package com.yonyou.iuap.baseservice.support.excel;
 
+import cn.hutool.core.util.ReflectUtil;
+import cn.hutool.poi.excel.ExcelWriter;
+
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import com.yonyou.iuap.utils.PropertyUtil;
-
-import cn.hutool.core.util.ReflectUtil;
-import cn.hutool.poi.excel.ExcelWriter;
 
 @SuppressWarnings("all")
 public class SimpleExcelExporter {

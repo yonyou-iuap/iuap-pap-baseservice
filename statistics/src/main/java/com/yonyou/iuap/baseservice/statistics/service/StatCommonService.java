@@ -1,11 +1,5 @@
 package com.yonyou.iuap.baseservice.statistics.service;
 
-import cn.hutool.core.util.ArrayUtil;
-import cn.hutool.core.util.ReflectUtil;
-import com.yonyou.iuap.baseservice.entity.RefParamConfig;
-import com.yonyou.iuap.baseservice.entity.RefParamVO;
-import com.yonyou.iuap.baseservice.entity.annotation.Reference;
-import com.yonyou.iuap.baseservice.persistence.utils.RefXMLParse;
 import com.yonyou.iuap.baseservice.ref.dao.mapper.RefCommonMapper;
 import com.yonyou.iuap.baseservice.statistics.dao.StatCommonMapper;
 import com.yonyou.iuap.baseservice.statistics.support.ParamProcessResult;
@@ -18,8 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Field;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("ALL")
 @Service
