@@ -443,6 +443,11 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
         return false;
     }
     /***************************************************/
+    /**
+     * 根据业务实体进行特性集成扩展
+     * @param calling
+     * @return
+     */
     public Page<T> customSelectPageWithFeatures(CustomSelectPageable<T> calling){
         prepareFeatSearchParam(calling.getSearchParams());
         Page<T> page = calling.doCustomSelectPage();
