@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +41,30 @@ public class StatCommonService {
             pageRequest = new PageRequest(pageRequest.getPageNumber(), pageRequest.getPageSize(), ppr.getSort());
         }
         Page  page = statCommonMapper.selectAllByPage(pageRequest, searchParams, ppr.getTableName(), ppr.getStatStatements(),ppr.getGroupStatements(), ppr.getWhereStatements()).getPage();
+        SearchParamUtil.processSelectList(page.getContent(),ppr,mapper);
+
+        return page;
+
+
+    }
+
+
+    /**
+     * 分页查询,单表动态条件
+     *
+     * @param pageRequest
+     * @param searchParams
+     * @return 某一页数据
+     */
+    public Page<Map> selectFieldsByPage(PageRequest pageRequest, SearchParams searchParams, String modelCode) {
+
+        ParamProcessResult ppr = SearchParamUtil.processServiceParams( searchParams, modelCode);
+        if (ppr.getSort() != null) {
+            pageRequest = new PageRequest(pageRequest.getPageNumber(), pageRequest.getPageSize(), ppr.getSort());
+        }
+        SearchParams useless = new SearchParams();//创建无用挂件，保证mapper解析不失败
+        useless.setSearchMap(new HashMap<>());
+        Page  page = statCommonMapper.selectAllByPage(pageRequest,  useless, ppr.getTableName(), null,ppr.getGroupStatements(), ppr.getWhereStatements()).getPage();
         SearchParamUtil.processSelectList(page.getContent(),ppr,mapper);
 
         return page;

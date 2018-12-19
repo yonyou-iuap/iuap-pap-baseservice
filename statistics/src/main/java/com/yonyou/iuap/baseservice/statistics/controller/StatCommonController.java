@@ -47,6 +47,16 @@ public class StatCommonController extends BaseController {
         return this.buildSuccess(list);
     }
 
+    @RequestMapping(value = "/fields/{modelCode}" ,method = RequestMethod.POST )
+    @ResponseBody
+    public Object fields( @PathVariable String modelCode, PageRequest pageRequest,@RequestBody Map<String,Object> searchMap) {
+        logger.debug("StatCommonController receiving searchParams:"+searchMap);
+        SearchParams searchParams = new SearchParams();
+        searchParams.setSearchMap(searchMap);
+        Page<Map> page = this.service.selectFieldsByPage(pageRequest, searchParams, modelCode);
+        return this.buildSuccess(page);
+    }
+
     @RequestMapping(value = "/distinct/{modelCode}" ,method = RequestMethod.POST )
     @ResponseBody
     public Object distinct( @PathVariable String modelCode,@RequestBody Map<String,Object> searchMap) {

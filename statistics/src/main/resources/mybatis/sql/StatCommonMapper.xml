@@ -67,16 +67,17 @@
     <sql id="selectClause">
 
         SELECT
-        <if test="statStatements!= null and statStatements.size > 0">
-            <foreach collection="statStatements" item="item" separator=",">
+        <if test="groupStatements != null and groupStatements.size > 0">
+            <foreach collection="groupStatements" item="item" separator=" ">
                 ${item}
             </foreach>
         </if>
-        <if test="groupStatements != null and groupStatements.size > 0">
-            <foreach collection="groupStatements" item="item" separator=" ">
+        <if test="statStatements!= null and statStatements.size > 0">
+            <foreach collection="statStatements" item="item" separator=",">
                 ,${item}
             </foreach>
         </if>
+
         from ${tableName} t
         <include refid="whereClause"/>
         
@@ -101,7 +102,6 @@
         <include refid="selectClause"/>
         <include refid="orderClause"/>
     </select>
-
 
     <select id="findDistinct" resultType="java.util.HashMap">
         select distinct
