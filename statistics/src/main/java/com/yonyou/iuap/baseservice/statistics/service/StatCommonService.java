@@ -12,9 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @SuppressWarnings("ALL")
 @Service
@@ -64,6 +62,11 @@ public class StatCommonService {
         }
         SearchParams useless = new SearchParams();//创建无用挂件，保证mapper解析不失败
         useless.setSearchMap(new HashMap<>());
+        if (  ppr.getGroupStatements()==null ||ppr.getGroupStatements().size()==0  ){//兼容传空条件，解释为全文检索
+            Set allFields = new HashSet();
+            allFields.add("*");
+            ppr.setGroupStatements(allFields);
+        }
         Page  page = statCommonMapper.selectAllByPage(pageRequest,  useless, ppr.getTableName(), null,ppr.getGroupStatements(), ppr.getWhereStatements()).getPage();
         SearchParamUtil.processSelectList(page.getContent(),ppr,mapper);
 
