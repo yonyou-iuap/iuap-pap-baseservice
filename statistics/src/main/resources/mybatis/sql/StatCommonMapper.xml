@@ -55,6 +55,22 @@
                         </foreach>
                         )
                     </if>
+                    <if test="item.condition == 'UEQ'">
+                        and t.${item.key} != '${item.value}'
+                    </if>
+                    <if test="item.condition == 'ULIKE'">
+                        and t.${item.key} NOT LIKE CONCAT('%', '${item.value}', '%')
+                    </if>
+                    <if test="item.condition == 'START'">
+                        and t.${item.key} LIKE CONCAT('${item.value}', '%')
+                    </if>
+                    <if test="item.condition == 'END'">
+                        and t.${item.key} LIKE CONCAT('%', '${item.value}')
+                    </if>
+
+                    <if test="item.condition == 'OTHER'">
+                        and   ${item.value}
+                    </if>
                     <if test="item.condition == 'OTHER'">
                         and   ${item.value}
                     </if>
