@@ -13,7 +13,7 @@
         <iuap-sign.version>3.1.0-RC003</iuap-sign.version>
         <iuap.module.version>3.1.0-RELEASE</iuap.module.version>
         <eiap.module.version>3.5.2-RELEASE</eiap.module.version>
-        <pap.module.version>3.5.5-RELEASE</pap.module.version>
+        <pap.module.version>3.5.5-SNAPSHOT</pap.module.version>
         <spring.verison>4.0.5.RELEASE</spring.verison>
     </properties>
 

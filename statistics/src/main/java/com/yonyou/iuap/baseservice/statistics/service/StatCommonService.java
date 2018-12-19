@@ -1,5 +1,8 @@
 package com.yonyou.iuap.baseservice.statistics.service;
 
+import cn.hutool.core.util.ReflectUtil;
+import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.EntityUtil;
+import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.FieldUtil;
 import com.yonyou.iuap.baseservice.ref.dao.mapper.RefCommonMapper;
 import com.yonyou.iuap.baseservice.statistics.dao.StatCommonMapper;
 import com.yonyou.iuap.baseservice.statistics.support.ParamProcessResult;
@@ -12,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.Transient;
+import java.lang.reflect.Field;
 import java.util.*;
 
 @SuppressWarnings("ALL")
@@ -64,7 +69,12 @@ public class StatCommonService {
         useless.setSearchMap(new HashMap<>());
         if (  ppr.getGroupStatements()==null ||ppr.getGroupStatements().size()==0  ){//兼容传空条件，解释为全文检索
             Set allFields = new HashSet();
-            allFields.add("*");
+            Class entityClazz =ppr.getStateModel().getmClass();
+            for (Field f : EntityUtil.getFields(entityClazz)){
+                if (f.getAnnotation(Transient.class)==null)
+                    allFields.add( FieldUtil.getColumnName(f)+" as "+f.getName());
+            };
+
             ppr.setGroupStatements(allFields);
         }
         Page  page = statCommonMapper.selectAllByPage(pageRequest,  useless, ppr.getTableName(), null,ppr.getGroupStatements(), ppr.getWhereStatements()).getPage();

@@ -81,12 +81,12 @@
 
         SELECT
         <if test="groupStatements != null and groupStatements.size > 0">
-            <foreach collection="groupStatements" item="item" separator=" ">
+            <foreach collection="groupStatements" item="item" separator=",">
                 ${item}
             </foreach>
         </if>
         <if test="statStatements!= null and statStatements.size > 0">
-            <foreach collection="statStatements" item="item" separator=",">
+            <foreach collection="statStatements" item="item" separator=" ">
                 ,${item}
             </foreach>
         </if>
