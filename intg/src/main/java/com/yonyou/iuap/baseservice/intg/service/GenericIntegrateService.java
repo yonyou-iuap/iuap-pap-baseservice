@@ -193,8 +193,13 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
         if(listData!=null && listData.size()==1) {
             return listData.get(0);
         }else {
-            throw new RuntimeException("检索数据不唯一, "+name + ":" + value);
+            if (listData==null||listData.size()==0){
+                throw new RuntimeException("检索结果为空, "+name + ":" + value);
+            }else{
+                throw new RuntimeException("检索数据不唯一, "+name + ":" + value);
+            }
         }
+
     }
 
     /***************************************************/
