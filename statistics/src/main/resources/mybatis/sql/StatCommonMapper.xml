@@ -71,9 +71,6 @@
                     <if test="item.condition == 'OTHER'">
                         and   ${item.value}
                     </if>
-                    <if test="item.condition == 'OTHER'">
-                        and   ${item.value}
-                    </if>
                 </foreach>
             </if>
         </where>
