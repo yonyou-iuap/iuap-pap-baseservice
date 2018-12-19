@@ -69,12 +69,15 @@ public class StatCommonService {
         useless.setSearchMap(new HashMap<>());
         if (  ppr.getGroupStatements()==null ||ppr.getGroupStatements().size()==0  ){//兼容传空条件，解释为全文检索
             Set allFields = new HashSet();
+            List groupFields = new ArrayList();
             Class entityClazz =ppr.getStateModel().getmClass();
             for (Field f : EntityUtil.getFields(entityClazz)){
-                if (f.getAnnotation(Transient.class)==null)
+                if (f.getAnnotation(Transient.class)==null){
                     allFields.add( FieldUtil.getColumnName(f)+" as "+f.getName());
+                    groupFields.add( f.getName());
+                }
             };
-
+            ppr.setGroupFields(groupFields);
             ppr.setGroupStatements(allFields);
         }
         Page  page = statCommonMapper.selectAllByPage(pageRequest,  useless, ppr.getTableName(), null,ppr.getGroupStatements(), ppr.getWhereStatements()).getPage();

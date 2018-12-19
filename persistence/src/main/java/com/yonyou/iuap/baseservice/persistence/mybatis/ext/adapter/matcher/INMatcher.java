@@ -21,10 +21,10 @@ public class INMatcher implements Matcher{
         strb.append(ParamUtil.adjust4Condition(field, fieldName)).append("\">\r\n");
         strb.append("\t\t and ").append(FieldUtil.getColumnName(field))
                 .append(" in " + "\r\n\t<foreach collection=\"")
-                .append(FieldUtil.getColumnName(field))
+                .append(fieldName)
                 .append("\" item=\"item\"  open=\"(\" separator=\",\" close=\")\">")
                 .append("${item} </foreach>")
-                .append(fieldName).append("}\r\n");
+                .append("\r\n");
         strb.append("\t</if>\r\n");
         return strb.toString();
     }
