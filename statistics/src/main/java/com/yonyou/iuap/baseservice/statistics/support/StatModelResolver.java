@@ -45,6 +45,10 @@ public class StatModelResolver {
                               logger.debug("Resolving model class:" + clz);
                               Field[] fields = ReflectUtil.getFields(clz);
                               StatModel statModel = null;
+
+                              if (clz.getAnnotation(StatisticsEntity.class)!=null){
+                                  statModel =   new StatModel();
+                              }
                               for (Field f : fields) {
                                   if (f.getAnnotation(StatisticsField.class) != null) {
                                       statModel = statModel == null ? new StatModel() : statModel;
