@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -46,7 +47,7 @@ public class StatModelResolver {
                               Field[] fields = ReflectUtil.getFields(clz);
                               StatModel statModel = null;
 
-                              if (clz.getAnnotation(StatisticsEntity.class)!=null){
+                              if (clz.getAnnotation(Entity.class)!=null){
                                   statModel =   new StatModel();
                               }
                               for (Field f : fields) {
