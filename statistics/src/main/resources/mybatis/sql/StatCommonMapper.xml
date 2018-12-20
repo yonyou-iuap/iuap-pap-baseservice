@@ -11,6 +11,9 @@
                 </foreach>
             </if>
         </if>
+        <if test="page == null or page.sort==null">
+                order by ts DESC
+        </if>
     </sql>
     
     <sql id="whereClause">
