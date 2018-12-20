@@ -9,10 +9,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Map;
@@ -49,6 +51,7 @@ public class StatModelResolver {
 
                               if (clz.getAnnotation(Entity.class)!=null){
                                   statModel =   new StatModel();
+                                  statModel.setCode( ((Entity)clz.getAnnotation(Entity.class)).name());
                               }
                               for (Field f : fields) {
                                   if (f.getAnnotation(StatisticsField.class) != null) {
@@ -58,12 +61,16 @@ public class StatModelResolver {
                                   }
                               }
                               if (statModel != null) {
-                                  statModel.setCode(clz.getSimpleName());
                                   statModel.setmClass(clz);
                                   statModel.setTableName(EntityUtil.getTableName(clz));
                                   logger.info("StatModelResolver caching model:" + statModel);
-                                  synchronized (this){
-                                      modelCache.put(clz.getSimpleName(), statModel);
+                                  synchronized (this){//modelCache不是ConcurrentHashMap ,只能这么控制一下
+                                      if (StringUtils.isEmpty( statModel.getCode()) ){
+                                          statModel.setCode(clz.getSimpleName());
+                                          modelCache.put(clz.getSimpleName(), statModel);
+                                      }else{
+                                          modelCache.put(statModel.getCode(), statModel);
+                                      }
                                   }
                               }
                           }
