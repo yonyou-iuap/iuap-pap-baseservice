@@ -7,6 +7,7 @@ import com.yonyou.iuap.baseservice.intg.support.ServiceFeature;
 import com.yonyou.iuap.baseservice.intg.support.ServiceFeatureHolder;
 import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericMapper;
 import com.yonyou.iuap.baseservice.service.GenericService;
+import com.yonyou.iuap.i18n.MessageSourceUtil;
 import com.yonyou.iuap.mvc.type.SearchParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,7 @@ import static com.yonyou.iuap.baseservice.intg.support.ServiceFeature.LOGICAL_DE
 @SuppressWarnings("ALL")
 public  abstract class GenericIntegrateService<T extends Model> extends GenericService<T> {
     private static Logger log = LoggerFactory.getLogger(GenericIntegrateService.class);
-    private static final String LOG_TEMPLATE="特性组件{}的未实现{}扩展" ;
+    private static final String LOG_TEMPLATE= MessageSourceUtil.getMessage("ja.int.ser2.0001", "特性组件{}的未实现{}扩展") ;
 
 
     /**
@@ -194,9 +195,9 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
             return listData.get(0);
         }else {
             if (listData==null||listData.size()==0){
-                throw new RuntimeException("检索结果为空, "+name + ":" + value);
+                throw new RuntimeException(MessageSourceUtil.getMessage("ja.int.ser2.0003", "检索结果为空,")+name + ":" + value);
             }else{
-                throw new RuntimeException("检索数据不唯一, "+name + ":" + value);
+                throw new RuntimeException(MessageSourceUtil.getMessage("ja.int.ser2.0004", "检索数据不唯一,")+name + ":" + value);
             }
         }
 
@@ -258,7 +259,7 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
         }
         int savedCnt=  super.insertBatch(listEntity);
         if (savedCnt!= listEntity.size()){
-            throw  new RuntimeException("batch insert error!");
+            throw new RuntimeException(MessageSourceUtil.getMessage("ja.int.ser2.0007", "batch insert error!"));
         }
         for(T entity: listEntity ){
             addFeatAfterEntitySave(entity);
@@ -304,7 +305,8 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
             entity=super.executeInsert(entity,isSelective);
         } catch (Exception e) {
             if (e instanceof  DuplicateKeyException){
-                throw new RuntimeException("违反唯一性约束，无法保存");
+                throw new RuntimeException(msg0005);
+
             }else{
                 throw e;
             }
@@ -313,7 +315,7 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
         return entity;
     }
 
-
+    private static String msg0005=MessageSourceUtil.getMessage("ja.int.ser2.0005", "违反唯一性约束，无法保存");
 
     /**
      * 在GenericService#executeUpdate()上进行重载+埋点,
@@ -329,7 +331,7 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
             entity=super.executeUpdate(entity,isSelective);
         } catch (Exception e) {
             if (e instanceof DuplicateKeyException){
-                throw new RuntimeException("违反唯一性约束，无法保存");
+                throw new RuntimeException(msg0005);
             }else{
                 throw e;
             }
