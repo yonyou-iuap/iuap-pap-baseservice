@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.yonyou.iuap.i18n.MessageSourceUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,15 +28,15 @@ import cn.hutool.core.util.StrUtil;
  */
 @SuppressWarnings("ALL")
 public class CodingUtil {
-	
+
 	private Logger log = LoggerFactory.getLogger(CodingUtil.class);
-	
+
 	private CodingUtil() {}
-	
+
 	public static CodingUtil inst() {
 		return Inner.INST;
 	}
-	
+
 	/**
 	 * 为对象设置Code
 	 * @param entity 业务实体
@@ -48,7 +49,7 @@ public class CodingUtil {
 				codingField = ReflectUtil.getField(entity.getClass(), anno.codingField());
 			} catch (Exception exp) {
 				log.error("获取Coding Field定义出错!", exp);
-				throw new BusinessRuntimeException("获取Coding Field定义出错!");
+                throw new BusinessRuntimeException(MessageSourceUtil.getMessage("ja.ser.uti.0001", "获取Coding Field定义出错!"));
 			}
 		}else {
 			codingField = AnnotationUtil.getFirstFieldByAnnotation(entity.getClass(), CodingField.class);
@@ -87,7 +88,7 @@ public class CodingUtil {
         if ("failed".equalsIgnoreCase(getFlag)){
             String errMsg = billCodeInfo.getString("msg");
             log.error("Error happened while committing code ："+JSON.toJSONString(data)+"，error reason："+errMsg);
-            throw new BusinessException("Error happened while committing code ："+JSON.toJSONString(data)+"，error reason："+errMsg);
+            throw new BusinessException(MessageSourceUtil.getMessage("ja.ser.uti.0002", "Error happened while committing code ：")+JSON.toJSONString(data)+MessageSourceUtil.getMessage("ja.ser.uti.0003", "，error reason：")+errMsg);
         }
     }
 
@@ -114,11 +115,11 @@ public class CodingUtil {
         if ("failed".equalsIgnoreCase(getFlag)){
             String errMsg = billCodeInfo.getString("msg");
             log.error("按编码规则生成编码出错："+JSON.toJSONString(data)+"，错误信息："+errMsg);
-            throw new BusinessException("按编码规则生成编码出错，原因："+errMsg);
+            throw new BusinessException(MessageSourceUtil.getMessage("ja.ser.uti.0006", "按编码规则生成编码出错，原因：")+errMsg);
         }
         return billCode;
     }
-    
+
     /**
      * 单据退号，以保证单据号连号的业务需要
      * @param billObjCode 编码对象code
@@ -139,9 +140,9 @@ public class CodingUtil {
         String returnFlag = returnCodeInfo.getString("status");
         if("failed".equalsIgnoreCase(returnFlag)){
             String errMsg = returnCodeInfo.getString("msg");
-            log.error("退号失败，错误信息：" + JSON.toJSONString(returnCodeInfo) + 
+            log.error("退号失败，错误信息：" + JSON.toJSONString(returnCodeInfo) +
             		  "\r\n退号申请信息：" + JSON.toJSONString(data));
-            throw new BusinessException("单据退号失败!",errMsg);
+            throw new BusinessException(MessageSourceUtil.getMessage("ja.ser.uti.0009", "单据退号失败!"),errMsg);
         }else {
         	log.info("单据退号成功，退号申请信息："+JSON.toJSONString(data));
         }
