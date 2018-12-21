@@ -102,7 +102,7 @@ public class I18nCommonService<T extends Model> implements QueryFeatureExtension
     }
 
     /**
-     * TOOD: 后期标准实现完善后,应改为调用wbalone的接口http://${server}/wbalone/i18n/classification/list获取
+     * TODO: 后期标准实现完善后,应改为调用wbalone的接口http://${server}/wbalone/i18n/classification/list获取
      * 枚举中所列遵循了iuap国际化总体方案.
      */
     enum LocaleStandard {
