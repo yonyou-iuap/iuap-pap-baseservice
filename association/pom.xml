@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.yonyou.iuap.baseservice</groupId>
     <artifactId>iuap-pap-baseservice-asso</artifactId>
+    <description>主子关联操作封装，并提供了标准Rest接口与前端标准组件集成。</description>
     <dependencies>
         <dependency>
             <groupId>com.yonyou.iuap.baseservice</groupId>

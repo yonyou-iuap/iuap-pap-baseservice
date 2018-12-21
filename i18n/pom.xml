@@ -11,7 +11,7 @@
 
     <groupId>com.yonyou.iuap.baseservice</groupId>
     <artifactId>iuap-pap-baseservice-i18n</artifactId>
-
+    <description>国际化工具包，提供国际化方案必须的工具支持</description>
     <dependencies>
 
         <!--spring-core 4.0.5-->

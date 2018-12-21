@@ -13,7 +13,7 @@
 	<artifactId>iuap-pap-baseservice-entity</artifactId>
 	<name>iuap-pap-baseservice-entity</name>
 	<url>http://maven.apache.org</url>
-
+    <description>实体层能力强化框架，提供实体基本能力（乐观锁、审计日志、逻辑删除等）规范，以及构建数据库查询能力的数据模型映射注解。</description>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>

@@ -11,6 +11,7 @@
 
     <groupId>com.yonyou.iuap.baseservice</groupId>
     <artifactId>iuap-pap-baseservice-print</artifactId>
+    <description>打印组件能力封装，提供PAP打印模块集成的标准接口实现和扩展能力</description>
     <dependencies>
         <dependency>
             <groupId>com.yonyou.iuap.baseservice</groupId>

@@ -13,7 +13,7 @@
 	<artifactId>iuap-pap-baseservice-service</artifactId>
 	<name>iuap-pap-baseservice-service</name>
 	<url>http://maven.apache.org</url>
-
+    <description>服务层封装框架，提供了多种CRUD能力的扩展和封装，并在此层实现了实体层的基本能力规范。</description>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>

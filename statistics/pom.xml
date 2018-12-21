@@ -8,10 +8,9 @@
         <version>3.5.5-RELEASE</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <description> capable  of aggregate function ,such as group ,count ,sum,avg...  </description>
     <groupId>com.yonyou.iuap.baseservice</groupId>
     <artifactId>iuap-pap-baseservice-statistics</artifactId>
-
+    <description>统计分析模块，提供基于单表的动态查询能力和简单聚合函数计算分析服务接口</description>
     <dependencies>
         <dependency>
             <groupId>com.yonyou.iuap.baseservice</groupId>

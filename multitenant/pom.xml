@@ -13,6 +13,7 @@
 	<artifactId>iuap-pap-baseservice-multitenant</artifactId>
 	<name>iuap-pap-baseservice-multitenant</name>
 	<url>http://maven.apache.org</url>
+    <description>租户隔离能力封装，提供租户隔离的标准化实现规范和接口标准</description>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>

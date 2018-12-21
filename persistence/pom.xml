@@ -13,6 +13,7 @@
 	<artifactId>iuap-pap-baseservice-persistence</artifactId>
 	<name>iuap-pap-baseservice-persistence</name>
 	<url>http://maven.apache.org</url>
+    <description>持久层能力封装框架，提供运行时自动生成CRUD-SQL脚本的能力，并进行了多数据库方言（oracle、mysql、mssql）的适配</description>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>

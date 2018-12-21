@@ -12,6 +12,7 @@
     <groupId>com.yonyou.iuap.baseservice</groupId>
     <name>iuap-pap-baseservice-ref</name>
     <artifactId>iuap-pap-baseservice-ref</artifactId>
+    <description>参照反写能力封装，兼容了PAP3.5.3之前版本的参照标准服务</description>
     <dependencies>
         <dependency>
             <groupId>com.yonyou.iuap.pap.base</groupId>

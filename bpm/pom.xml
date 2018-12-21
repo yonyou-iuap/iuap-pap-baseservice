@@ -13,6 +13,7 @@
 	<artifactId>iuap-pap-baseservice-bpm</artifactId>
 	<name>iuap-pap-baseservice-bpm</name>
 	<url>http://maven.apache.org</url>
+    <description>工作流组件能力封装，提供了与前端标准流程组件yy-bpm组件交互的标准实现和扩展能力</description>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>

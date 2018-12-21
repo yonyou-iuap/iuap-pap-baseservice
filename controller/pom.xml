@@ -14,7 +14,7 @@
 	<artifactId>iuap-pap-baseservice-controller</artifactId>
 	<name>iuap-pap-baseservice-controller</name>
 	<url>http://maven.apache.org</url>
-
+    <description>控制层封装框架，提供了与前端标准组件交互的接口规范和参数模板</description>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
