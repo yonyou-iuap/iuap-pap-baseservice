@@ -52,8 +52,8 @@ public abstract class GenericExService<T extends Model & LogicDel> extends Gener
 
     /**
      * 逻辑删除
-     * @param entity
-     * @return
+     * @param entity 待删除业务实体
+     * @return  删除数量
      */
     public int update4LogicDel(T entity) {
         if(entity != null) {
@@ -72,8 +72,8 @@ public abstract class GenericExService<T extends Model & LogicDel> extends Gener
 
     /**
      * 覆盖父方法，调整为逻辑删除
-     * @param entity
-     * @return
+     * @param entity 待删除业务实体
+     * @return 删除数量
      */
     @Override
     public int delete(T entity) {
@@ -82,7 +82,7 @@ public abstract class GenericExService<T extends Model & LogicDel> extends Gener
 
     /**
      * 覆盖父方法，调整为逻辑删除
-     * @param id
+     * @param id 待删除业务实体id
      */
     @Override
     public int delete(Serializable id) {
