@@ -20,8 +20,8 @@
         </dependency>
         <dependency>
             <groupId>com.yonyou.iuap.baseservice</groupId>
-            <artifactId>iuap-pap-baseservice-multitenant</artifactId>
-            <version>${pap.module.version}</version>
+            <artifactId>iuap-pap-baseservice-entity</artifactId>
+            <version>3.5.5-RELEASE</version>
         </dependency>
         <dependency>
             <groupId>com.yonyou.iuap.pap</groupId>
