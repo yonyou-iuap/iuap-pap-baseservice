@@ -1,5 +1,6 @@
 package com.yonyou.iuap.baseservice.service;
 
+import com.yonyou.iuap.i18n.MessageSourceUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
@@ -20,22 +21,22 @@ import org.springframework.data.domain.PageRequest;
 import java.io.Serializable;
 import java.util.*;
 
-/** 
+/**
  * 说明：基础Service基类
  * @author houlf
  * 2018年6月12日
  */
 @SuppressWarnings("ALL")
 public abstract class GenericService<T extends Model>{
-	
-	private Logger log = LoggerFactory.getLogger(GenericService.class);
 
-	/**
-	 * 分页查询
-	 * @param pageRequest
-	 * @param searchParams
-	 * @return
-	 */
+    private Logger log = LoggerFactory.getLogger(GenericService.class);
+
+    /**
+     * 分页查询
+     * @param pageRequest
+     * @param searchParams
+     * @return
+     */
     public Page<T> selectAllByPage(PageRequest pageRequest, SearchParams searchParams) {
         return genericMapper.selectAllByPage(pageRequest, searchParams).getPage();
     }
@@ -45,19 +46,19 @@ public abstract class GenericService<T extends Model>{
      * @return
      */
     public List<T> findAll(){
-    	Map<String,Object> queryParams = new HashMap<String,Object>();
-    	return this.queryList(queryParams);
+        Map<String,Object> queryParams = new HashMap<String,Object>();
+        return this.queryList(queryParams);
     }
-    
+
     /**
      * 根据参数查询List
      * @param queryParams
      * @return
      */
     public List<T> queryList(Map<String,Object> queryParams){
-    	return this.genericMapper.queryList(queryParams);
+        return this.genericMapper.queryList(queryParams);
     }
-    
+
     /**
      * 根据字段名查询List
      * @param name
@@ -65,18 +66,18 @@ public abstract class GenericService<T extends Model>{
      * @return
      */
     public List<T> queryList(String name, Object value){
-    	Map<String,Object> queryParams = new HashMap<String,Object>();
-    	queryParams.put(name, value);
-    	return this.queryList(queryParams);
+        Map<String,Object> queryParams = new HashMap<String,Object>();
+        queryParams.put(name, value);
+        return this.queryList(queryParams);
     }
-    
+
     /**
      * 根据参数查询List【返回值为List<Map>】
      * @param params
      * @return
      */
     public List<Map<String,Object>> queryListByMap(Map<String,Object> params){
-    	return this.genericMapper.queryListByMap(params);
+        return this.genericMapper.queryListByMap(params);
     }
 
     /**
@@ -85,7 +86,7 @@ public abstract class GenericService<T extends Model>{
      * @return
      */
     public T findById(Serializable id) {
-    	return this.findUnique("id", id);
+        return this.findUnique("id", id);
     }
 
     /**
@@ -95,40 +96,40 @@ public abstract class GenericService<T extends Model>{
      * @return
      */
     public T findUnique(String name, Object value) {
-    	List<T> listData = this.queryList(name, value);
-    	if(listData!=null && listData.size()==1) {
-    		return listData.get(0);
-    	}else {
-    		throw new RuntimeException("检索数据不唯一, "+name + ":" + value);
-    	}
+        List<T> listData = this.queryList(name, value);
+        if(listData!=null && listData.size()==1) {
+            return listData.get(0);
+        }else {
+            throw new RuntimeException(MessageSourceUtil.getMessage("ja.bas.ser2.0001", "检索数据不唯一,")+name + ":" + value);
+        }
     }
-    
+
     /**
      * 保存数据
      * @param entity
      * @return
      */
-	public T save(T entity) {
-		boolean isNew = false;					//是否新增数据
-		if(entity instanceof Model) {
-			if(entity.getId()==null) {
-				isNew = true;
-			}else {
-				isNew = StrUtil.isEmptyIfStr(entity.getId());
-			}
-		}
-		if(isNew) {
-			return insert(entity);
-		}else {
-			return update(entity);
-		}
-	}
-	
-	/**
-	 * 批量保存
-	 * @param listEntity 待保存业务实体列表
-	 */
-	public void saveBatch(List<T> listEntity){
+    public T save(T entity) {
+        boolean isNew = false;					//是否新增数据
+        if(entity instanceof Model) {
+            if(entity.getId()==null) {
+                isNew = true;
+            }else {
+                isNew = StrUtil.isEmptyIfStr(entity.getId());
+            }
+        }
+        if(isNew) {
+            return insert(entity);
+        }else {
+            return update(entity);
+        }
+    }
+
+    /**
+     * 批量保存
+     * @param listEntity 待保存业务实体列表
+     */
+    public void saveBatch(List<T> listEntity){
         List<T> insertList = new ArrayList<>();
         for (int i = 0; i < listEntity.size(); i++) {
             if (listEntity.get(i) != null && listEntity.get(i).getId() == null) {
@@ -140,25 +141,25 @@ public abstract class GenericService<T extends Model>{
         if (insertList.size() > 0) {
             insertBatch(insertList);
         }
-	}
+    }
 
     /**
      *  批量全量插入
      * @param listEntity 待插入保存业务实体列表
      * @return
      */
-	public int insertBatch(List<T> listEntity){
+    public int insertBatch(List<T> listEntity){
         return genericMapper.insertBatch(listEntity);
     }
-	
-	/**
-	 * 新增保存数据
-	 * @param entity 待插入实体
-	 * @return 插入保存后实体
-	 */
-	public T insert(T entity) {
-		return executeInsert(entity,false);
-	}
+
+    /**
+     * 新增保存数据
+     * @param entity 待插入实体
+     * @return 插入保存后实体
+     */
+    public T insert(T entity) {
+        return executeInsert(entity,false);
+    }
 
     /**
      * 新增保存数据,跳过空值字段
@@ -186,7 +187,7 @@ public abstract class GenericService<T extends Model>{
             log.info("新增保存数据：\r\n" + JSON.toJSONString(entity));
             return entity;
         } else {
-            throw new RuntimeException("新增保存数据出错，对象为空!");
+            throw new RuntimeException(MessageSourceUtil.getMessage("ja.bas.ser2.0003", "新增保存数据出错，对象为空!"));
         }
     }
 
@@ -216,14 +217,14 @@ public abstract class GenericService<T extends Model>{
 
     }
 
-	/**
-	 * 更新保存数据
-	 * @param entity
-	 * @return
-	 */
-	public T update(T entity) {
+    /**
+     * 更新保存数据
+     * @param entity
+     * @return
+     */
+    public T update(T entity) {
         return  executeUpdate(entity,false);
-	}
+    }
 
     /**
      * 更新保存数据,跳过空值字段
@@ -246,73 +247,76 @@ public abstract class GenericService<T extends Model>{
                 count = genericMapper.update(entity);
             }
             if(count != 1) {
-                log.error("更新保存数据出错，更新记录数="+count+"\r\n"+JSON.toJSONString(entity));
-                throw new RuntimeException("更新保存数据出错，更新记录数="+count);
+                String msg=MessageSourceUtil.getMessage("ja.bas.ser2.0004", "更新保存数据出错，更新记录数=")+count+"\r\n"+JSON.toJSONString(entity);
+                log.error(msg);
+                throw new RuntimeException(msg);
             }else if (isSelective){
                 BeanUtils.copyProperties(this.findById(entity.getId()),entity);//updateSelective之后的信息完整化回传
             }
             return entity;
         }else {
-            log.error("更新保存数据出错，输入参数对象为空!");
-            throw new RuntimeException("更新保存数据出错，输入参数对象为空!");
+            String msg=MessageSourceUtil.getMessage("ja.bas.ser2.0005", "更新保存数据出错，输入参数对象为空!");
+            log.error(msg);
+            throw new RuntimeException(msg);
         }
     }
 
-	/**
-	 * 删除数据
-	 * @return
-	 */
-	public int deleteBatch(List<T> list) {
-		int count = 0;
-		for(T entity: list) {
-			count += this.delete(entity);
-		}
-		return count;
-	}
-	
-	/**
-	 * 删除数据
-	 * @param entity
-	 * @return
-	 */
-	public int delete(T entity) {
-		return this.delete(entity.getId());
-	}
+    /**
+     * 删除数据
+     * @return
+     */
+    public int deleteBatch(List<T> list) {
+        int count = 0;
+        for(T entity: list) {
+            count += this.delete(entity);
+        }
+        return count;
+    }
 
-	/**
-	 * 根据id删除数据
-	 * @param id
-	 * @return
-	 */
-	public int delete(Serializable id) {
-		Map<String,Object> data = new HashMap<String,Object>();
-		data.put("id", id);
-		int count = this.genericMapper.delete(data);
-		if(count == 1) {
-			return count;
-		}else {
-			log.error("删除数据出错,记录数="+count+"\r\n"+JSON.toJSONString(id));
-			throw new RuntimeException("删除数据出错,记录数="+count+"\r\n"+JSON.toJSONString(id));
-		}
-	}
-	
-	/**
-	 * 生成并设置ID
-	 * @param entity
-	 */
-	private void genAndSetEntityId(T entity) {
-		//ID为空的情况下，生成生成主键
-		if(entity.getId()==null || StrUtil.isBlankIfStr(entity.getId())) {
-		    Serializable id = GeneratorManager.generateID(entity);
+    /**
+     * 删除数据
+     * @param entity
+     * @return
+     */
+    public int delete(T entity) {
+        return this.delete(entity.getId());
+    }
+
+    /**
+     * 根据id删除数据
+     * @param id
+     * @return
+     */
+    public int delete(Serializable id) {
+        Map<String,Object> data = new HashMap<String,Object>();
+        data.put("id", id);
+        int count = this.genericMapper.delete(data);
+        if(count == 1) {
+            return count;
+        }else {
+            String msg=MessageSourceUtil.getMessage("ja.bas.ser2.0006", "删除数据出错,记录数=")+count+"\r\n"+JSON.toJSONString(id);
+            log.error(msg);
+            throw new RuntimeException(msg);
+        }
+    }
+
+    /**
+     * 生成并设置ID
+     * @param entity
+     */
+    private void genAndSetEntityId(T entity) {
+        //ID为空的情况下，生成生成主键
+        if(entity.getId()==null || StrUtil.isBlankIfStr(entity.getId())) {
+            Serializable id = GeneratorManager.generateID(entity);
             entity.setId(id);
-		}
-	}
+        }
+    }
 
-	/***************************************************/
-	protected GenericMapper<T> genericMapper;
+    /***************************************************/
+    protected GenericMapper<T> genericMapper;
 
-	public void setGenericMapper(GenericMapper<T> mapper) {
-		this.genericMapper = mapper;
-	}
+    public void setGenericMapper(GenericMapper<T> mapper) {
+        this.genericMapper = mapper;
+    }
 
 }
