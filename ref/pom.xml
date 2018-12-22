@@ -16,7 +16,7 @@
     <dependencies>
         <dependency>
             <groupId>com.yonyou.iuap.pap.base</groupId>
-            <artifactId>pap_base_ref</artifactId>
+            <artifactId>pap_base_comp_ref</artifactId>
         </dependency>
         <dependency>
             <groupId>com.yonyou.iuap.pap</groupId>
