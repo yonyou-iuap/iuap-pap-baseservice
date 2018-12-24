@@ -73,7 +73,7 @@ public class StatCommonService {
             Class entityClazz =ppr.getStateModel().getmClass();
             for (Field f : EntityUtil.getFields(entityClazz)){
                 if (f.getAnnotation(Transient.class)==null){
-                    allFields.add( FieldUtil.getColumnName(f)+" as "+f.getName());
+                    allFields.add( FieldUtil.getColumnName(f)+" as \""+f.getName()+"\"");
                     groupFields.add( f.getName());
                 }
             };

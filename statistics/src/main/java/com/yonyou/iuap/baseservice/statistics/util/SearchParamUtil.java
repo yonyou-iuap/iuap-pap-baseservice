@@ -73,7 +73,7 @@ public class SearchParamUtil {
                     throw new RuntimeException("cannot find field " + distincts + " in  model [" + modelCode + "] ");
                 }
                 ;
-                statStatements.add(FieldUtil.getColumnName(keyField) + " as " + dis);
+                statStatements.add(FieldUtil.getColumnName(keyField) + " as \"" + dis+"\"");
             }
             result.setGroupFields(distincts);
         } else {
@@ -85,7 +85,7 @@ public class SearchParamUtil {
             Map<String, StatFunctions[]> statColFuncs = m.getStatColumnsFunctions();
             for (String col : statColFuncs.keySet()) {
                 for (StatFunctions func : statColFuncs.get(col)) {
-                    statStatements.add(func + "(" + col + ") as " + m.getStatColumnsFields().get(col) + StringUtils.capitalize(func.name()));
+                    statStatements.add(func + "(" + col + ") as \"" + m.getStatColumnsFields().get(col) + StringUtils.capitalize(func.name()) +"\"");
                 }
             }
             /**
@@ -101,7 +101,7 @@ public class SearchParamUtil {
                     if (keyField == null) {
                         throw new RuntimeException("cannot find field " + group + " in  model [" + modelCode + "] ");
                     }
-                    groupStatements.add(FieldUtil.getColumnName(keyField) + " as " + group);
+                    groupStatements.add(FieldUtil.getColumnName(keyField) + " as \"" + group +"\"");
                     groupCols.add(FieldUtil.getColumnName(keyField));
                 }
                 searchParams.getSearchMap().put(groupParams.name(), groupCols);
