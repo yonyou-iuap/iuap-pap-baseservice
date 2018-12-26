@@ -41,11 +41,10 @@ public class RefXMLParse {
 				try {
 					initRefXml();
 				} catch (NoSuchFieldException | IllegalAccessException  |ClassNotFoundException e) {
-					logger.error(REF_DECUMENT_NAME+".xml，解析失败");
-					logger.error(e.getStackTrace().toString());
-					e.printStackTrace();
+					logger.error(REF_DECUMENT_NAME+".xml，解析失败",e);
 				}
-				return new RefXMLParse();
+                refXMLParse = new RefXMLParse();
+				return refXMLParse;
 			}
 		} else {
 			return refXMLParse;
