@@ -339,12 +339,12 @@
         <snapshotRepository>
             <id>iUAP-Snapshots</id>
             <name>iUAP-Snapshots</name>
-            <url>http://maven.yonyou.com/nexus/content/repositories/iUAP-Snapshots/</url>
+            <url>http://maven.yonyoucloud.com/nexus/content/repositories/iUAP-Snapshots/</url>
         </snapshotRepository>
         <repository>
             <id>iUAP-Stagings</id>
             <name>iUAP-Stagings</name>
-            <url>http://maven.yonyou.com/nexus/content/repositories/iUAP-Stagings/</url>
+            <url>http://maven.yonyoucloud.com/nexus/content/repositories/iUAP-Stagings/</url>
         </repository>
     </distributionManagement>
 
