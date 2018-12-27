@@ -181,7 +181,12 @@ public abstract class GenericService<T extends Model>{
             getPrepared4Insert(entity);
             if (isSelective) {
                 this.genericMapper.insertSelective(entity);
-                BeanUtils.copyProperties(this.findById(entity.getId()), entity);//insertSelective之后的信息完整化回传
+                Map<String, Object> queryParams = new HashMap<>();
+                queryParams.put("id",entity.getId());
+                List<T> refreshed = genericMapper.queryList(queryParams);
+                if (refreshed.size()>0){
+                    BeanUtils.copyProperties(refreshed.get(0) , entity);//insertSelective之后的信息完整化回传
+                }
             } else
                 this.genericMapper.insert(entity);
             log.info("新增保存数据：\r\n" + JSON.toJSONString(entity));
