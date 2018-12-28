@@ -62,7 +62,7 @@
                         and t.${item.key} != '${item.value}'
                     </if>
                     <if test="item.condition == 'ULIKE'">
-                        and t.${item.key} NOT LIKE CONCAT('%', '${item.value}', '%')
+                        and t.${item.key} NOT LIKE CONCAT(CONCAT('%', '${item.value}'), '%')
                     </if>
                     <if test="item.condition == 'START'">
                         and t.${item.key} LIKE CONCAT('${item.value}', '%')
