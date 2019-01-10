@@ -22,28 +22,28 @@
             <if test="whereStatements != null and whereStatements.size>0 ">
                 <foreach collection="whereStatements" item="item">
                     <if test="item.condition == 'EQ'">
-                        and t.${item.key} = '${item.value}'
+                        and t.${item.key} = #{item.value}
                     </if>
                     <if test="item.condition == 'GT'">
-                        and t.${item.key} &gt; '${item.value}'
+                        and t.${item.key} &gt; #{item.value}
                     </if>
                     <if test="item.condition == 'LT'">
-                        and t.${item.key} &lt; '${item.value}'
+                        and t.${item.key} &lt; #{item.value}
                     </if>
                     <if test="item.condition == 'GTEQ'">
-                        and t.${item.key} &gt;= '${item.value}'
+                        and t.${item.key} &gt;= #{item.value}
                     </if>
                     <if test="item.condition == 'LTEQ'">
-                        and t.${item.key} &lt;= '${item.value}'
+                        and t.${item.key} &lt;= #{item.value}
                     </if>
                     <if test="item.condition == 'LIKE'">
-                        and t.${item.key} LIKE CONCAT(CONCAT('%', '${item.value}'), '%')
+                        and t.${item.key} LIKE CONCAT(CONCAT('%', #{item.value}), '%')
                     </if>
                     <if test="item.condition == 'LLIKE'">
-                        and t.${item.key} LIKE CONCAT('%', '${item.value}')
+                        and t.${item.key} LIKE CONCAT('%', #{item.value})
                     </if>
                     <if test="item.condition == 'RLIKE'">
-                        and t.${item.key} LIKE CONCAT('${item.value}', '%')
+                        and t.${item.key} LIKE CONCAT(#{item.value}, '%')
                     </if>
                     <if test="item.condition == 'RANGE' and item.value!=null   ">
                         and t.${item.key} between
@@ -59,16 +59,16 @@
                         )
                     </if>
                     <if test="item.condition == 'UEQ'">
-                        and t.${item.key} != '${item.value}'
+                        and t.${item.key} != #{item.value}
                     </if>
                     <if test="item.condition == 'ULIKE'">
-                        and t.${item.key} NOT LIKE CONCAT(CONCAT('%', '${item.value}'), '%')
+                        and t.${item.key} NOT LIKE CONCAT(CONCAT('%', #{item.value}), '%')
                     </if>
                     <if test="item.condition == 'START'">
-                        and t.${item.key} LIKE CONCAT('${item.value}', '%')
+                        and t.${item.key} LIKE CONCAT(#{item.value}, '%')
                     </if>
                     <if test="item.condition == 'END'">
-                        and t.${item.key} LIKE CONCAT('%', '${item.value}')
+                        and t.${item.key} LIKE CONCAT('%', #{item.value})
                     </if>
 
                     <if test="item.condition == 'OTHER'">
