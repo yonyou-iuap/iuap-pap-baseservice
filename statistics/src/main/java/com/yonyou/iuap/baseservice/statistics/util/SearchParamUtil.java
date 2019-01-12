@@ -257,9 +257,9 @@ public class SearchParamUtil {
         /**
          * @Step 2解析参照配置, 一次按需(idCache)加载参照数据(远程与本地略有不同)
          */
-        Map<String, List> remoteRefs = new HashMap<>();
+        Map<String, Set> remoteRefs = new HashMap<>();
         for (Field field : refCache.keySet()) {
-            List<String> setList = new ArrayList<>(idCache.get(field));
+            Set<String> setList = new HashSet<>(idCache.get(field));//id去重
             if (setList == null || setList.size() == 0) {//无ID直接跳过，进入下个field
                 continue;
             }
@@ -279,9 +279,11 @@ public class SearchParamUtil {
                     logger.warn("ref.XML config error:" + refCache.get(field).code());
                     continue;
                 }
+                List ids = new ArrayList();
+                ids.addAll(setList);
                 refContents =
                         mapper.findRefListByIds(refParamConfig.getTableName(),
-                                refParamConfig.getId(), refParamConfig.getExtension(), setList);
+                                refParamConfig.getId(), refParamConfig.getExtension(), ids);
             }
             if (null != refContents && refContents.size() > 0)
                 refDataCache.put(field, refContents);//将所有参照数据集和field的关系缓存起来后续使用
@@ -289,7 +291,9 @@ public class SearchParamUtil {
         if (remoteRefs.size() > 0) {//利用总结好的参数一次性调用远程参照服务
             for (String refCode : remoteRefs.keySet()) {
                 try {
-                    List<Map<String, Object>> refContents = RefIdToNameUtil.convertIdToName(refCode, remoteRefs.get(refCode));//调用pap—base—ref的工具类进行远程调用
+                    List ids = new ArrayList();
+                    ids.addAll(remoteRefs.get(refCode));
+                    List<Map<String, Object>> refContents = RefIdToNameUtil.convertIdToName(refCode, ids);//调用pap—base—ref的工具类进行远程调用
                     for (Map refContent : refContents) { //遍历结果集，找对应的field，分配反写值
                         for (Field field : refCache.keySet()) {
                             List<Map<String, Object>> refFieldData = new ArrayList<>();

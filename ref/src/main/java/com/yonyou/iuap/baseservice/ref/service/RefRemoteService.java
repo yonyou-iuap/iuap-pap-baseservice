@@ -100,7 +100,9 @@ public class RefRemoteService<T extends Model> implements QueryFeatureExtension<
         for (String refCode : allCache.keySet()) {
             List<Map<String, Object>> refContents = null;
             try {
-                refContents = RefIdToNameUtil.convertIdToName(refCode, allCache.get(refCode).getIdCache());//调用pap——base——ref的工具类进行远程调用
+                List ids =new ArrayList();
+                ids.addAll( allCache.get(refCode).getIdCache());
+                refContents = RefIdToNameUtil.convertIdToName(refCode, ids);//调用pap——base——ref的工具类进行远程调用
             } catch (Exception e) {
                 logger.error("remote ref-id2name service calling error：" + refCode, e);
             }
@@ -150,7 +152,7 @@ public class RefRemoteService<T extends Model> implements QueryFeatureExtension<
     class ReferenceCache {
 
         private Reference ref; //同一个refcode所有@Reference内容都在这里
-        private List<String> idCache = new ArrayList<>(); //缓存每套refcode下用到的所有参照表id值
+        private Set<String> idCache = new HashSet<>(); //缓存每套refcode下用到的所有参照表id值
         private Set<Field> fieldCache = new HashSet<>();//缓存每套refcode下打注解的field
         private List<Map<String, Object>> refDataCache = new ArrayList<>(); //缓存每套refCode下的id到name的远程查询结果
         private Map<String, String[]> fieldIdCache = new HashMap<>(); //缓存实体中每个field对应的id值,key为hashcode
@@ -182,11 +184,11 @@ public class RefRemoteService<T extends Model> implements QueryFeatureExtension<
             this.ref = ref;
         }
 
-        public List<String> getIdCache() {
+        public Set<String> getIdCache() {
             return idCache;
         }
 
-        public void setIdCache(List<String> idCache) {
+        public void setIdCache(Set<String> idCache) {
             this.idCache = idCache;
         }
 
