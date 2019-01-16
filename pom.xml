@@ -246,64 +246,6 @@
         </dependencies>
     </dependencyManagement>
 
-    <repositories>
-        <repository>
-            <id>nexus</id>
-            <name>Nexus</name>
-            <url>http://maven.yonyou.com/nexus/content/groups/public</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-
-        <repository>
-            <id>iUAP-Snapshots</id>
-            <name>iUAP-Snapshots</name>
-            <url>http://maven.yonyou.com/nexus/content/repositories/iUAP-Snapshots/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>iUAP-Stagings</id>
-            <name>iUAP-Stagings</name>
-            <url>http://maven.yonyou.com/nexus/content/repositories/iUAP-Stagings/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>iUAP</id>
-            <name>iWeb</name>
-            <url>http://maven.yonyou.com/nexus/content/repositories/iUAP/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>central</id>
-            <name>central</name>
-            <url>http://maven.yonyou.com/nexus/service/local/repositories/central</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
     <pluginRepositories>
         <pluginRepository>
             <id>maven-net-cn</id>

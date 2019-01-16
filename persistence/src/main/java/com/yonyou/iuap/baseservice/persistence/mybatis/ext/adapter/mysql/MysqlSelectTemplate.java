@@ -91,7 +91,7 @@ public class MysqlSelectTemplate implements SqlTemplate{
 	
 	private void buildWhere4SearchParams(String prefix, Class<?> entityClazz, StringBuilder whereSql) {
 		if(!StrUtil.isBlank(prefix)) {
-			whereSql.append("\r\n<if test=\"" + prefix + "!= null\">");
+			whereSql.append("\r\n<if test=\"whereStatements != null and whereStatements.size>0 \">");
 		}
 		Matcher matcher = null;
 		for(Field field : EntityUtil.getEntityFields(entityClazz)) {
