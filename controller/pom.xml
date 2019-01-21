@@ -7,28 +7,23 @@
 	<parent>
 		<groupId>com.yonyou.iuap</groupId>
 		<artifactId>iuap-pap-baseservice</artifactId>
-		<version>3.5.5-RELEASE</version>
+		<version>3.5.6-SNAPSHOT</version>
 	</parent>
 	
 	<groupId>com.yonyou.iuap.baseservice</groupId>
 	<artifactId>iuap-pap-baseservice-controller</artifactId>
 	<name>iuap-pap-baseservice-controller</name>
 	<url>http://maven.apache.org</url>
-    <description>控制层封装框架，提供了与前端标准组件交互的接口规范和参数模板</description>
+    <description>控制层封装框架，提供了与前端标准组件交互的接口规范和参数模板,已经移至core包中</description>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<dependencies>
-		
-		<dependency>
-			<groupId>com.yonyou.iuap.pap</groupId>
-			<artifactId>eiap-plus-common</artifactId>
-		</dependency>
-		
+
 		<dependency>
 			<groupId>com.yonyou.iuap.baseservice</groupId>
-			<artifactId>iuap-pap-baseservice-service</artifactId>
+			<artifactId>iuap-pap-baseservice-core</artifactId>
 			<version>${pap.module.version}</version>
 		</dependency>
 

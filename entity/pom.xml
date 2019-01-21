@@ -6,31 +6,24 @@
 	<parent>
 		<groupId>com.yonyou.iuap</groupId>
 		<artifactId>iuap-pap-baseservice</artifactId>
-		<version>3.5.5-RELEASE</version>
+		<version>3.5.6-SNAPSHOT</version>
 	</parent>
 
 	<groupId>com.yonyou.iuap.baseservice</groupId>
 	<artifactId>iuap-pap-baseservice-entity</artifactId>
 	<name>iuap-pap-baseservice-entity</name>
 	<url>http://maven.apache.org</url>
-    <description>实体层能力强化框架，提供实体基本能力（乐观锁、审计日志、逻辑删除等）规范，以及构建数据库查询能力的数据模型映射注解。</description>
+    <description>实体层能力强化框架，提供实体基本能力（乐观锁、审计日志、逻辑删除等）规范，以及构建数据库查询能力的数据模型映射注解。已移至core工程</description>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>javax.persistence</groupId>
-			<artifactId>persistence-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>cn.hutool</groupId>
-			<artifactId>hutool-all</artifactId>
-		</dependency>
-		<dependency>
-		    <groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>com.yonyou.iuap.baseservice</groupId>
+            <artifactId>iuap-pap-baseservice-core</artifactId>
+            <version>${pap.module.version}</version>
+        </dependency>
 	</dependencies>
 	
 	<build>
@@ -47,9 +40,6 @@
 				</excludes>
 			</resource>
 		</resources>
-		<!-- test过程中涉及的资源文件，默认位于${basedir}/src/test/resources/目录下。这里的资源文件不会被构建到目标构件中 -->
-		<testResources>
-		</testResources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

@@ -6,39 +6,24 @@
 	<parent>
 		<groupId>com.yonyou.iuap</groupId>
 		<artifactId>iuap-pap-baseservice</artifactId>
-		<version>3.5.5-RELEASE</version>
+		<version>3.5.6-SNAPSHOT</version>
 	</parent>
 
 	<groupId>com.yonyou.iuap.baseservice</groupId>
 	<artifactId>iuap-pap-baseservice-service</artifactId>
 	<name>iuap-pap-baseservice-service</name>
 	<url>http://maven.apache.org</url>
-    <description>服务层封装框架，提供了多种CRUD能力的扩展和封装，并在此层实现了实体层的基本能力规范。</description>
+    <description>服务层封装框架，提供了多种CRUD能力的扩展和封装，并在此层实现了实体层的基本能力规范，代码已移至core包中</description>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>com.yonyou.iuap.pap</groupId>
-			<artifactId>eiap-plus-common</artifactId>
-		</dependency>
+
 		<dependency>
 			<groupId>com.yonyou.iuap.baseservice</groupId>
-			<artifactId>iuap-pap-baseservice-persistence</artifactId>
+			<artifactId>iuap-pap-baseservice-core</artifactId>
             <version>${pap.module.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.yonyou.iuap</groupId>
-			<artifactId>iuap-utils</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>fastjson</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi-ooxml</artifactId>
 		</dependency>
 	</dependencies>
 	
