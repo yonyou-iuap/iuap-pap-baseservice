@@ -2,7 +2,7 @@ package com.yonyou.iuap.baseservice.multitenant.controller;
 
 
 import com.yonyou.iuap.baseservice.controller.GenericController;
-import com.yonyou.iuap.baseservice.multitenant.entity.MultiTenant;
+import com.yonyou.iuap.baseservice.entity.MultiTenant;
 import com.yonyou.iuap.baseservice.multitenant.service.GenericMultiTenantService;
 
 

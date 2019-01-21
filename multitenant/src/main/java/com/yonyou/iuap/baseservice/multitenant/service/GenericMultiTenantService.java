@@ -3,7 +3,7 @@ package com.yonyou.iuap.baseservice.multitenant.service;
 import cn.hutool.core.util.StrUtil;
 import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.multitenant.dao.mapper.GenericMultiTenantMapper;
-import com.yonyou.iuap.baseservice.multitenant.entity.MultiTenant;
+import com.yonyou.iuap.baseservice.entity.MultiTenant;
 import com.yonyou.iuap.baseservice.service.GenericService;
 import com.yonyou.iuap.context.InvocationInfoProxy;
 import com.yonyou.iuap.mvc.type.SearchParams;

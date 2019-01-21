@@ -3,7 +3,7 @@ package com.yonyou.iuap.baseservice.multitenant.controller;
 
 import cn.hutool.core.util.StrUtil;
 import com.yonyou.iuap.base.web.BaseController;
-import com.yonyou.iuap.baseservice.multitenant.entity.MultiTenant;
+import com.yonyou.iuap.baseservice.entity.MultiTenant;
 import com.yonyou.iuap.baseservice.multitenant.service.GenericMultiTenantService;
 import com.yonyou.iuap.mvc.constants.RequestStatusEnum;
 import com.yonyou.iuap.mvc.type.JsonResponse;

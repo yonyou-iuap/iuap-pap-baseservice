@@ -1,7 +1,5 @@
-package com.yonyou.iuap.baseservice.multitenant.entity;
+package com.yonyou.iuap.baseservice.entity;
 
-
-import com.yonyou.iuap.baseservice.entity.Model;
 
 /**
  * 说明：多租户基础Model

@@ -1,7 +1,7 @@
 package com.yonyou.iuap.baseservice.multitenant.dao.mapper;
 
 
-import com.yonyou.iuap.baseservice.multitenant.entity.MultiTenant;
+import com.yonyou.iuap.baseservice.entity.MultiTenant;
 import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericMapper;
 
 /**
