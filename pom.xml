@@ -262,10 +262,10 @@
 
 
     <modules>
-        <module>persistence</module>
-        <module>service</module>
-        <module>controller</module>
-        <module>entity</module>
+        <module>depracated/persistence</module>
+        <module>depracated/service</module>
+        <module>depracated/controller</module>
+        <module>depracated/entity</module>
         <module>bpm</module>
         <module>attachment</module>
         <module>ref</module>
