@@ -1,0 +1,2 @@
+com.yonyou.iuap.baseservice.persistence.mybatis.ext.support.converter.HumpConvertor
+com.yonyou.iuap.baseservice.persistence.mybatis.ext.support.converter.UnanimousConvertor

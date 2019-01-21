@@ -1,0 +1,3 @@
+com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.oracle.OracleMapperFactory
+com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.mysql.MysqlMapperFactory
+com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.mssql.MssqlMapperFactory
