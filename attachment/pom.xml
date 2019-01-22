@@ -14,11 +14,6 @@
     <dependencies>
 
         <dependency>
-            <groupId>com.yonyou.iuap</groupId>
-            <artifactId>iuap-persistence</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>com.yonyou.iuap.baseservice</groupId>
             <artifactId>iuap-pap-baseservice-controller</artifactId>
             <version>${pap.module.version}</version>

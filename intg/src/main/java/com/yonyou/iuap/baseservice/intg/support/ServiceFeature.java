@@ -13,7 +13,6 @@ public enum ServiceFeature {
     REFERENCE("com.yonyou.iuap.pap.base.ref.service.RefBaseCommonService"),//本地参照特性
     REMOTE_REFERENCE("com.yonyou.iuap.baseservice.ref.service.RefRemoteService"),//远程参照解析特性
     BPM("com.yonyou.iuap.baseservice.bpm.service.BpmCommonService"),//流程特性
-    DATA_PERMISSION("com.yonyou.iuap.baseservice.datapermission.service.DpCommonService"),//数据权限特性
     I18N("com.yonyou.iuap.baseservice.intg.service.I18nCommonService"),//国际化特性
     OTHER("java.lang.Class"),//其他，用于客户化扩展特性加载
 
