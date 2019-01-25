@@ -17,6 +17,9 @@ import javax.persistence.Version;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+/**
+ * mssql方言版 局部更新sql生成
+ */
 public class MssqlUpdateSelectiveTemplate extends AbsMssqlTemplate implements SqlTemplate{
 	
 	private Logger log = LoggerFactory.getLogger(MssqlUpdateSelectiveTemplate.class);
@@ -53,18 +56,16 @@ public class MssqlUpdateSelectiveTemplate extends AbsMssqlTemplate implements Sq
         }
         if (column==null || StrUtil.isEmpty(column.name())) {
             updateSql.append(FieldUtil.getColumnName(field));
-            if(field.getAnnotation(Version.class)==null) {				//非乐观锁字段
-            	updateSql.append("=").append(FieldUtil.build4Mybatis(field));
-            }else {														//乐观锁字段
-                updateSql.append("=").append(FieldUtil.buildVersionField4Mybatis(field));
-            }
         }else {
             updateSql.append(column.name());
-            if(field.getAnnotation(Version.class)==null) {				//非乐观锁字段
-                updateSql.append("=").append(FieldUtil.build4Mybatis(field));
-            }else {														//乐观锁字段
-                updateSql.append("=").append(FieldUtil.buildVersionField4Mybatis(field));
-            }
+        }
+        //非乐观锁字段
+        if (field.getAnnotation(Version.class) == null) {
+            updateSql.append("=").append(FieldUtil.build4Mybatis(field));
+        }
+        //乐观锁字段
+        else {
+            updateSql.append("=").append(FieldUtil.buildVersionField4Mybatis(field));
         }
         updateSql.append("</if>");
 	}
