@@ -91,11 +91,13 @@ public class SearchParamUtil {
             /**
              * @Step 1.3
              * 解析groupParam，构造 select部分和group by部分的查询脚本
+             * <p>mssql下sort和groupby有冲突，需要保持sort和group by一致，才能实现分页
              */
             if (searchParams.getSearchMap().get(groupParams.name()) != null) {
                 List<String> groups = (List<String>) searchParams.getSearchMap().get(groupParams.name());
                 Set<String> groupStatements = new HashSet<>();
                 Set<String> groupCols = new HashSet<>();
+                List<Sort.Order> orders = new ArrayList<>(); //构造sort
                 for (String group : groups) {
                     Field keyField = ReflectUtil.getField(m.getmClass(), group);
                     if (keyField == null) {
@@ -103,10 +105,13 @@ public class SearchParamUtil {
                     }
                     groupStatements.add(FieldUtil.getColumnName(keyField) + " as \"" + group +"\"");
                     groupCols.add(FieldUtil.getColumnName(keyField));
+                    orders.add(new Sort.Order(FieldUtil.getColumnName(keyField)));
                 }
                 searchParams.getSearchMap().put(groupParams.name(), groupCols);
+                searchParams.getSearchMap().put(sortMap.name(),null);
                 result.setGroupStatements(groupStatements);
                 result.setGroupFields(groups);
+                result.setSort(new Sort(orders));
             }
         }
         result.setStatStatements(statStatements);
