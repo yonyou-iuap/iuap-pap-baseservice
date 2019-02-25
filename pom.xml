@@ -37,6 +37,11 @@
                 <version>${eiap.module.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.yonyou.iuap.pap.base</groupId>
+                <artifactId>pap_base_i18n</artifactId>
+                <version>${pap.module.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>fastjson</artifactId>
                 <version>1.2.38</version>

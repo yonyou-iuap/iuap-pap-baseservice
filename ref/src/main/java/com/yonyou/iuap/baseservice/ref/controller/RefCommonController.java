@@ -7,7 +7,7 @@ import com.yonyou.iuap.baseservice.entity.RefParamVO;
 import com.yonyou.iuap.baseservice.persistence.utils.RefXMLParse;
 import com.yonyou.iuap.baseservice.persistence.utils.RefXmlConstract;
 import com.yonyou.iuap.baseservice.ref.service.RefCommonService;
-import com.yonyou.iuap.i18n.MessageSourceUtil;
+import com.yonyou.iuap.pap.base.i18n.MessageSourceUtil;
 import com.yonyou.iuap.pap.base.ref.entity.RefVertion;
 import com.yonyou.iuap.pap.base.ref.entity.RefViewModelVO;
 import com.yonyou.iuap.pap.base.ref.utils.RefUitls;
