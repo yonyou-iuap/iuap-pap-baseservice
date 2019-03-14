@@ -1,6 +1,5 @@
 package com.yonyou.iuap.baseservice.service;
 
-import com.yonyou.iuap.i18n.MessageSourceUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
@@ -10,8 +9,8 @@ import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericMapper;
 import com.yonyou.iuap.baseservice.service.util.CodingUtil;
 import com.yonyou.iuap.baseservice.support.generator.GeneratorManager;
 import com.yonyou.iuap.context.InvocationInfoProxy;
+import com.yonyou.iuap.i18n.MessageSourceUtil;
 import com.yonyou.iuap.mvc.type.SearchParams;
-import org.apache.http.client.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -243,7 +242,7 @@ public abstract class GenericService<T extends Model>{
     protected T executeUpdate(T entity,boolean isSelective) {
         int count ;
         if(entity!=null) {
-            String now = DateUtils.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss SSS");
+            String now = DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss SSS");
             entity.setLastModified(now);
             entity.setLastModifyUser(InvocationInfoProxy.getUserid());
             if (isSelective){
