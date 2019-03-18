@@ -25,6 +25,7 @@ import com.yonyou.iuap.baseservice.entity.RefParamVO;
  * 
  * @author taomk 2015-7-14
  */
+@Deprecated
 public class RefXMLParse {
 
 	private static Logger logger = LoggerFactory.getLogger(RefXMLParse.class);

@@ -1,7 +1,7 @@
 package com.yonyou.iuap.baseservice.entity;
 
 import java.util.LinkedHashMap;
-
+@Deprecated
 public class RefParamVO {
 
 	private String reftype;

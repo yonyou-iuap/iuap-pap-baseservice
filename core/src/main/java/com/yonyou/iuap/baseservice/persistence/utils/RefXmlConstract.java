@@ -21,7 +21,7 @@ package com.yonyou.iuap.baseservice.persistence.utils;
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
              佛祖保佑       永无BUG
 */
-
+@Deprecated
 public class RefXmlConstract {
 
     public static final String REF_VIEW_MODEL_VO = "RefViewModelVO";
