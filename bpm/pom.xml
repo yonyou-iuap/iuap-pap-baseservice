@@ -34,7 +34,7 @@
 
 		<dependency>
 			<groupId>com.yonyou.iuap.baseservice</groupId>
-			<artifactId>iuap-pap-baseservice-controller</artifactId>
+			<artifactId>iuap-pap-baseservice-core</artifactId>
 			<version>${pap.module.version}</version>
 		</dependency>
 		<dependency>
@@ -42,6 +42,10 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+    </dependencies>
 	
 </project>

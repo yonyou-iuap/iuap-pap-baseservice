@@ -7,6 +7,7 @@ import com.yonyou.iuap.baseservice.attachment.entity.AttachmentEntity;
 import com.yonyou.iuap.baseservice.attachment.entity.Attachmentable;
 import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericExMapper;
 import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericMapper;
+import com.yonyou.iuap.baseservice.ref.service.RefCommonService;
 import com.yonyou.iuap.baseservice.service.GenericService;
 import com.yonyou.iuap.baseservice.support.generator.GeneratorManager;
 import com.yonyou.iuap.context.InvocationInfoProxy;
@@ -32,7 +33,7 @@ public class GenericAtService<T extends Attachmentable> extends GenericService<T
     @Autowired
     private AttachmentMapper atMapper;
     @Autowired
-    private RefBaseCommonService rfService;
+    private RefCommonService rfService;
 
 	protected GenericMapper mapper;
 
