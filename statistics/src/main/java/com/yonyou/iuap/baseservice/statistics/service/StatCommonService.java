@@ -101,7 +101,22 @@ public class StatCommonService {
         if (ppr.getSort() != null) {
             pageRequest = new PageRequest(pageRequest.getPageNumber(), pageRequest.getPageSize(), ppr.getSort());
         }
-        List<Map> list = statCommonMapper.findAll(pageRequest, searchParams, ppr.getTableName(), ppr.getStatStatements(),ppr.getGroupStatements(), ppr.getWhereStatements());
+        SearchParams useless = new SearchParams();//创建无用挂件，保证mapper解析不失败
+        useless.setSearchMap(new HashMap<>());
+        if (  ppr.getGroupStatements()==null ||ppr.getGroupStatements().size()==0  ){//兼容传空条件，解释为全文检索
+            Set allFields = new HashSet();
+            List groupFields = new ArrayList();
+            Class entityClazz =ppr.getStateModel().getmClass();
+            for (Field f : EntityUtil.getFields(entityClazz)){
+                if (f.getAnnotation(Transient.class)==null){
+                    allFields.add( FieldUtil.getColumnName(f)+" as \""+f.getName()+"\"");
+                    groupFields.add( f.getName());
+                }
+            };
+            ppr.setGroupFields(groupFields);
+            ppr.setGroupStatements(allFields);
+        }
+        List<Map> list = statCommonMapper.findAll(pageRequest, useless, ppr.getTableName(), ppr.getStatStatements(),ppr.getGroupStatements(), ppr.getWhereStatements());
         SearchParamUtil.processSelectList(list,ppr,mapper);
         return list;
 
