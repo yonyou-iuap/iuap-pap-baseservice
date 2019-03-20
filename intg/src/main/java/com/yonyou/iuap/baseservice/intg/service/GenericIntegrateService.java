@@ -487,7 +487,7 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
 
     protected GenericMapper<T> genericMapper;
 
-    protected String[] feats = new String[]{"REFERENCE"};
+    protected String[] feats = new String[]{"UNI_REFERENCE"};
 
     protected abstract ServiceFeature[] getFeats();
 

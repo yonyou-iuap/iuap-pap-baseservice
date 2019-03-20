@@ -20,6 +20,7 @@ import java.util.*;
  * 远程参照反写服务,作为可插拔ServiceFeature#REMOTE_REFERENCE特性的默认实现，用于多参照微服务之间RPC调用，解决id转name问题，继续依赖Reference注解
  * <br>
  * 数据库集中存储式请参考com.yonyou.iuap.pap.base.ref.service.RefBaseCommonService
+ * @deprecated  推荐PAP3.5.6以后使用com.yonyou.iuap.baseservice.ref.service.RefUnifyService
  *
  * @author leon
  * @date 2018-12-11
@@ -78,6 +79,8 @@ public class RefRemoteService<T extends Model> implements QueryFeatureExtension<
                     cache.getFieldCache().add(field);
                     allCache.put(ref.code(), cache);
                 }
+            }else if(null != ref){
+                allCache.get(ref.code()).getFieldCache().add(field);
             }
         }
         for (Object entity : list) {

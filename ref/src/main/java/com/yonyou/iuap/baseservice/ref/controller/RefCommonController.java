@@ -2,15 +2,15 @@ package com.yonyou.iuap.baseservice.ref.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import com.yonyou.iuap.baseservice.entity.RefParamConfig;
-import com.yonyou.iuap.baseservice.entity.RefParamVO;
-import com.yonyou.iuap.baseservice.persistence.utils.RefXMLParse;
-import com.yonyou.iuap.baseservice.persistence.utils.RefXmlConstract;
 import com.yonyou.iuap.baseservice.ref.service.RefCommonService;
 import com.yonyou.iuap.pap.base.i18n.MessageSourceUtil;
+import com.yonyou.iuap.pap.base.ref.entity.RefParamConfig;
+import com.yonyou.iuap.pap.base.ref.entity.RefParamVO;
 import com.yonyou.iuap.pap.base.ref.entity.RefVertion;
 import com.yonyou.iuap.pap.base.ref.entity.RefViewModelVO;
 import com.yonyou.iuap.pap.base.ref.utils.RefUitls;
+import com.yonyou.iuap.pap.base.ref.utils.RefXMLParse;
+import com.yonyou.iuap.pap.base.ref.utils.RefXmlConstract;
 import com.yonyou.iuap.wb.utils.JsonResponse;
 import com.yonyou.uap.ieop.security.datapermission.DataPermissionCenter;
 import org.apache.commons.collections4.CollectionUtils;
@@ -100,8 +100,8 @@ public final class RefCommonController  {
 
     /**
      * 通过pk查询所有数据,String pk数组入参
-     * @param arg0
-     * @return
+     * @param vo RefViewModelVO参照入参
+     * @return id-to-name 的结果集
      */
     @RequestMapping(value = {"/matchPKRefJSON"}, method = {RequestMethod.POST})
     @ResponseBody
@@ -211,11 +211,7 @@ public final class RefCommonController  {
         return null;
     }
 
-    /**
-     * @see com.yonyou.iuap.ref.sdk.refmodel.model.AbstractTreeGridRefModel#blobRefTree(com.yonyou.iuap.ref.model.RefViewModelVO)
-     * @param refModel
-     * @return
-     */
+
     @RequestMapping(value = {"/blobRefTree"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> blobRefTree(@RequestBody RefViewModelVO refModel) {
