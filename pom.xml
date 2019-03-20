@@ -259,13 +259,13 @@
         <module>depracated/service</module>
         <module>depracated/controller</module>
         <module>depracated/entity</module>
+        <module>depracated/i18n</module>
         <module>bpm</module>
         <module>attachment</module>
         <module>ref</module>
         <module>association</module>
         <module>print</module>
         <module>multitenant</module>
-        <module>i18n</module>
         <module>intg</module>
         <module>statistics</module>
         <module>core</module>
