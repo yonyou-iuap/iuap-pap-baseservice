@@ -11,7 +11,6 @@ import com.yonyou.iuap.baseservice.support.generator.GeneratorManager;
 import com.yonyou.iuap.context.InvocationInfoProxy;
 import com.yonyou.iuap.mvc.type.SearchParams;
 import com.yonyou.iuap.pap.base.i18n.MessageSourceUtil;
-import org.apache.http.client.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -243,7 +242,7 @@ public abstract class GenericService<T extends Model>{
     protected T executeUpdate(T entity,boolean isSelective) {
         int count ;
         if(entity!=null) {
-            String now = DateUtils.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss SSS");
+            String now = DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss SSS");
             entity.setLastModified(now);
             entity.setLastModifyUser(InvocationInfoProxy.getUserid());
             if (isSelective){
