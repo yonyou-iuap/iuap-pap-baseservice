@@ -11,7 +11,6 @@ import com.yonyou.iuap.baseservice.ref.dao.mapper.RefCommonMapper;
 import com.yonyou.iuap.mvc.type.SearchParams;
 import com.yonyou.iuap.pap.base.ref.entity.RefParamConfig;
 import com.yonyou.iuap.pap.base.ref.entity.RefParamVO;
-import com.yonyou.iuap.pap.base.ref.service.RefBaseCommonService;
 import com.yonyou.iuap.pap.base.ref.utils.RefXMLParse;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -42,9 +41,6 @@ public  class RefCommonService<T extends Model>  implements QueryFeatureExtensio
 
     @Autowired
     RefCommonMapper mapper;
-    @Autowired
-    RefBaseCommonService refBaseCommonService;
-
 
     public List<Map<String, Object>> getFilterRef(String tablename, String idfield,
                                                   List<String> extColumns, List<String> ids) {
