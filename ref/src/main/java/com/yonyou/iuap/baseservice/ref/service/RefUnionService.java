@@ -9,6 +9,7 @@ import com.yonyou.iuap.mvc.type.SearchParams;
 import com.yonyou.iuap.pap.base.ref.utils.RefIdToNameUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -20,6 +21,7 @@ import java.util.*;
  * @date 2019/3/20
  * @since 3.5.6
  */
+@Service
 public class RefUnionService<T extends Model> implements QueryFeatureExtension<T> {
     private static Logger logger = LoggerFactory.getLogger(RefUnionService.class);
     private Class modelClass;
@@ -138,7 +140,7 @@ public class RefUnionService<T extends Model> implements QueryFeatureExtension<T
                     for (int i = 0; i < loopSize; i++) {
                         List<String> reflectValues = new ArrayList<>();  //装载待反写field的值
                         for (Map<String, Object> refData : fieldRefData) {//取出参照缓存数据集
-                            reflectValues.add( String.valueOf(refData.get(refContext.getRef().srcProperties()[i]  ))  )  ;
+                            reflectValues.add( String.valueOf(refData.get(refContext.getRef().srcProperties()[i].toLowerCase()  ))  )  ;//统一按小写处理
                         }
                         String fieldValue = ArrayUtil.join(reflectValues.toArray(), ",");
                         ReflectUtil.setFieldValue(entity, refContext.getRef().desProperties()[i], fieldValue); //执行反写
