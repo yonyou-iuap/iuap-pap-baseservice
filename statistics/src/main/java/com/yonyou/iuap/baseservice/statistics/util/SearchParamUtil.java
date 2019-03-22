@@ -234,127 +234,94 @@ public class SearchParamUtil {
         }
         /**
          * @Step 1
-         * 解析参照配置,获取参照字段id集合,用于后续参照查询
+         * 一次遍历,获取参照字段id集合,用于@Step 2
          */
+        Map<String, Map<Field, Set<String>>> refFieldIds = new HashMap<>();//key为refcode,value为idCache
         Map<Field, Set<String>> idCache = new HashMap<>(); //缓存list中的所有entity属性参照内的id
         Map<Field, Reference> refCache = new HashMap<>();//缓存entity中的所有@Reference定义
-        Map<Field, List<Map<String, Object>>> refDataCache = new HashMap<>();//缓存参照数据,用于最后的反写
-        boolean isFirst = true;
-        for (Map statResult : selectList) {
+        Map<String, List<String>> utilParam = new HashMap<>(); //调util时的入参
+        for (Map row : selectList) {
             for (String fieldName : pr.getGroupFields()) {
                 Field field = ReflectUtil.getField(pr.getStateModel().getmClass(), fieldName);
                 Reference ref = field.getAnnotation(Reference.class);
                 if (ref != null) {
-                    if (isFirst) { //  提高缓存装载效率,仅加载一次
-                        refCache.put(field, ref); //将所有参照和field的关系缓存起来后续使用
+                    if (idCache.get(field)==null) { //  提高缓存装载效率,仅加载一次
                         idCache.put(field, new HashSet<String>());
                     }
                     refCache.put(field, ref); //将所有参照和field的关系缓存起来后续使用
-                    if (null != statResult.get(fieldName)) {
-                        String[] fieldIds = statResult.get(fieldName).toString().split(",");//兼容参照多选
+                    if (null != row.get(fieldName)) {
+                        String[] fieldIds = row.get(fieldName).toString().split(",");//兼容参照多选
                         idCache.get(field).addAll(Arrays.asList(fieldIds));
+
                     }
+                    if (refFieldIds.get(ref.code())==null){
+                        refFieldIds.put(ref.code(),idCache);
+                    }
+                    List ids = new ArrayList();
+                    ids.addAll(idCache.get(field));
+                    utilParam.put(ref.code(),ids);
                 }
             }
-            isFirst = false;
         }
         /**
-         * @Step 2解析参照配置, 一次按需(idCache)加载参照数据(远程与本地略有不同)
+         * @Step 2解析参照配置, 一次按需(idCache)加载参照数据(远程与本地统一处理)
+         * 返回结果重新整理到refDataCache,为@Step 3 做准备
          */
-        Map<String, Set> remoteRefs = new HashMap<>();
-        for (Field field : refCache.keySet()) {
-            Set<String> setList = new HashSet<>(idCache.get(field));//id去重
-            if (setList == null || setList.size() == 0) {//无ID直接跳过，进入下个field
-                continue;
-            }
-            String refCode=refCache.get(field).code();
-            RefParamVO refParamVO = RefXMLParse.getInstance().getReParamConfig(refCode);
-
-            List<Map<String, Object>> refContents = null;
-            if (refParamVO == null) {//远程参照先集中查询参数
-                if (remoteRefs.containsKey( refCode)) {
-                    remoteRefs.get(refCode).addAll(setList);
-                } else {
-                    remoteRefs.put(refCode, setList);
-                }
-            } else {//内部参照直接加载数据库
-                RefParamConfig refParamConfig = refParamVO.getRefParamConfigTable() == null ? refParamVO.getRefParamConfigTableTree() : refParamVO.getRefParamConfigTable();
-                if ( refParamConfig == null) {
-                    logger.warn("ref.XML config error:" + refCache.get(field).code());
-                    continue;
-                }
-                List ids = new ArrayList();
-                ids.addAll(setList);
-                refContents =
-                        mapper.findRefListByIds(refParamConfig.getTableName(),
-                                refParamConfig.getId(), refParamConfig.getExtension(), ids);
-            }
-            if (null != refContents && refContents.size() > 0)
-                refDataCache.put(field, refContents);//将所有参照数据集和field的关系缓存起来后续使用
+        Map<Field, Map<String, Map<String,Object>>> refDataCache = new HashMap<>();//key为参照field;value.key为field内的id,value.value为id对应的参照数据
+        Map<String, List<Map<String, Object>>> utilResult =null;
+        try {
+            utilResult = RefIdToNameUtil.convertIdToName(utilParam);
+        } catch (Exception e) {
+            logger.error("unified ref-id2name service calling error：" + utilParam, e);
         }
-        if (remoteRefs.size() > 0) {//利用总结好的参数一次性调用远程参照服务
-            for (String refCode : remoteRefs.keySet()) {
-                try {
-                    List ids = new ArrayList();
-                    ids.addAll(remoteRefs.get(refCode));
-                    List<Map<String, Object>> refContents = RefIdToNameUtil.convertIdToName(refCode, ids);//调用pap—base—ref的工具类进行远程调用
-                    for (Map refContent : refContents) { //遍历结果集，找对应的field，分配反写值
-                        for (Field field : refCache.keySet()) {
-                            List<Map<String, Object>> refFieldData = new ArrayList<>();
-                            if (refCache.get(field).code().equals(refCode)) {
-                                for (String id: idCache.get(field)){
-                                    if (id.equals( refContent.get("ID") ) || id.equals( refContent.get("id") )|| id.equals( refContent.get("refpk"))   ){
-                                        refFieldData.add(refContent);
-                                    }
-                                }
-                            }
-                            if (refDataCache.containsKey(field)){//防止缓存的正确值被覆盖掉
-                                refDataCache.get(field).addAll(refFieldData);
-                            }else{
-                                refDataCache.put(field, refFieldData);
+        //utilResult都是按refcode分组的数据,我们反写都是基于field的,需要重新格式化到refDataCache中
+        if (null != utilResult && utilResult.size() > 0){
+            for (String refCode:utilResult.keySet()){
+                for (Map<String,Object> refContent :utilResult.get(refCode) ){
+                    for (Field field : refCache.keySet()) {
+                        Map<String,Map<String,Object>> refFieldData = new HashMap<>();
+                        for (String id: refFieldIds.get(refCode).get(field)){
+                            if (id.equals( refContent.get("ID") ) || id.equals( refContent.get("id") )|| id.equals( refContent.get("refpk"))   ){
+                                refFieldData.put(id,refContent);
                             }
                         }
+                        if (refDataCache.containsKey(field)){//防止缓存的正确值被覆盖掉
+                            refDataCache.get(field).putAll(refFieldData);
+                        }else{
+                            refDataCache.put(field, refFieldData);
+                        }
                     }
-                } catch (Exception e) {
-                    logger.error("remote ref-id2name service calling error：" + refCode, e);
                 }
             }
+        }else{
+            logger.error("unified ref-id2name service returning nothing! :" + utilParam);
+            return;
         }
 
         /**
-         * @Step 3 逐条遍历业务结果集,向entity参照指定属性写入参照值
+         * @Step 3 二次遍历,执行反写
          */
-        if (refDataCache.isEmpty()) {
-            return;
-        }
-        for (Map statResult : selectList) { //遍历结果集
+        for (Map row : selectList) { //遍历结果集
             for (Field refField : refCache.keySet()) {//遍历缓存的entity的全部参照字段
                 if (refDataCache.get(refField) == null) {
                     continue;//没有参照数据缓存,就不用后面的反写了,直接下一个参照字段
                 }
-                if (statResult.get(refField.getName()) == null) {
+                if (row.get(refField.getName()) == null) {
                     continue; // 参照field id值为空,则跳过本field数据解析
                 }
-                String refFieldValue = statResult.get(refField.getName()).toString();//取参照字段值
-                Reference refAnnotation = refCache.get(refField);
-                String[] mutiRefIds = refFieldValue.split(",");     //参照字段值转数组
-                String[] mutiRefValues = new String[mutiRefIds.length];  //定义结果载体
-                int loopSize = Math.min(refAnnotation.srcProperties().length, refAnnotation.desProperties().length);//参照配置多字段参照时需结构匹配
+                String refFieldValue = row.get(refField.getName()).toString();//取参照字段值
+                Reference reference = refCache.get(refField);
+                String[] ids = refFieldValue.split(",");     //参照字段值转数组
+                String[] writeValues = new String[ids.length];  //定义结果载体
+                int loopSize = Math.min(reference.srcProperties().length, reference.desProperties().length);//参照配置多字段参照时需结构匹配
                 for (int i = 0; i < loopSize; i++) {                //遍历参照中配置的多个srcPro和desPro 进行值替换
-                    String srcCol = refAnnotation.srcProperties()[i];  //参照表name字段
-                    String desField = refAnnotation.desProperties()[i]; //entity对应参照value的字段
-                    List<Map<String, Object>> refDatas = refDataCache.get(refField);//取出参照缓存数据集
-                    for (Map<String, Object> refData : refDatas) {
-                        for (int j = 0; j < mutiRefIds.length; j++) {//多值参照时,循环匹配拿到结果进行反写
-                            if (  mutiRefIds[j].equals(refData.get("ID"))  || mutiRefIds[j].equals(refData.get("id")) || mutiRefIds[j].equals(refData.get("refpk"))  ) { //数据库适配时 mysql也要将此字段as ID
-                                for (String columnKey : refData.keySet()) {//解决大小写适配问题
-                                    if (columnKey.equalsIgnoreCase(srcCol))
-                                        mutiRefValues[j] = String.valueOf(refData.get(columnKey));
-                                }
-                            }
-                        }
+                    String srcCol = reference.srcProperties()[i];  //参照表name字段
+                    String desField = reference.desProperties()[i]; //entity对应参照value的字段
+                    for (int j = 0; j < ids.length; j++) {//多值参照时,循环匹配拿到结果进行反写
+                        writeValues[j]= String.valueOf( refDataCache.get(refField).get(ids[j]).get(srcCol)) ;
+
                     }
-                    statResult.put(desField, ArrayUtil.join(mutiRefValues, ","));//执行反写
+                    row.put(desField, ArrayUtil.join(writeValues, ","));//执行反写
                 }
             }
         }
