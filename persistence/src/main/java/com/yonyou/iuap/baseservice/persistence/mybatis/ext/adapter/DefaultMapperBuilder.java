@@ -1,8 +1,14 @@
 package com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ServiceLoader;
 
+import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.EntityUtil;
+import com.yonyou.iuap.baseservice.support.generator.GeneratedValue;
+import com.yonyou.iuap.baseservice.support.generator.Strategy;
+import org.apache.ibatis.executor.keygen.KeyGenerator;
+import org.apache.ibatis.executor.keygen.SelectKeyGenerator;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.MappedStatement.Builder;
 import org.apache.ibatis.mapping.SqlCommandType;
