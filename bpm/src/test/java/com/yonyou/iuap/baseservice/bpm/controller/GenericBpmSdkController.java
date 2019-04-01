@@ -1,26 +1,19 @@
 package com.yonyou.iuap.baseservice.bpm.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.yonyou.iuap.base.utils.RestUtils;
 import com.yonyou.iuap.baseservice.bpm.entity.BpmModel;
 import com.yonyou.iuap.baseservice.bpm.service.GenericBpmSdkService;
-import com.yonyou.iuap.baseservice.bpm.utils.BpmExUtil;
 import com.yonyou.iuap.baseservice.controller.GenericExController;
-import com.yonyou.iuap.context.InvocationInfoProxy;
 import com.yonyou.iuap.mvc.constants.RequestStatusEnum;
 import com.yonyou.iuap.mvc.type.JsonResponse;
 import com.yonyou.iuap.persistence.vo.pub.BusinessException;
-import iuap.uitemplate.base.util.PropertyUtil;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import yonyou.bpm.rest.request.RestVariable;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 import java.util.Map;
 
 class GenericBpmSdkController<T extends BpmModel> extends GenericExController<T> {
@@ -29,9 +22,9 @@ class GenericBpmSdkController<T extends BpmModel> extends GenericExController<T>
     @ResponseBody
     public Object doStart(@RequestBody T entity, HttpServletRequest request) throws Exception {
         try {
-            String processDefCode = this.getAllocatedProcess(request);
+/*            String processDefCode = this.getAllocatedProcess(request);
             entity.setProcessDefineCode(processDefCode);
-            entity=service.save(entity);
+            entity=service.save(entity);*/
           //  this.service.doStartProcess(entity);
             return this.buildSuccess("流程已启动！");
         } catch (Exception exp) {
@@ -147,7 +140,7 @@ class GenericBpmSdkController<T extends BpmModel> extends GenericExController<T>
      * @param request
      * @return
      */
-    private String getAllocatedProcess(HttpServletRequest request) {
+ /*   private String getAllocatedProcess(HttpServletRequest request) {
         String checkUrl = PropertyUtil.getProperty("bpmrest.checkUrl");
         JSONObject result = RestUtils.getInstance().doGetWithSign(checkUrl, request, JSONObject.class);
         if (BpmExUtil.inst().isSuccess4CheckSubmit(result)) {
@@ -160,7 +153,7 @@ class GenericBpmSdkController<T extends BpmModel> extends GenericExController<T>
             }
         }
         throw new BusinessException("流程提交出错【资源分配中未分配流程】");
-    }
+    }*/
 
     @RequestMapping(value = "/doDelegate", method = RequestMethod.POST)
     @ResponseBody

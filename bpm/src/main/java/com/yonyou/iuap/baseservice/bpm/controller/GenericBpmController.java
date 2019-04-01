@@ -226,37 +226,38 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 	}
 
 	@Override
-	public JsonResponse doReject(Map<String, Object> map) throws Exception {
+	public JsonResponse doReject(@RequestBody Map<String, Object> map) throws Exception {
 		logger.debug("doReject");
 		return buildSuccess();
 	}
 
 	@Override
-	public JsonResponse doAddSign(Map<String, Object> map) throws Exception {
+	public JsonResponse doAddSign(@RequestBody Map<String, Object> map) throws Exception {
 		logger.debug("doAddSign");
 		return buildSuccess();
 	}
 
 	@Override
-	public JsonResponse doDelegate(Map<String, Object> map) throws Exception {
+	public JsonResponse doDelegate(@RequestBody Map<String, Object> map) throws Exception {
 		logger.debug("doDelegate");
 		return buildSuccess();
 	}
 
 	@Override
-	public JsonResponse doAssign(Map<String, Object> map) throws Exception {
+	public JsonResponse doAssign(@RequestBody Map<String, Object> map) throws Exception {
 		logger.debug("doAssign");
 		return buildSuccess();
 	}
 
 	@Override
-	public JsonResponse doWithdraw(Map<String, Object> map) throws Exception {
+	public JsonResponse doWithdraw(@RequestBody Map<String, Object> map) throws Exception {
 		logger.debug("doWithdraw");
 		return buildSuccess();
 	}
 
 	@Override
-	public JsonResponse doCompletedWithdraw(Map<String, Object> params) throws Exception {
+	@ResponseBody
+	public JsonResponse doCompletedWithdraw(@RequestBody Map<String, Object> params) throws Exception {
 		logger.debug("doCompletedWithdraw begin");
 		evalParamData(params);
         T entity=service.findById(billId);
@@ -268,13 +269,13 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 	}
 
 	@Override
-	public JsonResponse doSuspend(Map<String, Object> map) throws Exception {
+	public JsonResponse doSuspend( @RequestBody Map<String, Object> map) throws Exception {
 		logger.debug("doSuspend");
 		return buildSuccess();
 	}
 
 	@Override
-	public JsonResponse doActivate(Map<String, Object> map) throws Exception {
+	public JsonResponse doActivate(@RequestBody Map<String, Object> map) throws Exception {
 		logger.debug("doActivate");
 		return buildSuccess();
 	}
