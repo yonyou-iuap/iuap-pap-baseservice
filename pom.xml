@@ -260,7 +260,7 @@
         <module>depracated/controller</module>
         <module>depracated/entity</module>
         <module>depracated/i18n</module>
-        <!--<module>bpm</module>-->
+        <module>bpm</module>
         <module>attachment</module>
         <module>ref</module>
         <module>association</module>
