@@ -181,10 +181,19 @@ public abstract class GenericService<T extends Model>{
             if (isSelective) {
                 this.genericMapper.insertSelective(entity);
                 Map<String, Object> queryParams = new HashMap<>();
-                queryParams.put("id",entity.getId());
+                if(entity.getId()==null){
+                    queryParams.put("ts",entity.getTs());
+                }else{
+                    queryParams.put("id",entity.getId());
+                }
                 List<T> refreshed = genericMapper.queryList(queryParams);
+                //insertSelective之后的信息完整化回传
                 if (refreshed.size()>0){
-                    BeanUtils.copyProperties(refreshed.get(0) , entity);//insertSelective之后的信息完整化回传
+                    if (entity.getId()==null){
+                        BeanUtils.copyProperties(refreshed.get(refreshed.size()-1) , entity);
+                    }else {
+                        BeanUtils.copyProperties(refreshed.get(0) , entity);
+                    }
                 }
             } else
                 this.genericMapper.insert(entity);

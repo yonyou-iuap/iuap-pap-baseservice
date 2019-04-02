@@ -356,7 +356,7 @@
             <id>rc</id>
             <!-- 本模式开关控制 默认关闭false-->
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <activeByDefault>false</activeByDefault>
             </activation>
             <build>
                 <finalName>${project.artifactId}-${project.version}-RC${timestamp}</finalName>
