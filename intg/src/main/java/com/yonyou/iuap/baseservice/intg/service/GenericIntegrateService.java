@@ -414,6 +414,10 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
      */
     @Override
     public int delete(Serializable id) {
+        if (id == null) {
+            log.info(" input parameter[id] is null,deleting nothing", id);
+            return 0;
+        }
         Map params = new  HashMap <>();
         params.put("id",id);
         List<T> ls = genericMapper.queryList(params);
