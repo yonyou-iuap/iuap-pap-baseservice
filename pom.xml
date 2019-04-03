@@ -19,7 +19,7 @@
         <iuap.module.version>3.1.0-RELEASE</iuap.module.version>
         <eiap.module.version>3.5.6-SNAPSHOT</eiap.module.version>
         <pap.module.version>3.5.6-SNAPSHOT</pap.module.version>
-        <spring.verison>4.0.5.RELEASE</spring.verison>
+        <spring.verison>5.1.3.RELEASE</spring.verison>
     </properties>
 
     <dependencyManagement>
@@ -27,12 +27,7 @@
             <dependency>
                 <groupId>com.yonyou.iuap</groupId>
                 <artifactId>ucf-dao</artifactId>
-            </dependency>
-            <dependency>
-                <groupId>com.yonyou.iuap</groupId>
-                <artifactId>iuap-file</artifactId>
-                <version>3.1.1-RELEASE</version>
-                <scope>compile</scope>
+                <version>1.0.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.yonyou.iuap.pap.bpm</groupId>
@@ -43,33 +38,83 @@
                 <groupId>com.yonyou.iuap.pap</groupId>
                 <artifactId>eiap-plus-common</artifactId>
                 <version>${eiap.module.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.yonyou.iuap.pap</groupId>
+                        <artifactId>iuap-authrbac-sdk</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.yonyou.iuap.pap.base</groupId>
                 <artifactId>pap_base_i18n</artifactId>
                 <version>${pap.module.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>fastjson</artifactId>
-                <version>1.2.38</version>
-            </dependency>
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>4.11</version>
-                <scope>test</scope>
-            </dependency>
 
-            <dependency>
-                <groupId>com.yonyou.iuap.pap.authrbac</groupId>
-                <artifactId>iuap-authrbac-sdk</artifactId>
-                <version>${eiap.module.version}</version>
-            </dependency>
             <dependency>
                 <groupId>com.yonyou.iuap.pap.authrbac</groupId>
                 <artifactId>iuap-authrbac-common</artifactId>
                 <version>${eiap.module.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.yonyou.iuap</groupId>
+                <artifactId>iuap-utils</artifactId>
+                <version>${iuap.module.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.yonyou.iuap.pap.base</groupId>
+                <artifactId>pap_base_comp_ref</artifactId>
+                <version>${pap.module.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.yonyou.iuap</groupId>
+                <artifactId>iuap-sign</artifactId>
+                <version>${iuap-sign.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>io.springside</groupId>
+                        <artifactId>springside-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.shiro</groupId>
+                        <artifactId>shiro-web</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>net.sf.json-lib</groupId>
+                        <artifactId>json-lib</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.bouncycastle</groupId>
+                        <artifactId>bcpg-jdk16</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.owasp.esapi</groupId>
+                        <artifactId>esapi</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.yonyou.iuap</groupId>
+                        <artifactId>iuap-utils</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.yonyou.iuap</groupId>
+                        <artifactId>iuap-log</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>commons-codec</groupId>
+                        <artifactId>commons-codec</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>commons-beanutils</groupId>
+                        <artifactId>commons-beanutils</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
             </dependency>
             <dependency>
                 <groupId>org.hibernate.javax.persistence</groupId>
@@ -118,105 +163,9 @@
                 <version>3.1.0</version>
                 <scope>provided</scope>
             </dependency>
-
-            <dependency>
-                <groupId>com.yonyou.iuap</groupId>
-                <artifactId>iuap-mybatis</artifactId>
-                <version>3.2.3-RC001</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.yonyou.iuap</groupId>
-                <artifactId>iuap-generic</artifactId>
-                <version>${iuap.module.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.yonyou.iuap</groupId>
-                <artifactId>iuap-utils</artifactId>
-                <version>${iuap.module.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.mybatis</groupId>
-                <artifactId>mybatis-spring</artifactId>
-                <version>1.2.3</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-core</artifactId>
-                <version>${spring.verison}</version>
-            </dependency>
-
-
             <dependency>
                 <groupId>org.springframework.data</groupId>
                 <artifactId>spring-data-commons</artifactId>
-                <version>1.8.0.RELEASE</version>
-            </dependency>
-
-
-            <dependency>
-                <groupId>dom4j</groupId>
-                <artifactId>dom4j</artifactId>
-                <version>1.6.1</version>
-            </dependency>
-            <dependency>
-                <groupId>com.yonyou.iuap.pap.base</groupId>
-                <artifactId>pap_base_comp_ref</artifactId>
-                <version>${pap.module.version}</version>
-            </dependency>
-
-
-            <dependency>
-                <groupId>com.yonyou.iuap</groupId>
-                <artifactId>iuap-sign</artifactId>
-                <version>${iuap-sign.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>io.springside</groupId>
-                        <artifactId>springside-core</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.shiro</groupId>
-                        <artifactId>shiro-web</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>net.sf.json-lib</groupId>
-                        <artifactId>json-lib</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.bouncycastle</groupId>
-                        <artifactId>bcpg-jdk16</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.owasp.esapi</groupId>
-                        <artifactId>esapi</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.yonyou.iuap</groupId>
-                        <artifactId>iuap-utils</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.yonyou.iuap</groupId>
-                        <artifactId>iuap-log</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>commons-codec</groupId>
-                        <artifactId>commons-codec</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>commons-beanutils</groupId>
-                        <artifactId>commons-beanutils</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-api</artifactId>
-                <version>RELEASE</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
@@ -224,21 +173,15 @@
                 <version>4.4.1</version>
             </dependency>
             <dependency>
-                <groupId>commons-io</groupId>
-                <artifactId>commons-io</artifactId>
-                <version>2.4</version>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>RELEASE</version>
             </dependency>
             <dependency>
-                <groupId>commons-lang</groupId>
-                <artifactId>commons-lang</artifactId>
-                <version>2.5</version>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.12</version>
             </dependency>
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-classic</artifactId>
-                <version>1.1.2</version>
-            </dependency>
-
             <dependency>
                 <groupId>org.apache.poi</groupId>
                 <artifactId>poi-ooxml</artifactId>
@@ -246,6 +189,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
 
     <pluginRepositories>
         <pluginRepository>
@@ -263,13 +207,7 @@
 
 
     <modules>
-        <module>depracated/persistence</module>
-        <module>depracated/service</module>
-        <module>depracated/controller</module>
-        <module>depracated/entity</module>
-        <module>depracated/i18n</module>
         <module>bpm</module>
-        <module>attachment</module>
         <module>ref</module>
         <module>association</module>
         <module>print</module>

@@ -28,11 +28,6 @@
             <artifactId>eiap-plus-common</artifactId>
         </dependency>
 		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>fastjson</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>com.yonyou.iuap.baseservice</groupId>
 			<artifactId>iuap-pap-baseservice-core</artifactId>
 			<version>${version}</version>

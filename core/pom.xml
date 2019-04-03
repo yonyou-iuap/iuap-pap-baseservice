@@ -13,6 +13,10 @@
     <artifactId>iuap-pap-baseservice-core</artifactId>
     <dependencies>
         <dependency>
+            <groupId>com.yonyou.iuap</groupId>
+            <artifactId>ucf-dao</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.yonyou.iuap.pap.base</groupId>
             <artifactId>pap_base_i18n</artifactId>
         </dependency>
@@ -20,10 +24,7 @@
             <groupId>com.yonyou.iuap.pap</groupId>
             <artifactId>eiap-plus-common</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
@@ -43,10 +44,6 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.yonyou.iuap</groupId>
-            <artifactId>iuap-mybatis</artifactId>
         </dependency>
         <dependency>
             <groupId>dom4j</groupId>
