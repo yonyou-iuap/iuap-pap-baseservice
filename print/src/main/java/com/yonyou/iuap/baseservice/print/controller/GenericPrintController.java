@@ -5,9 +5,12 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.yonyou.iuap.base.web.BaseController;
 import com.yonyou.iuap.baseservice.entity.annotation.Associative;
-import com.yonyou.iuap.baseservice.intg.service.GenericIntegrateService;
+import com.yonyou.iuap.baseservice.intg.service.GenericUcfService;
 import com.yonyou.iuap.baseservice.print.entity.Printable;
 import com.yonyou.iuap.mvc.constants.RequestStatusEnum;
+import com.yonyou.iuap.ucf.common.entity.Identifier;
+import com.yonyou.iuap.ucf.dao.description.Persistence;
+import com.yonyou.iuap.ucf.dao.support.UcfSearchParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +31,7 @@ import java.util.Set;
  * 2018年7月20日
  */
 @SuppressWarnings("all")
-public abstract  class GenericPrintController<T extends Printable> extends BaseController {
+public abstract  class GenericPrintController<T extends Printable& Identifier<ID>& Persistence,ID extends Serializable> extends BaseController {
     private Logger log = LoggerFactory.getLogger(GenericPrintController.class);
 
     @RequestMapping(value = "/dataForPrint", method = RequestMethod.POST)
@@ -37,7 +41,7 @@ public abstract  class GenericPrintController<T extends Printable> extends BaseC
 		JSONObject jsonObj = JSON.parseObject(params);
 		String id = (String) jsonObj.get("id");
 		
-		T vo = service.findById(id);
+		T vo = service.findUnique("id",id);
         if (vo.getMainBoCode()==null){
             return buildError("mainBoCode","主表业务对象编码为打印关键参数不可为空",RequestStatusEnum.FAIL_FIELD);
         }
@@ -70,7 +74,7 @@ public abstract  class GenericPrintController<T extends Printable> extends BaseC
             if (associative==null|| StringUtils.isEmpty(associative.fkName())){
                 return buildError("","主子表打印需要在entity上增加@Associative并指定fkName",RequestStatusEnum.FAIL_FIELD);
             }
-            List subList= subServices.get(subBoCode).queryList(associative.fkName(),id);
+            List subList= subServices.get(subBoCode).queryList(UcfSearchParams.of( subServices.get(subBoCode).getModelClass() ).addEqualCondition( associative.fkName(),id  ).getSearchMap());
             JSONArray childrenDataJson = new JSONArray();
             childrenDataJson.addAll(subList);
             boAttr.put(subBoCode, childrenDataJson);//子表填充
@@ -83,13 +87,13 @@ public abstract  class GenericPrintController<T extends Printable> extends BaseC
 
 
     /************************************************************/
-    private Map<String ,GenericIntegrateService> subServices = new HashMap<>();
-    private GenericIntegrateService<T> service;
+    private Map<String , GenericUcfService> subServices = new HashMap<>();
+    private GenericUcfService<T,ID> service;
 
-    protected void setService(GenericIntegrateService<T> genericService) {
+    protected void setService(GenericUcfService<T,ID> genericService) {
         this.service = genericService;
     }
-    protected void setSubService(String subBoCode, GenericIntegrateService subService) {
+    protected void setSubService(String subBoCode, GenericUcfService subService) {
         subServices.put(subBoCode,subService);
 
     }

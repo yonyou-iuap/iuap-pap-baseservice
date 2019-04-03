@@ -3,12 +3,14 @@ package com.yonyou.iuap.baseservice.controller;
 import com.yonyou.iuap.base.web.BaseController;
 import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.entity.annotation.Associative;
-import com.yonyou.iuap.baseservice.intg.service.GenericIntegrateService;
+import com.yonyou.iuap.baseservice.intg.service.GenericUcfService;
 import com.yonyou.iuap.baseservice.service.GenericAssoService;
 import com.yonyou.iuap.baseservice.vo.GenericAssoVo;
 import com.yonyou.iuap.mvc.constants.RequestStatusEnum;
 import com.yonyou.iuap.mvc.type.JsonResponse;
 import com.yonyou.iuap.mvc.type.SearchParams;
+import com.yonyou.iuap.ucf.common.entity.Identifier;
+import com.yonyou.iuap.ucf.dao.description.Persistence;
 import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +31,7 @@ import java.io.Serializable;
  */
 
 @Transactional
-public abstract  class GenericAssoController<T extends Model> extends BaseController {
+public abstract  class GenericAssoController<T extends Persistence& Identifier<ID>,ID extends Serializable> extends BaseController {
     private Logger log = LoggerFactory.getLogger(GenericAssoController.class);
 
 
@@ -86,8 +88,6 @@ public abstract  class GenericAssoController<T extends Model> extends BaseContro
             for (T entity:entities){
                 if (StringUtils.isEmpty(entity.getId())) {
                     return this.buildError("ID", "ID field is empty:"+entity.toString(), RequestStatusEnum.FAIL_FIELD);
-                } else if (StringUtils.isEmpty(entity.getTs())) {
-                    return this.buildError("TS", "TS field is empty:"+entity.toString(), RequestStatusEnum.FAIL_FIELD);
                 } else {
                     result += this.service.deleAssoVo(entity, annotation);
 
@@ -102,13 +102,13 @@ public abstract  class GenericAssoController<T extends Model> extends BaseContro
 
     /************************************************************/
 //    private Map<Class ,GenericService> subServices = new HashMap<>();
-    private GenericAssoService<T> service;
+    private GenericAssoService<T,ID> service;
 
-    protected void setService(GenericAssoService<T> genericService) {
+    protected void setService(GenericAssoService<T,ID> genericService) {
         this.service = genericService;
     }
 
-    protected void setSubService(Class entityClass, GenericIntegrateService subService) {
+    protected void setSubService(Class entityClass, GenericUcfService subService) {
         service.setSubService( entityClass,subService  );
     }
 

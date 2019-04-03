@@ -5,7 +5,8 @@ import com.yonyou.iuap.baseservice.persistence.support.DeleteFeatureExtension;
 import com.yonyou.iuap.baseservice.persistence.support.QueryFeatureExtension;
 import com.yonyou.iuap.baseservice.persistence.support.SaveFeatureExtension;
 import com.yonyou.iuap.context.InvocationInfoProxy;
-import com.yonyou.iuap.mvc.type.SearchParams;
+import com.yonyou.iuap.ucf.common.entity.Identifier;
+import com.yonyou.iuap.ucf.common.rest.SearchParams;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -13,10 +14,10 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class MultenCommonService<T extends MultiTenant> implements QueryFeatureExtension<T>,SaveFeatureExtension<T> ,DeleteFeatureExtension<T> {
+public class MultenCommonService<T extends MultiTenant & Identifier> implements QueryFeatureExtension<T>,SaveFeatureExtension<T> ,DeleteFeatureExtension<T> {
 
     @Override
-    public SearchParams prepareQueryParam(SearchParams searchParams,Class modelClass) {
+    public SearchParams prepareQueryParam(SearchParams searchParams, Class modelClass) {
         Map<String,Object> searchMap=searchParams.getSearchMap();
         String tenantidInMap=String.valueOf(searchMap.get("tenantid"));
         if(StringUtils.isEmpty(tenantidInMap)|| "null".equals(tenantidInMap)){

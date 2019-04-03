@@ -5,12 +5,14 @@ import com.yonyou.iuap.baseservice.bpm.utils.BpmExUtil;
 import com.yonyou.iuap.baseservice.persistence.support.DeleteFeatureExtension;
 import com.yonyou.iuap.baseservice.persistence.support.SaveFeatureExtension;
 import com.yonyou.iuap.persistence.vo.pub.BusinessException;
+import com.yonyou.iuap.ucf.common.entity.Identifier;
 import org.springframework.stereotype.Service;
 
+import java.io.Serializable;
 import java.util.Map;
 
 @Service
-public class BpmCommonService<T extends BpmSimpleModel> implements SaveFeatureExtension<T>, DeleteFeatureExtension<T> {
+public class BpmCommonService<T extends BpmSimpleModel& Identifier<ID>,ID extends Serializable> implements SaveFeatureExtension<T>, DeleteFeatureExtension<T> {
 
 
     /**

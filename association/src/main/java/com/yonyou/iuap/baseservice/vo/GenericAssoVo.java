@@ -1,6 +1,7 @@
 package com.yonyou.iuap.baseservice.vo;
 
 import com.yonyou.iuap.baseservice.entity.Model;
+import com.yonyou.iuap.ucf.common.entity.Identifier;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -12,7 +13,7 @@ import java.util.Map;
  *
  * @param <T> 主表类对象限定为Model,否则无法装填数据
  */
-public class GenericAssoVo<T extends Model> implements Serializable {
+public class GenericAssoVo<T extends Identifier> implements Serializable {
 
 
     protected T entity; //主表对象

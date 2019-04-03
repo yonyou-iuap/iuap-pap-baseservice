@@ -2,11 +2,11 @@ package com.yonyou.iuap.baseservice.ref.service;
 
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
-import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.entity.annotation.Reference;
 import com.yonyou.iuap.baseservice.persistence.support.QueryFeatureExtension;
-import com.yonyou.iuap.mvc.type.SearchParams;
 import com.yonyou.iuap.pap.base.ref.utils.RefIdToNameUtil;
+import com.yonyou.iuap.ucf.common.entity.Identifier;
+import com.yonyou.iuap.ucf.common.rest.SearchParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ import java.util.*;
  * @since 3.5.6
  */
 @Service
-public class RefUnionService<T extends Model> implements QueryFeatureExtension<T> {
+public class RefUnionService<T extends Identifier> implements QueryFeatureExtension<T> {
     private static Logger logger = LoggerFactory.getLogger(RefUnionService.class);
     private Class modelClass;
 
