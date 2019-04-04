@@ -63,8 +63,7 @@ public abstract  class GenericAssoController<T extends Persistence& Identifier<I
     @ResponseBody
     public Object  saveAssoVo(@RequestBody GenericAssoVo<T> vo){
         Associative annotation= vo.getEntity().getClass().getAnnotation(Associative.class);
-        if (annotation==null|| StringUtils.isEmpty(annotation.fkName())){
-            return buildError("","Nothing got @Associative or without fkName",RequestStatusEnum.FAIL_FIELD);
+        if (annotation==null|| StringUtils.isEmpty(annotation.fkName())){            return buildError("","Nothing got @Associative or without fkName",RequestStatusEnum.FAIL_FIELD);
         }
         Object result =service.saveAssoVo(vo,annotation);
         return this.buildSuccess(result) ;
