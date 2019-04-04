@@ -1,7 +1,7 @@
 package com.yonyou.iuap.baseservice.bpm.entity;
 
 /**
- * TODO description
+ * 流程状态,作用于业务实体
  *
  * @author leon
  * @date 2019/4/4
