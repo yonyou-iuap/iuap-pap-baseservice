@@ -1,7 +1,9 @@
 package com.yonyou.iuap.baseservice.ref.dao.mapper;
 
+import com.yonyou.iuap.mybatis.anotation.MyBatisRepository;
 import com.yonyou.iuap.mybatis.type.PageResult;
-import com.yonyou.iuap.persistence.mybatis.anotation.MyBatisRepository;
+import com.yonyou.iuap.ucf.dao.BaseDAO;
+import com.yonyou.iuap.ucf.dao.BasePO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.PageRequest;
 
@@ -15,7 +17,7 @@ import java.util.Map;
  * 
  */
 @MyBatisRepository
-public interface RefCommonMapper {
+public interface RefCommonMapper extends BaseDAO<BasePO,String> {
 
 	/**
 	 * 表型参照(包括树表和单表)--表的数据查询

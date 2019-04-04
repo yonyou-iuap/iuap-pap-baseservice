@@ -1,9 +1,9 @@
 package com.yonyou.iuap.baseservice.bpm.controller;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.yonyou.iuap.base.web.BaseController;
 import com.yonyou.iuap.baseservice.bpm.entity.BpmModel;
 import com.yonyou.iuap.baseservice.bpm.service.GenericBpmSdkService;
-import com.yonyou.iuap.baseservice.controller.GenericExController;
 import com.yonyou.iuap.mvc.constants.RequestStatusEnum;
 import com.yonyou.iuap.mvc.type.JsonResponse;
 import com.yonyou.iuap.persistence.vo.pub.BusinessException;
@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
-class GenericBpmSdkController<T extends BpmModel> extends GenericExController<T> {
+class GenericBpmSdkController<T extends BpmModel> extends BaseController  {
 
     @RequestMapping(value = "/doStart")
     @ResponseBody
@@ -186,7 +186,7 @@ class GenericBpmSdkController<T extends BpmModel> extends GenericExController<T>
 
     public void setService(GenericBpmSdkService<T> bpmService) {
         this.service = bpmService;
-        super.setService(bpmService);
+//        super.setService(bpmService);
     }
 
 }

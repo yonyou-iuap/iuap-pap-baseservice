@@ -9,11 +9,9 @@ import com.yonyou.iuap.baseservice.entity.Model;
  * @author houlf
  * 2018年6月12日
  */
-public interface BpmSimpleModel extends Model,LogicDel {
+public interface BpmSimpleModel extends Model,LogicDel,BpmState {
 
-    Integer getBpmState();
 
-    void setBpmState(Integer bpmState);
 
     String getProcessDefineCode();
 

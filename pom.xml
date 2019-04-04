@@ -207,13 +207,10 @@
 
 
     <modules>
-        <module>bpm</module>
         <module>ref</module>
         <module>association</module>
         <module>print</module>
-        <module>multitenant</module>
         <module>intg</module>
-        <module>statistics</module>
         <module>core</module>
     </modules>
     <distributionManagement>

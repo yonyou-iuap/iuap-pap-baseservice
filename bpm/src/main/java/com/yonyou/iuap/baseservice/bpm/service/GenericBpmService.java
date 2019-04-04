@@ -6,7 +6,6 @@ import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.yonyou.iuap.baseservice.bpm.entity.BpmSimpleModel;
 import com.yonyou.iuap.baseservice.bpm.utils.BpmExUtil;
-import com.yonyou.iuap.baseservice.service.GenericExService;
 import com.yonyou.iuap.bpm.pojo.BPMFormJSON;
 import com.yonyou.iuap.bpm.service.BPMSubmitBasicService;
 import com.yonyou.iuap.bpm.util.BpmRestVarType;
