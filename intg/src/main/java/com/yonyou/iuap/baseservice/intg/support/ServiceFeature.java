@@ -8,9 +8,8 @@ import java.util.List;
  */
 public enum ServiceFeature {
     MULTI_TENANT("com.yonyou.iuap.baseservice.multitenant.service.MultenCommonService"),//多租户隔离特性
-    AUDIT_TRAIL("com.yonyou.iuap.baseservice.intg.ext.AuditTrailCommonService"),//审计追踪信息
-    UNION_REFERENCE("com.yonyou.iuap.baseservice.ref.service.RefUnionService"),//本地及远程参照统一解析特性
-    BPM("com.yonyou.iuap.baseservice.bpm.service.BpmCommonService"),//流程特性
+    AUDIT_TRAIL("com.yonyou.iuap.baseservice.intg.ext.ExtAuditTrailService"),//审计追踪信息
+    REF("com.yonyou.iuap.baseservice.intg.ext.ExtReferenceService"),//本地及远程参照统一解析特性
     OTHER("java.lang.Class"),//其他，用于客户化扩展特性加载
 
 //    PRINT(GenericAtService.class )

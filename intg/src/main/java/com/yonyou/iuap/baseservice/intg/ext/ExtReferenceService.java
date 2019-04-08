@@ -1,4 +1,4 @@
-package com.yonyou.iuap.baseservice.ref.service;
+package com.yonyou.iuap.baseservice.intg.ext;
 
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
@@ -22,8 +22,8 @@ import java.util.*;
  * @since 3.5.6
  */
 @Service
-public class RefUnionService<T extends Identifier> implements QueryFeatureExtension<T> {
-    private static Logger logger = LoggerFactory.getLogger(RefUnionService.class);
+public class ExtReferenceService<T extends Identifier> implements QueryFeatureExtension<T> {
+    private static Logger logger = LoggerFactory.getLogger(ExtReferenceService.class);
     private Class modelClass;
 
     @Override

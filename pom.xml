@@ -207,7 +207,6 @@
 
 
     <modules>
-        <module>ref</module>
         <module>association</module>
         <module>print</module>
         <module>intg</module>

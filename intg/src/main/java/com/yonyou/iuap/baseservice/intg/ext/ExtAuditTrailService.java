@@ -18,7 +18,7 @@ import java.util.Date;
  * @since UCF1.0
  */
 @Service
-public class AuditTrailCommonService<T extends Identifier& AuditTrail>  implements SaveFeatureExtension<T> {
+public class ExtAuditTrailService<T extends Identifier& AuditTrail>  implements SaveFeatureExtension<T> {
     @Override
     public T prepareEntityBeforeSave(T entity) {
         if(entity.getId()== null){
