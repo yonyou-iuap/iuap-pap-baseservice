@@ -287,7 +287,7 @@ public abstract class GenericUcfService <T  extends Persistence & Identifier<ID>
      */
     public T save(T entity) {
         boolean isNew = false;					//是否新增数据
-        if(entity instanceof Model) {
+        if(entity != null) {
             if(entity.getId()==null) {
                 isNew = true;
             }else {
@@ -295,11 +295,10 @@ public abstract class GenericUcfService <T  extends Persistence & Identifier<ID>
             }
         }
         if(isNew) {
-             genericMapper.insertSelective(entity);
+            return executeInsert(entity,true);
         }else {
-             genericMapper.updateSelective(entity);
+            return executeUpdate(entity,true);
         }
-        return entity;
     }
     /**
      * 在GenericService#executeInsert()上进行重载+埋点,

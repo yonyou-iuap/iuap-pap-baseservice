@@ -6,7 +6,7 @@ package com.yonyou.iuap.baseservice.entity;
  * @author jhb
  * 2018年8月8日
  */
-public interface MultiTenant extends Model {
+public interface MultiTenant  {
     public String getTenantid();
     public void setTenantid(String tenantid);
 
