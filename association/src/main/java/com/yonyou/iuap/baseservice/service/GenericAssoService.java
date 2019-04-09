@@ -35,7 +35,7 @@ public abstract class GenericAssoService<T extends Persistence & Identifier<ID>,
 
 
     @Transactional
-    public GenericAssoVo getAssoVo(PageRequest pageRequest,
+    public GenericAssoVo<T> getAssoVo(PageRequest pageRequest,
                                    SearchParams searchParams) {
         Serializable id = MapUtils.getString(searchParams.getSearchMap(), "id");
         T entity = super.findUnique("id", id);

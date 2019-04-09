@@ -208,7 +208,6 @@
 
     <modules>
         <module>association</module>
-        <module>print</module>
         <module>intg</module>
         <module>core</module>
     </modules>
