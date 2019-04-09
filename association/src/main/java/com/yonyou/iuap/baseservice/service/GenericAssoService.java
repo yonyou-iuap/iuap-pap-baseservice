@@ -67,7 +67,7 @@ public abstract class GenericAssoService<T extends Persistence & Identifier<ID>,
     @Transactional
     public int deleAssoVo(T entity, Associative annotation) {
         int deleted = 0;
-        deleted = super.delete(entity);
+        deleted = super.delete(entity.getId());
         if (annotation.deleteCascade()) {//是否联删除的标识
             for (Class assoKey : subServices.keySet()) {
                 GenericUcfService subSer = subServices.get(assoKey);
