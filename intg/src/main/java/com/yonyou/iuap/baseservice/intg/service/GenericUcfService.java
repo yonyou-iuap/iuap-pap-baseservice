@@ -15,7 +15,6 @@ import com.yonyou.iuap.ucf.dao.BaseDAO;
 import com.yonyou.iuap.ucf.dao.BasePO;
 import com.yonyou.iuap.ucf.dao.description.Persistence;
 import com.yonyou.iuap.ucf.dao.support.UcfSearchParams;
-import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,14 +35,14 @@ import java.util.*;
  * @date 2019/4/3
  * @since UCF1.0
  */
-@SuppressWarnings("rawtype")
+@SuppressWarnings("ALL")
 public abstract class GenericUcfService <T  extends Persistence & Identifier<ID>, ID extends Serializable>{
 
     private static Logger log = LoggerFactory.getLogger(GenericUcfService.class);
     private static final String LOG_TEMPLATE= MessageSourceUtil.getMessage("ja.int.ser2.0001", "特性组件{}的未实现{}扩展") ;
 
 
-    protected BaseDAO<T,ID> genericMapper;
+    protected BaseDAO<T,ID> baseDAO;
     protected String[] feats = new String[]{"UNI_REFERENCE"};
     protected Set<QueryFeatureExtension> customQueryExts;     //客户自定义的查询特性服务扩展点
     protected Set<SaveFeatureExtension> customSaveExts;       //客户自定义的保存特性服务扩展点
@@ -52,13 +51,13 @@ public abstract class GenericUcfService <T  extends Persistence & Identifier<ID>
 
     protected abstract ServiceFeature[] getFeats();
 
-    public void setGenericMapper(BaseDAO<T,ID> mapper ) {
+    public void setBaseDAO(BaseDAO<T,ID> mapper ) {
         setGenericMapper(mapper,new String[0]);
     }
 
     public void setGenericMapper(BaseDAO<T,ID> mapper,String... extensions ) {
         this.feats=combineFeats(extensions);
-        this.genericMapper = mapper;
+        this.baseDAO = mapper;
     }
 
     private String[] combineFeats(String[] extensions){
@@ -146,7 +145,7 @@ public abstract class GenericUcfService <T  extends Persistence & Identifier<ID>
     public Page<T> selectAllByPage(PageRequest pageRequest, SearchParams searchParams) {
 
         searchParams=prepareFeatSearchParam(searchParams);
-        Page<T> page=genericMapper.listPage(pageRequest, searchParams).getPage();
+        Page<T> page= baseDAO.listPage(pageRequest, searchParams).getPage();
         fillListFeatAfterQuery(page.getContent());
         return page;
     }
@@ -169,7 +168,7 @@ public abstract class GenericUcfService <T  extends Persistence & Identifier<ID>
         SearchParams searchParams= UcfSearchParams.of(getModelClass());
         searchParams.setSearchMap(queryParams);
         searchParams=prepareFeatSearchParam(searchParams);
-        return   fillListFeatAfterQuery(genericMapper.list(searchParams));
+        return   fillListFeatAfterQuery(baseDAO.list(searchParams));
     }
 
 
@@ -183,7 +182,7 @@ public abstract class GenericUcfService <T  extends Persistence & Identifier<ID>
         UcfSearchParams searchParams= UcfSearchParams.of(getModelClass());
         searchParams.addEqualCondition(name,value);
         prepareFeatSearchParam(searchParams);
-        List<T>listData=genericMapper.list(searchParams);
+        List<T>listData= baseDAO.list(searchParams);
         listData=fillListFeatAfterQuery(listData);
         if(listData!=null && listData.size()==1) {
             return listData.get(0);
@@ -250,7 +249,7 @@ public abstract class GenericUcfService <T  extends Persistence & Identifier<ID>
         for(T entity: listEntity ){
             prepareFeatEntity(entity);
         }
-        int savedCnt=  genericMapper.insertBatch(listEntity);
+        int savedCnt=  baseDAO.insertBatch(listEntity);
         if (savedCnt!= listEntity.size()){
             throw new RuntimeException(MessageSourceUtil.getMessage("ja.int.ser2.0007", "batch insert error!"));
         }
@@ -279,13 +278,20 @@ public abstract class GenericUcfService <T  extends Persistence & Identifier<ID>
         return savedCnt;
     }
 
-
     /**
      * 保存数据,将GenericService.save中的全值保存方式切换为selective方式
      * 不需埋点,因为其后续会调用executeInsert或executeUpdate的埋点
      * @param entity  入参转化后的业务实体,需至少实现model接口
      * @return 保存后的完整实体信息
      */
+    public T save(T entity,boolean isNew  ,boolean isSelective) {
+        if(isNew) {
+            return executeInsert(entity,isSelective);
+        }else {
+            return executeUpdate(entity,isSelective);
+        }
+    }
+
     public T save(T entity) {
         boolean isNew = false;					//是否新增数据
         if(entity != null) {
@@ -295,11 +301,7 @@ public abstract class GenericUcfService <T  extends Persistence & Identifier<ID>
                 isNew = StrUtil.isEmptyIfStr(entity.getId());
             }
         }
-        if(isNew) {
-            return executeInsert(entity,true);
-        }else {
-            return executeUpdate(entity,true);
-        }
+        return   save(entity,isNew,true);
     }
     /**
      * 在GenericService#executeInsert()上进行重载+埋点,
@@ -312,7 +314,7 @@ public abstract class GenericUcfService <T  extends Persistence & Identifier<ID>
         prepareFeatEntity(entity);
         if (entity != null) {
             if (isSelective) {
-                this.genericMapper.insertSelective(entity);
+                this.baseDAO.insertSelective(entity);
                 Map<String, Object> queryParams = new HashMap<>();
                 if(entity.getId()==null){
                     queryParams.put(entity.getDescription().getVersion().getName(),
@@ -321,7 +323,7 @@ public abstract class GenericUcfService <T  extends Persistence & Identifier<ID>
                     queryParams.put("id",entity.getId());
                 }
                 SearchParams params = UcfSearchParams.of(getModelClass()).setSearchMap(queryParams);
-                List<T> refreshed = genericMapper.list(params);
+                List<T> refreshed = baseDAO.list(params);
                 //insertSelective之后的信息完整化回传
                 if (refreshed.size()>0){
                     if (entity.getId()==null){
@@ -331,7 +333,7 @@ public abstract class GenericUcfService <T  extends Persistence & Identifier<ID>
                     }
                 }
             } else
-                this.genericMapper.insert(entity);
+                this.baseDAO.insert(entity);
             log.info("新增保存数据：\r\n" + JSONObject.fromObject(entity).toString());
         } else {
             throw new RuntimeException(MessageSourceUtil.getMessage("ja.bas.ser2.0003", "新增保存数据出错，对象为空!"));
@@ -353,9 +355,9 @@ public abstract class GenericUcfService <T  extends Persistence & Identifier<ID>
         if(entity!=null) {
             String now = DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss SSS");
             if (isSelective){
-                count = genericMapper.updateSelective(entity);
+                count = baseDAO.updateSelective(entity);
             }else{
-                count = genericMapper.update(entity);
+                count = baseDAO.update(entity);
             }
             if(count != 1) {
                 String msg=MessageSourceUtil.getMessage("ja.bas.ser2.0004", "更新保存数据出错，更新记录数=")+count+"\r\n"+JSONObject.fromObject(entity).toString();
@@ -363,7 +365,7 @@ public abstract class GenericUcfService <T  extends Persistence & Identifier<ID>
                 throw new RuntimeException(msg);
             }else if (isSelective){
                 BeanUtils.copyProperties(
-                        genericMapper.getById(entity.getId()),entity
+                        baseDAO.getById(entity.getId()),entity
                          );//updateSelective之后的信息完整化回传
             }
         }else {
@@ -423,21 +425,14 @@ public abstract class GenericUcfService <T  extends Persistence & Identifier<ID>
     public int deleteBatch(List<T> list) {
         int count = 0;
         for(T entity: list) {
-            count += this.delete(entity.getId());
+            Map params = new  HashMap <>();
+            List<ID>  ids = new ArrayList<>();
+            params.put("id",entity.getId());
+            ids.add(entity.getId());
+            prepareFeatDeleteParam(entity,params);
+            count +=baseDAO.deleteByIds(ids);
+            runFeatAfterEntityDelete(entity);
         }
-        return count;
-    }
-    /**
-     * 删除数据:核心集成点
-     * @param entity
-     * @return
-     */
-    public int delete(T entity) {
-        Map params = new  HashMap <>();
-        params.put("id",entity.getId());
-        prepareFeatDeleteParam(entity,params);
-        int count= genericMapper.delete(params);
-        runFeatAfterEntityDelete(entity);
         return count;
     }
 
@@ -451,9 +446,16 @@ public abstract class GenericUcfService <T  extends Persistence & Identifier<ID>
             log.info(" input parameter[id] is null,deleting nothing", id);
             return 0;
         }
-        T entity = genericMapper.getById(id);
+        List<ID>  ids = new ArrayList<>();
+        ids.add(id);
+        Map params = new  HashMap <>();
+        params.put("id",id);
+        T entity = baseDAO.getById(id);
+        prepareFeatDeleteParam(entity,params);
         if (entity!=null){
-            return  this.delete(entity);
+            int count=  baseDAO.deleteByIds(ids);
+            runFeatAfterEntityDelete(entity);
+            return count;
         }else{
             log.info("删除失败,无id为{}的数据",id);
 //            throw new RuntimeException("删除失败,无id为{}的数据");
