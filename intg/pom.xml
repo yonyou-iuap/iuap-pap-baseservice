@@ -28,6 +28,12 @@
         <dependency>
             <groupId>com.yonyou.iuap.pap.base</groupId>
             <artifactId>pap_base_comp_ref</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.alibaba</groupId>
+                    <artifactId>fastjson</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.yonyou.iuap.baseservice</groupId>

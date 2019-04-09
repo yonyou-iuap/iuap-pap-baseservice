@@ -21,11 +21,6 @@
             <artifactId>pap_base_i18n</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.yonyou.iuap.pap</groupId>
-            <artifactId>eiap-plus-common</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
         </dependency>

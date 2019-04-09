@@ -3,8 +3,6 @@ package com.yonyou.iuap.baseservice.intg.service;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
-import com.alibaba.fastjson.JSON;
-import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.intg.support.ServiceFeature;
 import com.yonyou.iuap.baseservice.intg.support.ServiceFeatureHolder;
 import com.yonyou.iuap.baseservice.persistence.support.DeleteFeatureExtension;
@@ -17,6 +15,8 @@ import com.yonyou.iuap.ucf.dao.BaseDAO;
 import com.yonyou.iuap.ucf.dao.BasePO;
 import com.yonyou.iuap.ucf.dao.description.Persistence;
 import com.yonyou.iuap.ucf.dao.support.UcfSearchParams;
+import net.sf.json.JSON;
+import net.sf.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -36,6 +36,7 @@ import java.util.*;
  * @date 2019/4/3
  * @since UCF1.0
  */
+@SuppressWarnings("rawtype")
 public abstract class GenericUcfService <T  extends Persistence & Identifier<ID>, ID extends Serializable>{
 
     private static Logger log = LoggerFactory.getLogger(GenericUcfService.class);
@@ -331,7 +332,7 @@ public abstract class GenericUcfService <T  extends Persistence & Identifier<ID>
                 }
             } else
                 this.genericMapper.insert(entity);
-            log.info("新增保存数据：\r\n" + JSON.toJSONString(entity));
+            log.info("新增保存数据：\r\n" + JSONObject.fromObject(entity).toString());
         } else {
             throw new RuntimeException(MessageSourceUtil.getMessage("ja.bas.ser2.0003", "新增保存数据出错，对象为空!"));
         }
@@ -357,7 +358,7 @@ public abstract class GenericUcfService <T  extends Persistence & Identifier<ID>
                 count = genericMapper.update(entity);
             }
             if(count != 1) {
-                String msg=MessageSourceUtil.getMessage("ja.bas.ser2.0004", "更新保存数据出错，更新记录数=")+count+"\r\n"+JSON.toJSONString(entity);
+                String msg=MessageSourceUtil.getMessage("ja.bas.ser2.0004", "更新保存数据出错，更新记录数=")+count+"\r\n"+JSONObject.fromObject(entity).toString();
                 log.error(msg);
                 throw new RuntimeException(msg);
             }else if (isSelective){

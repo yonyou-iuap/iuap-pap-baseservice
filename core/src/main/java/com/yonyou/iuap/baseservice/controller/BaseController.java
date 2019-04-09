@@ -1,7 +1,6 @@
 package com.yonyou.iuap.baseservice.controller;
 
 
-import com.alibaba.fastjson.JSONObject;
 import com.yonyou.iuap.mvc.constants.RequestStatusEnum;
 import com.yonyou.iuap.mvc.type.JsonErrorResponse;
 import com.yonyou.iuap.mvc.type.JsonResponse;
@@ -9,6 +8,8 @@ import com.yonyou.iuap.pap.base.i18n.MessageSourceUtil;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 

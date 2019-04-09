@@ -1,20 +1,15 @@
 package com.yonyou.iuap.baseservice.service;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.parser.Feature;
 import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.entity.annotation.Associative;
 import com.yonyou.iuap.baseservice.intg.service.GenericUcfService;
 import com.yonyou.iuap.baseservice.vo.GenericAssoVo;
-import com.yonyou.iuap.mvc.type.SearchParams;
 import com.yonyou.iuap.ucf.common.entity.Identifier;
 import com.yonyou.iuap.ucf.dao.description.Persistence;
 import com.yonyou.iuap.ucf.dao.support.UcfSearchParams;
-import org.apache.commons.collections.MapUtils;
+import net.sf.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
@@ -57,7 +52,7 @@ public abstract class GenericAssoService<T extends Persistence & Identifier<ID>,
             if (subEntities != null && subEntities.size() > 0) {
                 for (Map subEntity : subEntities) {
                     subEntity.put(annotation.fkName(), newEntity.getId());//外键保存
-                    T entity = (T) JSON.parseObject(JSONObject.toJSONString(subEntity), assoKey, Feature.IgnoreNotMatch);
+                    T entity = (T)  JSONObject.toBean( JSONObject.fromObject(subEntity),  assoKey  );
                     if (entity.getId() != null && subEntity.get("dr") != null && subEntity.get("dr").toString().equalsIgnoreCase("1")) {
                         subServices.get(assoKey).delete(entity.getId());
                     } else
