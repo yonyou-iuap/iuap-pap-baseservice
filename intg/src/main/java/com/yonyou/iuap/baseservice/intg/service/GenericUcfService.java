@@ -36,7 +36,7 @@ import java.util.*;
  * @since UCF1.0
  */
 @SuppressWarnings("ALL")
-public abstract class GenericUcfService <T  extends Persistence & Identifier<ID>, ID extends Serializable>{
+public abstract class GenericUcfService <T  extends  Identifier<ID>, ID extends Serializable>{
 
     private static Logger log = LoggerFactory.getLogger(GenericUcfService.class);
     private static final String LOG_TEMPLATE= MessageSourceUtil.getMessage("ja.int.ser2.0001", "特性组件{}的未实现{}扩展") ;
@@ -315,14 +315,12 @@ public abstract class GenericUcfService <T  extends Persistence & Identifier<ID>
         if (entity != null) {
             if (isSelective) {
                 this.baseDAO.insertSelective(entity);
-                Map<String, Object> queryParams = new HashMap<>();
+                UcfSearchParams params = UcfSearchParams.of(getModelClass());
                 if(entity.getId()==null){
-                    queryParams.put(entity.getDescription().getVersion().getName(),
-                            ReflectUtil.getFieldValue(entity,entity.getDescription().getVersion().getName()));
+                    params.addEqualCondition("ts",ReflectUtil.getFieldValue(entity,"ts"));
                 }else{
-                    queryParams.put("id",entity.getId());
+                    params.addEqualCondition("id",entity.getId());
                 }
-                SearchParams params = UcfSearchParams.of(getModelClass()).setSearchMap(queryParams);
                 List<T> refreshed = baseDAO.list(params);
                 //insertSelective之后的信息完整化回传
                 if (refreshed.size()>0){
