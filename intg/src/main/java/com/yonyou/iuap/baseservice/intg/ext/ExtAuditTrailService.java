@@ -7,11 +7,10 @@ import com.yonyou.iuap.context.InvocationInfoProxy;
 import com.yonyou.iuap.ucf.common.entity.Identifier;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.Date;
 
 /**
- * TODO description
+ * 增补审计信息
  *
  * @author leon
  * @date 2019/4/8

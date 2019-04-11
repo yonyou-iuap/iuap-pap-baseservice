@@ -8,6 +8,7 @@ import java.util.List;
  */
 public enum ServiceFeature {
     AUDIT("com.yonyou.iuap.baseservice.intg.ext.ExtAuditTrailService"),//审计追踪信息
+    I18N_ENUM("com.yonyou.iuap.baseservice.intg.ext.ExtI18nEnumService"),//静态枚举国际化
     REF("com.yonyou.iuap.baseservice.intg.ext.ExtReferenceService"),//本地及远程参照统一解析特性
     OTHER("java.lang.Class"),//其他，用于客户化扩展特性加载
 
