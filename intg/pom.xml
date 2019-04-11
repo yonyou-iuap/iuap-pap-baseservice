@@ -33,6 +33,10 @@
                     <groupId>com.alibaba</groupId>
                     <artifactId>fastjson</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>com.yonyou.iuap.baseservice</groupId>
+                    <artifactId>iuap-pap-baseservice-persistence</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
