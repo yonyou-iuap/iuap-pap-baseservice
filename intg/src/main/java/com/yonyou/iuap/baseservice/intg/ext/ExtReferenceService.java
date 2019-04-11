@@ -177,7 +177,7 @@ public class ExtReferenceService<T extends Identifier> implements QueryFeatureEx
 
 
         List<Map<String, Object>> getFieldRefData(String hasCode) {
-            return fieldRefData.get(hasCode);
+            return fieldRefData.get(hasCode)==null? Collections.emptyList() :fieldRefData.get(hasCode);
         }
 
         void cacheRefIdsInEntityField(String hasCode, String[] refIds) {
