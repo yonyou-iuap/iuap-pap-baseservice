@@ -78,6 +78,8 @@ public class RefRemoteService<T extends Model> implements QueryFeatureExtension<
                     cache.getFieldCache().add(field);
                     allCache.put(ref.code(), cache);
                 }
+            }else if(null != ref){
+                allCache.get(ref.code()).getFieldCache().add(field);
             }
         }
         for (Object entity : list) {
