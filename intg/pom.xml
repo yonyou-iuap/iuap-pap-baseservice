@@ -45,6 +45,10 @@
             <version>${version}</version>
         </dependency>
         <dependency>
+            <groupId>com.yonyou.iuap.pap.workbench</groupId>
+            <artifactId>workbench-sdk</artifactId>
+        </dependency>
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <scope>compile</scope>
