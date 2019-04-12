@@ -14,10 +14,7 @@ import com.yonyou.iuap.baseservice.statistics.support.StatModelResolver;
 import com.yonyou.iuap.baseservice.support.condition.Match;
 import com.yonyou.iuap.context.InvocationInfoProxy;
 import com.yonyou.iuap.mvc.type.SearchParams;
-import com.yonyou.iuap.pap.base.ref.entity.RefParamConfig;
-import com.yonyou.iuap.pap.base.ref.entity.RefParamVO;
 import com.yonyou.iuap.pap.base.ref.utils.RefIdToNameUtil;
-import com.yonyou.iuap.pap.base.ref.utils.RefXMLParse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
@@ -110,7 +107,9 @@ public class SearchParamUtil {
                 searchParams.getSearchMap().put(sortMap.name(),null);
                 result.setGroupStatements(groupStatements);
                 result.setGroupFields(groups);
-                result.setSort(new Sort(orders));
+                if (orders.size()>0){
+                    result.setSort(new Sort(orders));
+                }
             }
         }
         result.setStatStatements(statStatements);
@@ -315,7 +314,7 @@ public class SearchParamUtil {
                 String[] writeValues = new String[ids.length];  //定义结果载体
                 int loopSize = Math.min(reference.srcProperties().length, reference.desProperties().length);//参照配置多字段参照时需结构匹配
                 for (int i = 0; i < loopSize; i++) {                //遍历参照中配置的多个srcPro和desPro 进行值替换
-                    String srcCol = reference.srcProperties()[i];  //参照表name字段
+                    String srcCol = reference.srcProperties()[i].toLowerCase();  //参照表name字段统一按小写处理
                     String desField = reference.desProperties()[i]; //entity对应参照value的字段
                     for (int j = 0; j < ids.length; j++) {//多值参照时,循环匹配拿到结果进行反写
                         writeValues[j]= String.valueOf( refDataCache.get(refField).get(ids[j]).get(srcCol)) ;

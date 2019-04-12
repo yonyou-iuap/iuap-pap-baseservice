@@ -9,6 +9,7 @@ import com.yonyou.iuap.mvc.type.SearchParams;
 import com.yonyou.iuap.pap.base.ref.utils.RefIdToNameUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -20,6 +21,7 @@ import java.util.*;
  * @date 2019/3/20
  * @since 3.5.6
  */
+@Service
 public class RefUnionService<T extends Model> implements QueryFeatureExtension<T> {
     private static Logger logger = LoggerFactory.getLogger(RefUnionService.class);
     private Class modelClass;
@@ -58,7 +60,7 @@ public class RefUnionService<T extends Model> implements QueryFeatureExtension<T
             return list;
         }
         //所有缓存的参照反写上下文,key为refCode
-        Map<String, RefContext> allCache = new HashMap<>();
+        Map<Reference, RefContext> allCache = new HashMap<>();
         /*
          * @Step 1
          * 解析参照配置(仅处理远程参照服务),获取参照字段id集合,用于后续参照远程调用
@@ -67,28 +69,28 @@ public class RefUnionService<T extends Model> implements QueryFeatureExtension<T
         Field[] fields = ReflectUtil.getFields(modelClass);
         for (Field field : fields) {
             Reference ref = field.getAnnotation(Reference.class);
-            if (null != ref && !allCache.containsKey(ref.code())) {
+            if (null != ref && !allCache.containsKey(ref)) {
                     logger.debug("caching remote Reference:" + ref.code());
                     RefContext cache = new RefContext(ref);
                     cache.getFieldCache().add(field);
-                    allCache.put(ref.code(), cache);
+                    allCache.put(ref, cache);
             }else if(null != ref){
-                allCache.get(ref.code()).getFieldCache().add(field);
+                allCache.get(ref).getFieldCache().add(field);
             }
         }
         //记录下list里所有的参照id
         for (Object entity : list) {
-            for (String refCode : allCache.keySet()) {
+            for (Reference ref : allCache.keySet()) {
                 //从缓存的field中遍历,跳过没有@Reference的field
-                for (Field field : allCache.get(refCode).getFieldCache()) {
+                for (Field field : allCache.get(ref).getFieldCache()) {
                     Object refIds = ReflectUtil.getFieldValue(entity, field);
                     if (null != refIds) {
                         //兼容参照多选
                         String[] fieldIds = refIds.toString().split(",");
                         //收集同一refCode下的所有id
-                        allCache.get(refCode).getIdCache().addAll(Arrays.asList(fieldIds));
+                        allCache.get(ref).getIdCache().addAll(Arrays.asList(fieldIds));
                         //缓存list里每条数据每个field里的参照ids,反写时使用
-                        allCache.get(refCode).cacheRefIdsInEntityField(entity.hashCode() +""+ field.hashCode(), fieldIds);
+                        allCache.get(ref).cacheRefIdsInEntityField(entity.hashCode() +""+ field.hashCode(), fieldIds);
                     }
                 }
             }
@@ -98,17 +100,27 @@ public class RefUnionService<T extends Model> implements QueryFeatureExtension<T
         /*
          * @Step 2解析参照配置, 一次按需(idCache)加载参照数据
          */
-        Map<String, List<String>> refParams = new HashMap<>();
-        for (String refCode : allCache.keySet()) {
-            List<String> ids = new ArrayList<>(allCache.get(refCode).getIdCache());
-            refParams.put(refCode,ids);
+        Map<String, Set<String>> refParams = new HashMap<>(); //为保证id去重,采用了set
+        for (Reference ref : allCache.keySet()) {
+            Set<String> ids = new HashSet<>(allCache.get(ref).getIdCache());
+            if (refParams.get(ref.code()) ==null){
+                refParams.put(ref.code(),ids);
+            }else{
+                refParams.get(ref.code()).addAll(ids);
+            }
         }
         try {
-            Map<String, List<Map<String, Object>>> queryResult = RefIdToNameUtil.convertIdToName(refParams);
+            // RefIdToNameUtil入参要求id式list,所以需要做一次转换
+            Map<String, List<String>> convertParam = new HashMap<>();
+            for (String refCode :refParams.keySet()){
+                List<String>  idConvertList = new ArrayList<>(refParams.get(refCode));
+                convertParam.put(refCode,idConvertList);
+            }
+            Map<String, List<Map<String, Object>>> queryResult = RefIdToNameUtil.convertIdToName(convertParam);
             if (null != queryResult && queryResult.size() > 0) {
-                for (String refCode :allCache.keySet()){
-                    allCache.get(refCode).setRefDataCache(queryResult.get(refCode));//将所有参照查询结果按refCode分组缓存
-                    allCache.get(refCode).putRefDataInOrderOfFieldIds();//按缓存分组整理这个refContents，为反写准备好一切
+                for (Reference ref :allCache.keySet()){
+                    allCache.get(ref).setRefDataCache(queryResult.get(ref.code()));//将所有参照查询结果按refCode分组缓存
+                    allCache.get(ref).putRefDataInOrderOfFieldIds();//按缓存分组整理这个refContents，为反写准备好一切
                 }
             }
         } catch (Exception e) {
@@ -120,13 +132,13 @@ public class RefUnionService<T extends Model> implements QueryFeatureExtension<T
          * 第2次遍历结果集,执行反写
          */
         for (Object entity : list) {
-            for (String refCode : allCache.keySet()) {
-                if (allCache.get(refCode).hasNoneRefData()) {
+            for (Reference ref : allCache.keySet()) {
+                if (allCache.get(ref).hasNoneRefData()) {
                     //没有参照数据queryResult,就不用后面的反写了,直接下一个refCode
                     continue;
                 }
-                RefContext refContext = allCache.get(refCode);
-                //从缓存的field中遍历,跳过没有@Reference的field
+                RefContext refContext = allCache.get(ref);
+                //从缓存的field中遍历,跳过没有@ref
                 for (Field refField : refContext.getFieldCache()) {
                     String cacheKey=entity.hashCode() +""+ refField.hashCode();
                     //从step2中整理好的结果中拿到半成品
@@ -138,7 +150,7 @@ public class RefUnionService<T extends Model> implements QueryFeatureExtension<T
                     for (int i = 0; i < loopSize; i++) {
                         List<String> reflectValues = new ArrayList<>();  //装载待反写field的值
                         for (Map<String, Object> refData : fieldRefData) {//取出参照缓存数据集
-                            reflectValues.add( String.valueOf(refData.get(refContext.getRef().srcProperties()[i]  ))  )  ;
+                            reflectValues.add( String.valueOf(refData.get(refContext.getRef().srcProperties()[i].toLowerCase()  ))  )  ;//统一按小写处理
                         }
                         String fieldValue = ArrayUtil.join(reflectValues.toArray(), ",");
                         ReflectUtil.setFieldValue(entity, refContext.getRef().desProperties()[i], fieldValue); //执行反写
@@ -163,7 +175,7 @@ public class RefUnionService<T extends Model> implements QueryFeatureExtension<T
 
 
         List<Map<String, Object>> getFieldRefData(String hasCode) {
-            return fieldRefData.get(hasCode);
+            return fieldRefData.get(hasCode)==null? Collections.emptyList() :fieldRefData.get(hasCode);
         }
 
         void cacheRefIdsInEntityField(String hasCode, String[] refIds) {
