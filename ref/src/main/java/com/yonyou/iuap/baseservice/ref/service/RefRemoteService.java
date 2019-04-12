@@ -62,7 +62,7 @@ public class RefRemoteService<T extends Model> implements QueryFeatureExtension<
             return list;
         }
 
-        Map<String, ReferenceCache> allCache = new HashMap<>(); //所有缓存的临时变量,key为refCode
+        Map<Reference, ReferenceCache> allCache = new HashMap<>(); //所有缓存的临时变量,key为refCode
         /**
          * @Step 1
          * 解析参照配置(仅处理远程参照服务),获取参照字段id集合,用于后续参照远程调用
@@ -70,26 +70,26 @@ public class RefRemoteService<T extends Model> implements QueryFeatureExtension<
         Field[] fields = ReflectUtil.getFields(modelClass);
         for (Field field : fields) {
             Reference ref = field.getAnnotation(Reference.class);
-            if (null != ref && !allCache.containsKey(ref.code())) {
+            if (null != ref && !allCache.containsKey(ref)) {
                 RefParamVO refParamVO = RefXMLParse.getInstance().getReParamConfig(ref.code());
                 if (refParamVO == null) { //ref.xml中解析不到的一律视为远程参照
                     logger.debug("caching remote Reference:" + ref.code());
                     ReferenceCache cache = new ReferenceCache(ref);
                     cache.getFieldCache().add(field);
-                    allCache.put(ref.code(), cache);
+                    allCache.put(ref, cache);
                 }
             }else if(null != ref){
-                allCache.get(ref.code()).getFieldCache().add(field);
+                allCache.get(ref).getFieldCache().add(field);
             }
         }
         for (Object entity : list) {
-            for (String refCode : allCache.keySet()) {
-                for (Field field : allCache.get(refCode).getFieldCache()) {
+            for (Reference ref : allCache.keySet()) {
+                for (Field field : allCache.get(ref).getFieldCache()) {
                     Object refIds = ReflectUtil.getFieldValue(entity, field);
                     if (null != refIds) {
                         String[] fieldIds = refIds.toString().split(",");//兼容参照多选
-                        allCache.get(refCode).getIdCache().addAll(Arrays.asList(fieldIds));
-                        allCache.get(refCode).cacheRefIdsInEntityField(entity.hashCode() +""+ field.hashCode(), fieldIds); //缓存list里每条数据没个field里的参照ids
+                        allCache.get(ref).getIdCache().addAll(Arrays.asList(fieldIds));
+                        allCache.get(ref).cacheRefIdsInEntityField(entity.hashCode() +""+ field.hashCode(), fieldIds); //缓存list里每条数据没个field里的参照ids
                     }
                 }
             }
@@ -99,18 +99,18 @@ public class RefRemoteService<T extends Model> implements QueryFeatureExtension<
         /**
          * @Step 2解析参照配置, 一次按需(idCache)加载参照数据
          */
-        for (String refCode : allCache.keySet()) {
+        for (Reference ref : allCache.keySet()) {
             List<Map<String, Object>> refContents = null;
             try {
                 List ids =new ArrayList();
-                ids.addAll( allCache.get(refCode).getIdCache());
-                refContents = RefIdToNameUtil.convertIdToName(refCode, ids);//调用pap——base——ref的工具类进行远程调用
+                ids.addAll( allCache.get(ref).getIdCache());
+                refContents = RefIdToNameUtil.convertIdToName(ref.code(), ids);//调用pap——base——ref的工具类进行远程调用
             } catch (Exception e) {
-                logger.error("remote ref-id2name service calling error：" + refCode, e);
+                logger.error("remote ref-id2name service calling error：" + ref.code(), e);
             }
             if (null != refContents && refContents.size() > 0) {
-                allCache.get(refCode).setRefDataCache(refContents);//将所有参照数据集和field的关系缓存起来后续使用
-                allCache.get(refCode).putRefDataInOrderOfFieldIds();//按缓存分组整理这个refContents，备用
+                allCache.get(ref).setRefDataCache(refContents);//将所有参照数据集和field的关系缓存起来后续使用
+                allCache.get(ref).putRefDataInOrderOfFieldIds();//按缓存分组整理这个refContents，备用
             }
         }
 
@@ -118,11 +118,11 @@ public class RefRemoteService<T extends Model> implements QueryFeatureExtension<
          * @Step 3 逐条遍历业务结果集,向entity参照指定属性写入参照查询结果值
          */
         for (Object entity : list) { //遍历结果集
-            for (String refCode : allCache.keySet()) {
-                if (allCache.get(refCode).hasNoRefDataCache()) {
+            for (Reference ref : allCache.keySet()) {
+                if (allCache.get(ref).hasNoRefDataCache()) {
                     continue;//没有参照数据集缓存,就不用后面的反写了,直接下一个refcode
                 }
-                ReferenceCache cache = allCache.get(refCode);
+                ReferenceCache cache = allCache.get(ref);
                 for (Field refField : cache.getFieldCache()) {//直接从缓存的field中遍历,省却没有@Reference的field
                     String hasCodeKey=entity.hashCode() +""+ refField.hashCode();
                     String[] fieldIds = cache.getCachedFieldIds(hasCodeKey);
