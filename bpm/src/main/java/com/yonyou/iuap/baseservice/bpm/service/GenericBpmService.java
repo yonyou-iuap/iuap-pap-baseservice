@@ -203,10 +203,14 @@ public abstract class GenericBpmService<T extends BpmSimpleModel> extends Generi
 	        if (BpmExUtil.inst().isSuccess(resultJsonObject)) {
 	            entity.setBpmState(1);// 从未提交状态改为已提交状态;
 //	            //修改DB表数据
-	            save(entity);
-	        } else if (BpmExUtil.inst().isFail(resultJsonObject)) {
+                try {
+                    save(entity);
+                } catch (Exception e) {
+                    new BusinessException("Modify document status error");;
+                }
+            } else if (BpmExUtil.inst().isFail(resultJsonObject)) {
 	            String msg = resultJsonObject.get("msg").toString();
-	            throw new BusinessException("提交启动流程实例发生错误，请联系管理员！错误原因：" + msg);
+	            throw new BusinessException(msg);
 	        }
 	        return resultJsonObject;
 		}
