@@ -206,7 +206,7 @@ public abstract class GenericBpmService<T extends BpmSimpleModel> extends Generi
                 try {
                     save(entity);
                 } catch (Exception e) {
-                    new BusinessException("Modify document status error");;
+                    throw new BusinessException("Modify document status error");
                 }
             } else if (BpmExUtil.inst().isFail(resultJsonObject)) {
 	            String msg = resultJsonObject.get("msg").toString();
