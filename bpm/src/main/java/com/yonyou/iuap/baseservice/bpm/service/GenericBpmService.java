@@ -23,6 +23,7 @@ import yonyou.bpm.rest.request.RestVariable;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.URLDecoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -114,6 +115,7 @@ public abstract class GenericBpmService<T extends BpmSimpleModel> extends Generi
     protected List<RestVariable> buildEntityVars(T entity){
         List<RestVariable> variables = new ArrayList<RestVariable>();
         Field[] fields = ReflectUtil.getFields(entity.getClass());
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 
         for (Field curField : fields) {
             Object fieldValue = ReflectUtil.getFieldValue(entity, curField);
@@ -124,8 +126,8 @@ public abstract class GenericBpmService<T extends BpmSimpleModel> extends Generi
             RestVariable var = new RestVariable();
             var.setName(curField.getName());
             if (variableType.equals("date") && fieldValue instanceof Date){
-                var.setValue(DatePattern.NORM_DATE_FORMAT.format((Date)fieldValue));
-                var.setType("string"); //date 类型的时候,如果日期不符合标准格式会导致流程引擎解析错误,故转为string
+                var.setValue(df.format(fieldValue));
+                var.setType(RestVariable.DATE_VARIABLE_TYPE); //date 类型的时候,如果日期不符合标准格式会导致流程引擎解析错误,故转为string
             }else{
                 var.setValue(fieldValue);
             }
