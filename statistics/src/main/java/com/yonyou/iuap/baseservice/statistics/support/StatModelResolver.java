@@ -51,7 +51,12 @@ public class StatModelResolver {
 
                               if (clz.getAnnotation(Entity.class)!=null){
                                   statModel =   new StatModel();
-                                  statModel.setCode( ((Entity)clz.getAnnotation(Entity.class)).name());
+                                  if(StringUtils.isEmpty( ((Entity)clz.getAnnotation(Entity.class)).name() )){
+                                      statModel.setCode(clz.getSimpleName());
+                                  }else{
+
+                                      statModel.setCode( ((Entity)clz.getAnnotation(Entity.class)).name());
+                                  }
                               }
                               for (Field f : fields) {
                                   if (f.getAnnotation(StatisticsField.class) != null) {
