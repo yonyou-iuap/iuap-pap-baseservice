@@ -5,7 +5,6 @@ import com.yonyou.iuap.baseservice.entity.LogicDel;
 import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.persistence.mybatis.mapper.GenericExMapper;
 import com.yonyou.iuap.pap.base.i18n.MessageSourceUtil;
-import com.yonyou.iuap.persistence.vo.pub.BusinessException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +29,7 @@ public abstract class GenericExService<T extends Model & LogicDel> extends Gener
             entity.setDr(LogicDel.NORMAL);
             return super.insert(entity);
         }else {
-            throw new BusinessException(MessageSourceUtil.getMessage("ja.bas.ser1.0001", "新增保存数据出错，对象为空!"));
+            throw new RuntimeException(MessageSourceUtil.getMessage("ja.bas.ser1.0001", "新增保存数据出错，对象为空!"));
         }
     }
 
@@ -45,7 +44,7 @@ public abstract class GenericExService<T extends Model & LogicDel> extends Gener
             entity.setDr(LogicDel.NORMAL);
             return super.update(entity);
         }else {
-            throw new BusinessException(MessageSourceUtil.getMessage("ja.bas.ser1.0002", "更新保存数据出错，对象为空!"));
+            throw new RuntimeException(MessageSourceUtil.getMessage("ja.bas.ser1.0002", "更新保存数据出错，对象为空!"));
         }
     }
 
@@ -62,10 +61,10 @@ public abstract class GenericExService<T extends Model & LogicDel> extends Gener
                 return count;
             }else {
                 log.error(MessageSourceUtil.getMessage("ja.bas.ser1.0003", "删除数据出错,记录数=")+count+"\r\n"+JSON.toJSONString(entity));
-                throw new BusinessException();
+                throw new RuntimeException();
             }
         }else {
-            throw new BusinessException(MessageSourceUtil.getMessage("ja.bas.ser1.0004", "数据对象为空,无法删除!"));
+            throw new RuntimeException(MessageSourceUtil.getMessage("ja.bas.ser1.0004", "数据对象为空,无法删除!"));
         }
     }
 

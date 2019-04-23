@@ -17,10 +17,6 @@
             <artifactId>pap_base_i18n</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.yonyou.iuap.pap</groupId>
-            <artifactId>eiap-plus-common</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
         </dependency>
@@ -51,6 +47,23 @@
         <dependency>
             <groupId>dom4j</groupId>
             <artifactId>dom4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.yonyou.iuap</groupId>
+            <artifactId>iuap-sign</artifactId>
+            <version>3.1.0-RC003</version>
+        </dependency>
+        <dependency>
+            <groupId>com.yonyou.iuap.pap.base</groupId>
+            <artifactId>pap_base_common</artifactId>
+            <version>3.5.6-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.yonyou.iuap.pap.base</groupId>
+            <artifactId>pap_base_common</artifactId>
+            <version>3.5.6-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 

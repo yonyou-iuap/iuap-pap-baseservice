@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.yonyou.iuap.baseservice.controller.util.BaseController;
 import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.yonyou.iuap.base.web.BaseController;
 import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.service.GenericService;
 import com.yonyou.iuap.mvc.constants.RequestStatusEnum;
@@ -31,7 +31,7 @@ import cn.hutool.core.util.StrUtil;
  * 2018年6月13日
  */
 @SuppressWarnings("all")
-public abstract class GenericController<T extends Model> extends BaseController{
+public abstract class GenericController<T extends Model> extends BaseController {
 	
 	private Logger log = LoggerFactory.getLogger(GenericController.class);
 
