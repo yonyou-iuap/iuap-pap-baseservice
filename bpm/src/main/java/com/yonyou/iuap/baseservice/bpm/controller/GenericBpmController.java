@@ -8,6 +8,7 @@ import com.yonyou.iuap.baseservice.bpm.entity.BpmSimpleModel;
 import com.yonyou.iuap.baseservice.bpm.service.GenericBpmService;
 import com.yonyou.iuap.baseservice.bpm.utils.BpmExUtil;
 import com.yonyou.iuap.bpm.service.JsonResultService;
+import com.yonyou.iuap.bpm.util.BPMUtil;
 import com.yonyou.iuap.bpm.web.IBPMBusinessProcessController;
 import com.yonyou.iuap.mvc.type.JsonResponse;
 import com.yonyou.iuap.persistence.vo.pub.BusinessException;
@@ -205,6 +206,19 @@ public  class GenericBpmController<T extends BpmSimpleModel> extends BaseControl
 		T result = service.save(entity);
 		return buildSuccess(result);
 	}
+
+
+	@Override
+	public JsonResponse doProcessEndAction(Map<String, Object> params) throws Exception {
+		logger.debug("流程结束回调成功 params=[{}]",params);
+		evalParamData(params);
+		T entity=service.findById(billId);
+		entity.setBpmState(BpmExUtil.BPM_STATE_FINISH);//流程正常结束
+		T result = service.save(entity);
+		return buildSuccess(result);
+	}
+
+
 
 
 	/**
