@@ -1,20 +1,16 @@
 package com.yonyou.iuap.baseservice.statistics.controller;
 
-import com.yonyou.iuap.base.web.BaseController;
-import com.yonyou.iuap.baseservice.persistence.support.PageRequestAndSearchParams;
+import com.yonyou.iuap.baseservice.controller.util.BaseController;
 import com.yonyou.iuap.baseservice.statistics.service.StatCommonService;
-import com.yonyou.iuap.baseservice.statistics.support.StatParam;
 import com.yonyou.iuap.mvc.type.SearchParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

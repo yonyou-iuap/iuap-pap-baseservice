@@ -11,7 +11,7 @@ import com.yonyou.iuap.pap.base.ref.entity.RefViewModelVO;
 import com.yonyou.iuap.pap.base.ref.utils.RefUitls;
 import com.yonyou.iuap.pap.base.ref.utils.RefXMLParse;
 import com.yonyou.iuap.pap.base.ref.utils.RefXmlConstract;
-import com.yonyou.iuap.wb.utils.JsonResponse;
+import com.yonyou.iuap.pap.base.utils.resp.JsonResponse ;
 import com.yonyou.uap.ieop.security.datapermission.DataPermissionCenter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;

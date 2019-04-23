@@ -79,6 +79,11 @@
                 <artifactId>spring-beans</artifactId>
                 <version>${spring.verison}</version>
             </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-tx</artifactId>
+                <version>${spring.verison}</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.springframework</groupId>
@@ -141,7 +146,11 @@
                 <version>${spring.verison}</version>
             </dependency>
 
-
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-test</artifactId>
+                <version>${spring.verison}</version>
+            </dependency>
             <dependency>
                 <groupId>org.springframework.data</groupId>
                 <artifactId>spring-data-commons</artifactId>
@@ -261,7 +270,6 @@
         <module>depracated/entity</module>
         <module>depracated/i18n</module>
         <module>bpm</module>
-        <module>attachment</module>
         <module>ref</module>
         <module>association</module>
         <module>print</module>

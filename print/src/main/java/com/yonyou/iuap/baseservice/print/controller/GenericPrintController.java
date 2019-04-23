@@ -3,7 +3,7 @@ package com.yonyou.iuap.baseservice.print.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.yonyou.iuap.base.web.BaseController;
+import com.yonyou.iuap.baseservice.controller.util.BaseController ;
 import com.yonyou.iuap.baseservice.entity.annotation.Associative;
 import com.yonyou.iuap.baseservice.intg.service.GenericIntegrateService;
 import com.yonyou.iuap.baseservice.print.entity.Printable;

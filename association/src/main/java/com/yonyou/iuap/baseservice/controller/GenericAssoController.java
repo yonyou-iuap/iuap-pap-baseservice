@@ -1,6 +1,6 @@
 package com.yonyou.iuap.baseservice.controller;
 
-import com.yonyou.iuap.base.web.BaseController;
+import com.yonyou.iuap.baseservice.controller.util.BaseController;
 import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.entity.annotation.Associative;
 import com.yonyou.iuap.baseservice.intg.service.GenericIntegrateService;
