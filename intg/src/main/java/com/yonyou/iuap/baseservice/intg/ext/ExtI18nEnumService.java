@@ -50,7 +50,7 @@ public class ExtI18nEnumService<T extends Identifier>  implements QueryFeatureEx
         for (T entity:list){
             for (Field  enumField:annoFields.keySet()){
                 String enumCode = String.valueOf(ReflectUtil.getFieldValue(entity,enumField)) ;
-                Object enumValue = EnumValueUtils.loadEnumInfo( annoFields.get(enumField).clazz()).get(enumCode);
+                Object enumValue = EnumValueUtils.loadEnumInfo( annoFields.get(enumField).clazz()).get(enumField.getName().toUpperCase()+"_"+enumCode);
                 if (enumValue!= null){
                     try {
                         ReflectUtil.setFieldValue(entity,annoFields.get(enumField).target(),enumValue);
