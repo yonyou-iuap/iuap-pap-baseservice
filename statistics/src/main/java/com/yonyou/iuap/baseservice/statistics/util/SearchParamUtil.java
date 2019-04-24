@@ -302,25 +302,26 @@ public class SearchParamUtil {
          */
         for (Map row : selectList) { //遍历结果集
             for (Field refField : refCache.keySet()) {//遍历缓存的entity的全部参照字段
-                if (refDataCache.get(refField) == null) {
+                if (refDataCache.get(refField) == null || refDataCache.get(refField).size()==0) {
                     continue;//没有参照数据缓存,就不用后面的反写了,直接下一个参照字段
                 }
-                if (row.get(refField.getName()) == null) {
+                if (row.get(refField.getName()) == null|| "".equals(row.get(refField.getName()))) {
                     continue; // 参照field id值为空,则跳过本field数据解析
                 }
-                String refFieldValue = row.get(refField.getName()).toString();//取参照字段值
+                String[] ids = row.get(refField.getName()).toString().split(",");     //参照字段值转数组
                 Reference reference = refCache.get(refField);
-                String[] ids = refFieldValue.split(",");     //参照字段值转数组
-                String[] writeValues = new String[ids.length];  //定义结果载体
+                List<String> reflectValues = new ArrayList<>();  //装载待反写field的值
                 int loopSize = Math.min(reference.srcProperties().length, reference.desProperties().length);//参照配置多字段参照时需结构匹配
                 for (int i = 0; i < loopSize; i++) {                //遍历参照中配置的多个srcPro和desPro 进行值替换
                     String srcCol = reference.srcProperties()[i].toLowerCase();  //参照表name字段统一按小写处理
                     String desField = reference.desProperties()[i]; //entity对应参照value的字段
                     for (int j = 0; j < ids.length; j++) {//多值参照时,循环匹配拿到结果进行反写
-                        writeValues[j]= String.valueOf( refDataCache.get(refField).get(ids[j]).get(srcCol)) ;
+                        if(null != refDataCache.get(refField).get(ids[j])){
+                            reflectValues.add(String.valueOf( refDataCache.get(refField).get(ids[j]).get(srcCol)))  ;
+                        }
 
                     }
-                    row.put(desField, ArrayUtil.join(writeValues, ","));//执行反写
+                    row.put(desField, ArrayUtil.join(reflectValues.toArray(), ","));//执行反写
                 }
             }
         }
