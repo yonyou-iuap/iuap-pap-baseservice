@@ -7,8 +7,6 @@ import java.util.List;
  * 特性实现全局预定义,运行时可以根据需求动态加载
  */
 public enum ServiceFeature {
-    @Deprecated
-    ATTACHMENT("com.yonyou.iuap.baseservice.attachment.service.AtCommonService"), //附件特性
     MULTI_TENANT("com.yonyou.iuap.baseservice.multitenant.service.MultenCommonService"),//多租户隔离特性
     LOGICAL_DEL("com.yonyou.iuap.baseservice.intg.service.DrCommonService"),//逻辑删除特性
     @Deprecated
