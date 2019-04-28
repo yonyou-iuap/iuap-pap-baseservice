@@ -1,5 +1,8 @@
 package com.yonyou.iuap.baseservice.intg.support;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +10,7 @@ import java.util.List;
  * 特性实现全局预定义,运行时可以根据需求动态加载
  */
 public enum ServiceFeature {
+
     MULTI_TENANT("com.yonyou.iuap.baseservice.multitenant.service.MultenCommonService"),//多租户隔离特性
     LOGICAL_DEL("com.yonyou.iuap.baseservice.intg.service.DrCommonService"),//逻辑删除特性
     @Deprecated
@@ -28,8 +32,6 @@ public enum ServiceFeature {
     }
 
     public static ServiceFeature getFeature(Object instance) {
-
-
         for (ServiceFeature feat : ServiceFeature.values()) {
             try {
                 if (nonClass.contains(feat.clazz)){
@@ -40,7 +42,8 @@ public enum ServiceFeature {
                     return feat;
             } catch (ClassNotFoundException e) {
                 nonClass.add(feat.clazz);
-                e.printStackTrace();
+                Logger logger = LoggerFactory.getLogger(ServiceFeature.class);
+                logger.info(e.getMessage());
             }
         }
         return OTHER;
