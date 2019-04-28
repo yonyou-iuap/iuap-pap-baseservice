@@ -11,7 +11,6 @@
 
 	<groupId>com.yonyou.iuap.baseservice</groupId>
 	<artifactId>iuap-pap-baseservice-entity</artifactId>
-    <version>3.5.6-RC1</version>
 	<name>iuap-pap-baseservice-entity</name>
 	<url>http://maven.apache.org</url>
     <description>实体层能力强化框架，提供实体基本能力（乐观锁、审计日志、逻辑删除等）规范，以及构建数据库查询能力的数据模型映射注解。已移至core工程</description>
@@ -23,7 +22,7 @@
         <dependency>
             <groupId>com.yonyou.iuap.baseservice</groupId>
             <artifactId>iuap-pap-baseservice-core</artifactId>
-            <version>${pap.module.version}</version>
+            <version>${project.version}</version>
         </dependency>
 	</dependencies>
 	
