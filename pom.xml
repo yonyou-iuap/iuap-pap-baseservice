@@ -13,7 +13,7 @@
         <iuap-sign.version>3.1.0-RC003</iuap-sign.version>
         <iuap.module.version>3.1.0-RELEASE</iuap.module.version>
         <eiap.module.version>3.5.6-SNAPSHOT</eiap.module.version>
-        <pap.module.version>3.5.6-SNAPSHOT</pap.module.version>
+        <pap.module.version>3.5.6-RELEASE</pap.module.version>
         <spring.verison>4.0.5.RELEASE</spring.verison>
     </properties>
 
@@ -56,12 +56,12 @@
             <dependency>
                 <groupId>com.yonyou.iuap.pap.authrbac</groupId>
                 <artifactId>iuap-authrbac-sdk</artifactId>
-                <version>${eiap.module.version}</version>
+                <version>${pap.module.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.yonyou.iuap.pap.authrbac</groupId>
                 <artifactId>iuap-authrbac-common</artifactId>
-                <version>${eiap.module.version}</version>
+                <version>${pap.module.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hibernate.javax.persistence</groupId>
