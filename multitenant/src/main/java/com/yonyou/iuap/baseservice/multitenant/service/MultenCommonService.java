@@ -33,7 +33,7 @@ public class MultenCommonService<T extends MultiTenant> implements QueryFeatureE
 
     @Override
     public T prepareEntityBeforeSave(T entity) {
-        entity.setTenantid(InvocationInfoProxy.getTenantid());
+        entity.setTenantId(InvocationInfoProxy.getTenantid());
         return entity;
     }
 
@@ -44,7 +44,7 @@ public class MultenCommonService<T extends MultiTenant> implements QueryFeatureE
 
     @Override
     public T prepareDeleteParams(T entity,Map params) {
-        entity.setTenantid(InvocationInfoProxy.getTenantid());
+        entity.setTenantId(InvocationInfoProxy.getTenantid());
         params.put("tenantid", InvocationInfoProxy.getTenantid());
         return entity;
     }
