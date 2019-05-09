@@ -1,6 +1,5 @@
 package com.yonyou.iuap.baseservice.vo;
 
-import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.ucf.common.entity.Identifier;
 
 import java.io.Serializable;

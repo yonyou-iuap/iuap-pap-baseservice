@@ -1,6 +1,5 @@
 package com.yonyou.iuap.baseservice.service;
 
-import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.entity.annotation.Associative;
 import com.yonyou.iuap.baseservice.intg.service.GenericUcfService;
 import com.yonyou.iuap.baseservice.vo.GenericAssoVo;

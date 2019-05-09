@@ -2,7 +2,6 @@ package com.yonyou.iuap.baseservice.statistics.util;
 
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
-import com.yonyou.iuap.baseservice.entity.LogicDel;
 import com.yonyou.iuap.baseservice.entity.MultiTenant;
 import com.yonyou.iuap.baseservice.entity.annotation.Reference;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.FieldUtil;

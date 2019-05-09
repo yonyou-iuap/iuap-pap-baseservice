@@ -1,15 +1,11 @@
 package com.yonyou.iuap.baseservice.intg.support;
 
 import cn.hutool.core.util.ArrayUtil;
-import cn.hutool.core.util.ReflectUtil;
-import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.persistence.support.DeleteFeatureExtension;
 import com.yonyou.iuap.baseservice.persistence.support.QueryFeatureExtension;
 import com.yonyou.iuap.baseservice.persistence.support.SaveFeatureExtension;
 import org.springframework.core.ResolvableType;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 

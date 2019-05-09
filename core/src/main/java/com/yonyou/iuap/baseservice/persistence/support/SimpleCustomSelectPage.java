@@ -1,11 +1,10 @@
 package com.yonyou.iuap.baseservice.persistence.support;
 
-import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.mvc.type.SearchParams;
-import org.springframework.data.domain.Page;
+import com.yonyou.iuap.ucf.common.entity.Identifier;
 import org.springframework.data.domain.PageRequest;
 
-public  abstract class SimpleCustomSelectPage<T extends Model> implements CustomSelectPageable<T>   {
+public  abstract class SimpleCustomSelectPage<T extends Identifier> implements CustomSelectPageable<T>   {
 
     protected SearchParams searchParams;
     protected PageRequest pageRequest;

@@ -1,12 +1,12 @@
 package com.yonyou.iuap.baseservice.statistics.service;
 
-import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.EntityUtil;
-import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.FieldUtil;
 import com.yonyou.iuap.baseservice.ref.dao.mapper.RefCommonMapper;
 import com.yonyou.iuap.baseservice.statistics.dao.StatCommonMapper;
 import com.yonyou.iuap.baseservice.statistics.support.ParamProcessResult;
 import com.yonyou.iuap.baseservice.statistics.util.SearchParamUtil;
 import com.yonyou.iuap.mvc.type.SearchParams;
+import com.yonyou.iuap.ucf.core.utils.EntityUtil;
+import com.yonyou.iuap.ucf.dao.utils.FieldUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

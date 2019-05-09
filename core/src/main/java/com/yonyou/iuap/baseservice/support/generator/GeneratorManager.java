@@ -9,8 +9,6 @@ import java.util.ServiceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.yonyou.iuap.baseservice.entity.Model;
-
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 
