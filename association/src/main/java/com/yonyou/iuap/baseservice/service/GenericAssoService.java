@@ -70,7 +70,7 @@ public abstract class GenericAssoService<T extends Persistence & Identifier<ID>,
         if (annotation.deleteCascade()) {//是否联删除的标识
             for (Class assoKey : subServices.keySet()) {
                 GenericUcfService subSer = subServices.get(assoKey);
-                List<Model> subList = subSer.queryList(
+                List<Identifier> subList = subSer.queryList(
                         UcfSearchParams.of(subServices.get(assoKey).getModelClass()).
                                 addEqualCondition(annotation.fkName(), entity.getId()).getSearchMap());
                 if (subList != null && subList.size() > 0) {
