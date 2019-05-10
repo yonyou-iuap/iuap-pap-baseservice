@@ -1,7 +1,5 @@
 package com.yonyou.iuap.baseservice.intg.ext;
 
-import cn.hutool.core.exceptions.UtilException;
-import cn.hutool.core.util.ReflectUtil;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.EntityUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +7,9 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 国际化枚举翻译工具
