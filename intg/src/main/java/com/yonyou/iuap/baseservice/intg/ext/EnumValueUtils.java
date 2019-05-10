@@ -1,5 +1,8 @@
 package com.yonyou.iuap.baseservice.intg.ext;
 
+import cn.hutool.core.exceptions.UtilException;
+import cn.hutool.core.util.ReflectUtil;
+import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.EntityUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,34 +46,26 @@ public class EnumValueUtils {
     /*
      * list<Map>处理
      */
-    public static List i18nEnumMapKeyToValue(List<Map> dataMapList, Class classObject) {
-        Map<Class, Set<Field>> enumCache = new HashMap();
-        if(!enumCache.containsKey(classObject)){
-            enumCache.put(classObject, new HashSet<Field>());
+    public static List i18nEnumMapKeyToValue(List<Map> list, Class modelClass) {
+        Map<Field,I18nEnumCode> annoFields = new HashMap<>();
+        for (Field field: EntityUtil.getEntityFields(modelClass) ){
+            if (field.getAnnotation(I18nEnumCode.class)!=null){
+                annoFields.put(field,field.getAnnotation(I18nEnumCode.class));
+            }
         }
-        Set<Field> fields = enumCache.get(classObject).size() == 0
-                ? new HashSet<>(Arrays.asList(classObject.getDeclaredFields())) : enumCache.get(classObject);
-        try {
-            for (Field field : fields) {
-                I18nEnumCode annotation = field.getDeclaredAnnotation(I18nEnumCode.class);
-                if (annotation != null) {
-                    enumCache.get(classObject).add(field);
-                    Class<? extends I18nEnum> enumClass = annotation.clazz();
-                    if (annotation.target() == null || annotation.target() == "") {
-                        continue;
-                    }
-                    for (Map<String, Object> item : dataMapList) {
-                        if (item.get(field.getName()) != null) {
-                            item.put(annotation.target(), (String)loadEnumInfo(enumClass)
-                                    .get(String.valueOf(item.get(field.getName()))));
-                        }
-                    }
+        if (annoFields.size()==0){
+            return  list;
+        }
+        for (Map entity:list){
+            for (Field  enumField:annoFields.keySet()){
+                String enumCode = String.valueOf(entity.get(enumField.getName()));
+                Object enumValue = loadEnumInfo( annoFields.get(enumField).clazz()).get(enumField.getName().toUpperCase()+"_"+enumCode);
+                if (enumValue!= null){
+                    entity.put(annoFields.get(enumField).target(),enumValue);
                 }
             }
-        } catch (Exception e) {
-            logger.error("loading fail on entity :"+classObject,e);
         }
 
-        return dataMapList;
+        return list;
     }
 }
