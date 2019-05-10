@@ -22,11 +22,8 @@ public class EnumValueUtils {
     private static Logger logger = LoggerFactory.getLogger(EnumValueUtils.class);
     /**
      * 输出就靠这波了
-     * @param enumClass
+     * @param enumClass 枚举类,只服务实现I18nEnum的
      * @return
-     * @throws NoSuchMethodException
-     * @throws InvocationTargetException
-     * @throws IllegalAccessException
      */
     public static Map loadEnumInfo(Class<? extends I18nEnum> enumClass)   {
 
@@ -43,7 +40,7 @@ public class EnumValueUtils {
     }
 
 
-    /*
+    /**
      * list<Map>处理
      */
     public static List i18nEnumMapKeyToValue(List<Map> list, Class modelClass) {
