@@ -130,6 +130,7 @@ public abstract class GenericBpmService<T extends BpmSimpleModel> extends Generi
                 var.setType(RestVariable.DATE_VARIABLE_TYPE); //date 类型的时候,如果日期不符合标准格式会导致流程引擎解析错误,故转为string
             }else{
                 var.setValue(fieldValue);
+                var.setType(variableType);
             }
             variables.add(var);
         }
