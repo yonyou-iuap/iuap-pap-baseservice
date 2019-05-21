@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.yonyou.iuap</groupId>
         <artifactId>ucf-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>iuap-pap-baseservice</artifactId>
@@ -15,10 +15,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
-        <iuap-sign.version>3.1.0-RC003</iuap-sign.version>
-        <iuap.module.version>3.1.0-RELEASE</iuap.module.version>
-        <eiap.module.version>3.5.6-SNAPSHOT</eiap.module.version>
-        <pap.module.version>3.5.6-SNAPSHOT</pap.module.version>
+        <iuap.module.version>5.0.0-SNAPSHOT</iuap.module.version>
+        <pap.module.version>3.5.6-RELEASE</pap.module.version>
         <spring.verison>5.1.3.RELEASE</spring.verison>
     </properties>
 
@@ -61,7 +59,7 @@
             <dependency>
                 <groupId>com.yonyou.iuap</groupId>
                 <artifactId>iuap-sign</artifactId>
-                <version>${iuap-sign.version}</version>
+                <version>${iuap.module.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>io.springside</groupId>
@@ -113,7 +111,7 @@
             <dependency>
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-all</artifactId>
-                <version>4.1.2</version>
+                <version>[4.1.2,)</version>
             </dependency>
 
             <dependency>
@@ -131,19 +129,12 @@
             <dependency>
                 <groupId>commons-collections</groupId>
                 <artifactId>commons-collections</artifactId>
-                <version>3.2</version>
             </dependency>
 
-            <dependency>
-                <groupId>commons-logging</groupId>
-                <artifactId>commons-logging</artifactId>
-                <version>1.1.1</version>
-            </dependency>
 
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>1.7.8</version>
             </dependency>
 
             <dependency>
@@ -159,7 +150,6 @@
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
-                <version>4.4.1</version>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
