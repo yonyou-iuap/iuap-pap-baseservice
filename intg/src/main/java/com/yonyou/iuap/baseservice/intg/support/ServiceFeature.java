@@ -20,9 +20,9 @@ public enum ServiceFeature {
     UNION_REFERENCE("com.yonyou.iuap.baseservice.ref.service.RefUnionService"),//本地及远程参照统一解析特性
     BPM("com.yonyou.iuap.baseservice.bpm.service.BpmCommonService"),//流程特性
     I18N("com.yonyou.iuap.baseservice.intg.service.I18nCommonService"),//国际化特性
+    I18N_ENUM("com.yonyou.iuap.baseservice.intg.service.ExtI18nEnumService"),//静态枚举国际化
     OTHER("java.lang.Class"),//其他，用于客户化扩展特性加载
 
-//    PRINT(GenericAtService.class )
     ;
 
     private String clazz;

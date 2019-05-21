@@ -260,7 +260,7 @@ public abstract class GenericService<T extends Model>{
                 count = genericMapper.update(entity);
             }
             if(count != 1) {
-                String msg=MessageSourceUtil.getMessage("ja.bas.ser2.0004", "更新保存数据出错，更新记录数=")+count+"\r\n"+JSON.toJSONString(entity);
+                String msg=MessageSourceUtil.getMessage("ja.bas.ser2.0004", "更新保存数据出错，更新记录数=")+count+"\r\n 更新数据主键为:"+String.valueOf(entity.getId());
                 log.error(msg);
                 throw new RuntimeException(msg);
             }else if (isSelective){

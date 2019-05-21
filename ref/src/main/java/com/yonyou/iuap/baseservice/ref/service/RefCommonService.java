@@ -63,8 +63,14 @@ public  class RefCommonService<T extends Model>  implements QueryFeatureExtensio
         if(ids!=null&&ids.size()>0){
             idList=new ArrayList<>(ids);
         }
+        String parentFieldName = refParamConfigTable.getPid();
+        if (parentFieldName==null&&refParamConfigTable.getFid()!=null&&refParamConfigTable.getFid().size()>0){
+            parentFieldName = refParamConfigTable.getFid().get(0);
+        }else{
+            throw new RuntimeException("found no parent field name in ref.xml,A tag of <field code=\"pid\"> or <field code=\"fid\"> is required!");
+        }
         Page<Map<String,Object>> result = mapper.treerefselectAllByPage(pageRequest,refParamConfigTable.getTableName(),refParamConfigTable.getId(),
-                refParamConfigTable.getRefcode(),refParamConfigTable.getRefname(), refParamConfigTable.getExtension(),keyword.toString(),conditions,conditionQuoter,refParamConfigTable.getCondition(),refParamConfigTable.getPid(),fid,
+                refParamConfigTable.getRefcode(),refParamConfigTable.getRefname(), refParamConfigTable.getExtension(),keyword.toString(),conditions,conditionQuoter,refParamConfigTable.getCondition(),parentFieldName,fid,
                 idList).getPage();
 
         return result;

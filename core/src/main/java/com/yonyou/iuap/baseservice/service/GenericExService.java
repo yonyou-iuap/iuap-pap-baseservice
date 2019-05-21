@@ -12,9 +12,11 @@ import java.io.Serializable;
 
 /**
  * 说明：基础Service扩展——支持逻辑删除
+ * 已废弃,推荐使用GenericService或GenericIntegrateService
  * @author houlf
  * 2018年6月12日
  */
+@Deprecated
 public abstract class GenericExService<T extends Model & LogicDel> extends GenericService<T>{
 
     private Logger log = LoggerFactory.getLogger(GenericExService.class);
