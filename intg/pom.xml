@@ -34,8 +34,8 @@
                     <artifactId>fastjson</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>com.yonyou.iuap.baseservice</groupId>
-                    <artifactId>iuap-pap-baseservice-persistence</artifactId>
+                    <groupId>com.yonyou.iuap</groupId>
+                    <artifactId>iuap-mybatis</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -55,6 +55,10 @@
                 <exclusion>
                     <groupId>org.apache.shiro</groupId>
                     <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.yonyou.iuap</groupId>
+                    <artifactId>iuap-security</artifactId>
                 </exclusion>
 
             </exclusions>
