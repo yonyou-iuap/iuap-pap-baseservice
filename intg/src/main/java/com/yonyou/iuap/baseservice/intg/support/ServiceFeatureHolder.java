@@ -4,6 +4,7 @@ import cn.hutool.core.util.ArrayUtil;
 import com.yonyou.iuap.baseservice.persistence.support.DeleteFeatureExtension;
 import com.yonyou.iuap.baseservice.persistence.support.QueryFeatureExtension;
 import com.yonyou.iuap.baseservice.persistence.support.SaveFeatureExtension;
+import com.yonyou.iuap.ucf.common.entity.Identifier;
 import org.springframework.core.ResolvableType;
 
 import java.util.*;
@@ -97,7 +98,7 @@ public class ServiceFeatureHolder  {
 
     public static Set getModelExtensions(Class modelClass, Class extIf){
         Set result =new HashSet<>();
-        if (modelClass.equals(Model.class)){
+        if (modelClass.equals(Identifier.class)){
             return result;
         }
         if (!isInit.get()){
@@ -146,13 +147,6 @@ public class ServiceFeatureHolder  {
     private static<T> boolean isExtServiceAssignedToModel(T instance,Class extIf,Class modelClass){
 
         ResolvableType serviceType = ResolvableType.forClass(extIf,instance.getClass());
-//        if (service.getSuperclass() == Object.class) {
-//            serviceType = ResolvableType.forType(
-//                    service.getGenericInterfaces()[0]);
-//        } else {
-//            serviceType = ResolvableType.forType(
-//                    service.getSuperclass().getGenericInterfaces()[0]);
-//        }
         return  ArrayUtil.isNotEmpty(serviceType.getGenerics())
                 && serviceType.getGeneric(0).resolve() == modelClass;
 

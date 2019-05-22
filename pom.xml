@@ -41,7 +41,7 @@
             <dependency>
                 <groupId>com.yonyou.iuap.pap.authrbac</groupId>
                 <artifactId>iuap-authrbac-common</artifactId>
-                <version>${eiap.module.version}</version>
+                <version>${pap.module.version}</version>
             </dependency>
 
             <dependency>
@@ -51,7 +51,7 @@
             </dependency>
 
             <dependency>
-                <groupId>com.yonyou.iuap.pap.base</groupId>
+                <groupId>com.yonyou.iuap.pap</groupId>
                 <artifactId>pap_base_comp_ref</artifactId>
                 <version>${pap.module.version}</version>
             </dependency>
@@ -59,7 +59,7 @@
             <dependency>
                 <groupId>com.yonyou.iuap</groupId>
                 <artifactId>iuap-sign</artifactId>
-                <version>${iuap.module.version}</version>
+                <version>3.1.0-RC003</version>
                 <exclusions>
                     <exclusion>
                         <groupId>io.springside</groupId>
@@ -160,11 +160,6 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>4.12</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.poi</groupId>
-                <artifactId>poi-ooxml</artifactId>
-                <version>3.17</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
