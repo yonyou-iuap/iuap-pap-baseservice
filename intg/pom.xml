@@ -47,6 +47,17 @@
         <dependency>
             <groupId>com.yonyou.iuap.pap.workbench</groupId>
             <artifactId>workbench-sdk</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.yonyou.iuap</groupId>
+                    <artifactId>iuap-licenseclient</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.shiro</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
