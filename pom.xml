@@ -14,6 +14,7 @@
         <iuap.module.version>3.1.0-RELEASE</iuap.module.version>
         <eiap.module.version>3.5.6-RELEASE</eiap.module.version>
         <pap.module.version>3.5.6-RELEASE</pap.module.version>
+        <ubpm.rest.sdk.version>4.0.0-RELEASE</ubpm.rest.sdk.version>
         <spring.verison>4.0.5.RELEASE</spring.verison>
     </properties>
 
@@ -29,7 +30,7 @@
             <dependency>
                 <groupId>com.yonyou.uap.bpm</groupId>
                 <artifactId>ubpm-rest-sdk</artifactId>
-                <version>1.2.2-SNAPSHOT</version>
+                <version>${ubpm.rest.sdk.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.yonyou.iuap.pap</groupId>
