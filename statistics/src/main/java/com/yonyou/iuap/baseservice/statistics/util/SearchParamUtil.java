@@ -276,18 +276,20 @@ public class SearchParamUtil {
         //utilResult都是按refcode分组的数据,我们反写都是基于field的,需要重新格式化到refDataCache中
         if (null != utilResult && utilResult.size() > 0){
             for (String refCode:utilResult.keySet()){
-                for (Map<String,Object> refContent :utilResult.get(refCode) ){
-                    for (Field field : refCache.keySet()) {
-                        Map<String,Map<String,Object>> refFieldData = new HashMap<>();
-                        for (String id: refFieldIds.get(refCode).get(field)){
-                            if (id.equals( refContent.get("ID") ) || id.equals( refContent.get("id") )|| id.equals( refContent.get("refpk"))   ){
-                                refFieldData.put(id,refContent);
+                if(utilResult.get(refCode)!=null){
+                    for (Map<String,Object> refContent :utilResult.get(refCode) ){
+                        for (Field field : refCache.keySet()) {
+                            Map<String,Map<String,Object>> refFieldData = new HashMap<>();
+                            for (String id: refFieldIds.get(refCode).get(field)){
+                                if (id.equals( refContent.get("ID") ) || id.equals( refContent.get("id") )|| id.equals( refContent.get("refpk"))   ){
+                                    refFieldData.put(id,refContent);
+                                }
                             }
-                        }
-                        if (refDataCache.containsKey(field)){//防止缓存的正确值被覆盖掉
-                            refDataCache.get(field).putAll(refFieldData);
-                        }else{
-                            refDataCache.put(field, refFieldData);
+                            if (refDataCache.containsKey(field)){//防止缓存的正确值被覆盖掉
+                                refDataCache.get(field).putAll(refFieldData);
+                            }else{
+                                refDataCache.put(field, refFieldData);
+                            }
                         }
                     }
                 }
