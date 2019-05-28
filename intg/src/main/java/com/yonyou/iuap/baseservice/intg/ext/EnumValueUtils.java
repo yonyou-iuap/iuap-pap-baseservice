@@ -32,6 +32,9 @@ public class EnumValueUtils {
         try {
             Method method = enumClass.getMethod("values");
             I18nEnum[] enumInst =  (I18nEnum[]) method.invoke(null, null);
+            if (enumInst==null || enumInst.length==0){
+                return map;
+            }
             map.putAll(enumInst[0].getMappings());
         } catch (NoSuchMethodException|IllegalAccessException|InvocationTargetException e) {
             logger.error("loading fail on enum :"+enumClass);
@@ -56,6 +59,9 @@ public class EnumValueUtils {
         for (Map entity:list){
             for (Field  enumField:annoFields.keySet()){
                 String enumCode = String.valueOf(entity.get(enumField.getName()));
+                if (loadEnumInfo( annoFields.get(enumField).clazz()).get(enumField.getName())==null){
+                    continue;
+                }
                 Object enumValue = loadEnumInfo( annoFields.get(enumField).clazz()).get(enumField.getName().toUpperCase()+"_"+enumCode);
                 if (enumValue!= null){
                     entity.put(annoFields.get(enumField).target(),enumValue);
