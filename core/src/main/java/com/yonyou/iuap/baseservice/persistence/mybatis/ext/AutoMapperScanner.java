@@ -25,7 +25,7 @@ public class AutoMapperScanner {
 
 	/**
 	 * 扫描、解析并注册MyBatis
-	 * @param basePackages
+	 * @param basePackages 扫描包的名称,支持多个
 	 */
 	public void scan(String[] basePackages, Configuration configuration) {
 		for (String basePackage : basePackages) {
@@ -47,7 +47,6 @@ public class AutoMapperScanner {
 	
 	/**
 	 * 扫描、解析并注册MyBatis
-	 * @param basePackages
 	 */
 	public void scanByAnnotation(ApplicationContext ctx, Configuration configuration) {
 		Map<String, Object> beans = ctx.getBeansWithAnnotation(MyBatisRepository.class);
@@ -56,7 +55,7 @@ public class AutoMapperScanner {
 		while(itor.hasNext()) {
 			Object mapperBean = beans.get(itor.next());
 			if(mapperBean instanceof MapperProxy) {
-				
+
 			}else {
 				this.parseMapper(mapperBean.getClass(), configuration);
 			}
@@ -66,8 +65,8 @@ public class AutoMapperScanner {
 	
 	/**
 	 * 解析Mapper
-	 * @param clazz
-	 * @param configuration
+	 * @param clazz mapper的class
+	 * @param configuration mybatis全局配置封装
 	 */
 	private void parseMapper(Class<?> clazz, Configuration configuration) {
 		if(clazz.getAnnotation(MyBatisRepository.class)!=null) {
