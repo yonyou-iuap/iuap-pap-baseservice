@@ -28,7 +28,7 @@
                 <scope>compile</scope>
             </dependency>
             <dependency>
-                <groupId>com.yonyou.uap.bpm</groupId>
+                <groupId>com.yonyou.iuap.pap.bpm</groupId>
                 <artifactId>ubpm-rest-sdk</artifactId>
                 <version>${ubpm.rest.sdk.version}</version>
             </dependency>
