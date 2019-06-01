@@ -156,7 +156,7 @@ public class GenericMultiTenantService<T extends MultiTenant> extends GenericSer
 	@Override
 	public T insert(T entity) {
 		if(entity != null) {
-			entity.setTenantid(InvocationInfoProxy.getTenantid());
+			entity.setTenantId(InvocationInfoProxy.getTenantid());
 			return insertWithSign(entity);
 		}else {
 			throw new RuntimeException("新增保存数据出错，对象为空!");
@@ -170,7 +170,7 @@ public class GenericMultiTenantService<T extends MultiTenant> extends GenericSer
 	 */
 	@Override
 	public T update(T entity) {
-		entity.setTenantid(InvocationInfoProxy.getTenantid());
+		entity.setTenantId(InvocationInfoProxy.getTenantid());
 		return updateWithSign(entity);
 	}
 
@@ -334,7 +334,7 @@ public class GenericMultiTenantService<T extends MultiTenant> extends GenericSer
 	 * @return 保存后的对象实体
 	 */
 	public T insertWithSign(T entity) {
-		if(entity != null && entity.getTenantid()!=null) {
+		if(entity != null && entity.getTenantId()!=null) {
 			return super.insert(entity);
 		}else {
 			throw new RuntimeException("新增保存数据出错，租户id为空!");
@@ -348,10 +348,10 @@ public class GenericMultiTenantService<T extends MultiTenant> extends GenericSer
 	 */
 	public T updateWithSign(T entity) {
 		if(entity!=null) {
-			T t=findByIdWithSign(entity.getId(),entity.getTenantid());
+			T t=findByIdWithSign(entity.getId(),entity.getTenantId());
 			if(t==null){
 				throw new RuntimeException("更新保存数据出错，对象为空!");
-			}else if(!t.getTenantid().equals(entity.getTenantid())){
+			}else if(!t.getTenantId().equals(entity.getTenantId())){
 				throw new RuntimeException("更新保存数据出错，租户不一致为空!");
 			}
 			return super.update(entity);
@@ -366,7 +366,7 @@ public class GenericMultiTenantService<T extends MultiTenant> extends GenericSer
 	 * @return 是否删除成功
 	 */
 	public int deleteWithSign(T entity) {
-		return deleteWithSign(entity.getId(),entity.getTenantid());
+		return deleteWithSign(entity.getId(),entity.getTenantId());
 	}
 
 	/**
