@@ -59,10 +59,8 @@ public class EnumValueUtils {
         for (Map entity:list){
             for (Field  enumField:annoFields.keySet()){
                 String enumCode = String.valueOf(entity.get(enumField.getName()));
-                if (loadEnumInfo( annoFields.get(enumField).clazz()).get(enumField.getName())==null){
-                    continue;
-                }
-                Object enumValue = loadEnumInfo( annoFields.get(enumField).clazz()).get(enumField.getName().toUpperCase()+"_"+enumCode);
+                Object enumValue = loadEnumInfo( annoFields.get(enumField).clazz())
+                        .get(enumField.getName().toUpperCase()+"_"+enumCode);
                 if (enumValue!= null){
                     entity.put(annoFields.get(enumField).target(),enumValue);
                 }
