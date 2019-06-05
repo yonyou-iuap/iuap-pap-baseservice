@@ -335,43 +335,7 @@
                     </archive>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>buildnumber-maven-plugin</artifactId>
-                <version>1.4</version>
-                <executions>
-                    <execution>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>create-timestamp</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <doCheck>false</doCheck>
-                    <doUpdate>false</doUpdate>
-                    <buildNumberPropertyName>verNum</buildNumberPropertyName>
-                    <format>{0,date,yyyyMMddHHmmss}</format>
-                    <items>
-                        <item>timestamp</item>
-                    </items>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
-    <profiles>
 
-        <profile>
-            <!-- 推荐以如下小版本号的方式发布补丁版本,效果类似于:iuap-pap-baseservice-sdk-3.5.5-SNAPSHOT-RC1542184591440.jar-->
-            <id>rc</id>
-            <!-- 本模式开关控制 默认关闭false-->
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <build>
-                <finalName>${project.artifactId}-${project.version}-RC${timestamp}</finalName>
-            </build>
-        </profile>
-
-    </profiles>
 </project>

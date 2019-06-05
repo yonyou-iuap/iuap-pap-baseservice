@@ -175,7 +175,7 @@ public class RefUnionService<T extends Model> implements QueryFeatureExtension<T
 
 
         List<Map<String, Object>> getFieldRefData(String hasCode) {
-            return fieldRefData.get(hasCode)==null? Collections.emptyList() :fieldRefData.get(hasCode);
+            return fieldRefData.get(hasCode)==null? new ArrayList<Map<String, Object>>() :fieldRefData.get(hasCode);
         }
 
         void cacheRefIdsInEntityField(String hasCode, String[] refIds) {

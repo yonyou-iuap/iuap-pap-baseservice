@@ -25,9 +25,12 @@ public class ConvertorHolder {
 	
 	private void init() {
 		ServiceLoader<ValueConvertor> spiLoader = ServiceLoader.load(ValueConvertor.class);
-		spiLoader.forEach(convertor->{
-			convertorMap.put(convertor.getType(), convertor);
-		});
+		for(ValueConvertor convertor :spiLoader ){
+            convertorMap.put(convertor.getType(), convertor);
+        }
+//		spiLoader.forEach(convertor->{
+//			convertorMap.put(convertor.getType(), convertor);
+//		});
 	}
 	
 	public ValueConvertor getConvertor(Class<?> clazz) {

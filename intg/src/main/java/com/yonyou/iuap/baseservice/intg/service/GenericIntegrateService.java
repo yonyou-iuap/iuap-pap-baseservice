@@ -29,8 +29,10 @@ import static com.yonyou.iuap.baseservice.intg.support.ServiceFeature.LOGICAL_DE
  * @param <T>
  */
 @SuppressWarnings("ALL")
-public  abstract class GenericIntegrateService<T extends Model> extends GenericService<T> {
+public  abstract class GenericIntegrateService<T extends Model> extends GenericService<T>  {
+
     private static Logger log = LoggerFactory.getLogger(GenericIntegrateService.class);
+
     private static final String LOG_TEMPLATE= MessageSourceUtil.getMessage("ja.int.ser2.0001", "特性组件{}的未实现{}扩展") ;
 
 

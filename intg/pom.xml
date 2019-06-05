@@ -12,6 +12,18 @@
     <groupId>com.yonyou.iuap.baseservice</groupId>
     <artifactId>iuap-pap-baseservice-intg</artifactId>
     <description>特性集成能力框架，提供了标准CRUD之外的扩展能力和多组件混合使用的可插拔能力。</description>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <dependencies>
 
         <dependency>

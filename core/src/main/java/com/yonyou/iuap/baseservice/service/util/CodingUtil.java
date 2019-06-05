@@ -38,7 +38,7 @@ public class CodingUtil {
 	 * @param entity 业务实体
 	 */
 	public void buildCoding(Object entity) {
-		CodingEntity anno = entity.getClass().getDeclaredAnnotation(CodingEntity.class);
+		CodingEntity anno = entity.getClass().getAnnotation(CodingEntity.class);
 		Field codingField  = null;
 		if(!StrUtil.isEmpty(anno.codingField())) {
 			try {

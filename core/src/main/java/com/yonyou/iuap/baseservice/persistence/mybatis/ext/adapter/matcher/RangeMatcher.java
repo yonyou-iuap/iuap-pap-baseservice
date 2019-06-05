@@ -1,5 +1,6 @@
 package com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.matcher;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -32,7 +33,7 @@ public class RangeMatcher implements Matcher{
 
 	@Override
 	public String buildCondition(Field field, String prefix) {
-		Condition condition = field.getDeclaredAnnotation(Condition.class);
+		Condition condition = field.getAnnotation(Condition.class);
 		boolean isAllBlank = true;
 		
 		StringBuilder strb = new StringBuilder();

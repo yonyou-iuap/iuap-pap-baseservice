@@ -26,8 +26,6 @@ public class MappedStatementHelper {
 	
 	/**
 	 * 添加补充-MappedStatement
-	 * @param mapStatement
-	 * @param returnType
 	 */
 	public static void addResultMap(Builder builder, Method method, Class<?> clazz, String statementId,Configuration configuration) {
 		Type returnType = method.getGenericReturnType();
@@ -38,7 +36,7 @@ public class MappedStatementHelper {
 				if(genericType.length != 1) {
 					throw new MapperException("无法识别的泛型类型!");
 				}else {
-					if(genericType[0].getTypeName().length()==1) {
+					if(genericType[0].toString().length()==1) {
 						ResultMap.Builder inlineResultMapBuilder = new ResultMap.Builder(configuration,
 						          											statementId + "-Inline", clazz,
 						          											new ArrayList<ResultMapping>(), null);
@@ -46,7 +44,7 @@ public class MappedStatementHelper {
 						resultMaps.add(inlineResultMapBuilder.build());
 						builder.resultMaps(resultMaps);
 						return;
-					}else if(genericType[0].getTypeName().startsWith("java.util.Map")) {
+					}else if(genericType[0].toString().startsWith("java.util.Map")) {
 						ResultMap.Builder inlineResultMapBuilder = new ResultMap.Builder(configuration,
 																			statementId + "-Inline", java.util.LinkedHashMap.class,
 																			new ArrayList<ResultMapping>(), null);
