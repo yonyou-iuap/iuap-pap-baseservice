@@ -14,9 +14,7 @@ import org.springframework.util.StringUtils;
 import javax.annotation.PostConstruct;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,63 +26,61 @@ import java.util.Set;
 public class StatModelResolver {
     private static Logger logger = LoggerFactory.getLogger(StatModelResolver.class);
     private static Map<String, StatModel> modelCache;
-    private static final String SCAN_ROOT ="com,cn,org,net,io,de";//默认的模型扫描范围
+    private static final String SCAN_ROOT = "com,cn,org,net,io,de";//默认的模型扫描范围
 
     /**
      * 优化性能，异步方式扫描
      */
     @PostConstruct
     public void init() {
-        Thread thread = new Thread(){
+        Thread thread = new Thread() {
 
-          @Override
-          public void run(){
-              modelCache = new CaseInsensitiveMap<>();
-              String[] basePackages = SCAN_ROOT.split(",");
-              Arrays.stream(basePackages).parallel().forEach(
-                      (basePackage)->{
-                          Set<Class<?>> classes = ClassUtil.scanPackageByAnnotation(basePackage, Table.class);
-                          for (Class clz : classes) {
-                              logger.debug("Resolving model class:" + clz);
-                              Field[] fields = ReflectUtil.getFields(clz);
-                              StatModel statModel = null;
+            @Override
+            public void run() {
+                modelCache = new CaseInsensitiveMap<>();
+                String[] basePackages = SCAN_ROOT.split(",");
+                for (final String basePackage : basePackages) {
 
-                              if (clz.getAnnotation(Entity.class)!=null){
-                                  statModel =   new StatModel();
-                                  if(StringUtils.isEmpty( ((Entity)clz.getAnnotation(Entity.class)).name() )){
-                                      statModel.setCode(clz.getSimpleName());
-                                  }else{
+                    Set<Class<?>> classes = ClassUtil.scanPackageByAnnotation(basePackage, Table.class);
+                    for (Class clz : classes) {
+                        logger.debug("Resolving model class:" + clz);
+                        Field[] fields = ReflectUtil.getFields(clz);
+                        StatModel statModel = null;
 
-                                      statModel.setCode( ((Entity)clz.getAnnotation(Entity.class)).name());
-                                  }
-                              }
-                              for (Field f : fields) {
-                                  if (f.getAnnotation(StatisticsField.class) != null) {
-                                      statModel = statModel == null ? new StatModel() : statModel;
-                                      statModel.getStatColumnsFields().put(FieldUtil.getColumnName(f), f.getName());
-                                      statModel.getStatColumnsFunctions().put(FieldUtil.getColumnName(f), f.getAnnotation(StatisticsField.class).functions());
-                                  }
-                              }
-                              if (statModel != null) {
-                                  statModel.setmClass(clz);
-                                  statModel.setTableName(EntityUtil.getTableName(clz));
-                                  logger.info("StatModelResolver caching model:" + statModel);
-                                  synchronized (this){//modelCache不是ConcurrentHashMap ,只能这么控制一下
-                                      if (StringUtils.isEmpty( statModel.getCode()) ){
-                                          statModel.setCode(clz.getSimpleName());
-                                          modelCache.put(clz.getSimpleName(), statModel);
-                                      }else{
-                                          modelCache.put(statModel.getCode(), statModel);
-                                      }
-                                  }
-                              }
-                          }
+                        if (clz.getAnnotation(Entity.class) != null) {
+                            statModel = new StatModel();
+                            if (StringUtils.isEmpty(((Entity) clz.getAnnotation(Entity.class)).name())) {
+                                statModel.setCode(clz.getSimpleName());
+                            } else {
 
+                                statModel.setCode(((Entity) clz.getAnnotation(Entity.class)).name());
+                            }
+                        }
+                        for (Field f : fields) {
+                            if (f.getAnnotation(StatisticsField.class) != null) {
+                                statModel = statModel == null ? new StatModel() : statModel;
+                                statModel.getStatColumnsFields().put(FieldUtil.getColumnName(f), f.getName());
+                                statModel.getStatColumnsFunctions().put(FieldUtil.getColumnName(f), f.getAnnotation(StatisticsField.class).functions());
+                            }
+                        }
+                        if (statModel != null) {
+                            statModel.setmClass(clz);
+                            statModel.setTableName(EntityUtil.getTableName(clz));
+                            logger.info("StatModelResolver caching model:" + statModel);
+                            synchronized (this) {//modelCache不是ConcurrentHashMap ,只能这么控制一下
+                                if (StringUtils.isEmpty(statModel.getCode())) {
+                                    statModel.setCode(clz.getSimpleName());
+                                    modelCache.put(clz.getSimpleName(), statModel);
+                                } else {
+                                    modelCache.put(statModel.getCode(), statModel);
+                                }
+                            }
+                        }
+                    }
+                }
 
-                      }
-              );
-              logger.info("StatModelResolver cached model:" + modelCache);
-          }
+                logger.info("StatModelResolver cached model:" + modelCache);
+            }
 
         };
         thread.start();

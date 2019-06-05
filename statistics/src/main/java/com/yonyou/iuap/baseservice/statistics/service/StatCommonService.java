@@ -65,7 +65,7 @@ public class StatCommonService {
             pageRequest = new PageRequest(pageRequest.getPageNumber(), pageRequest.getPageSize(), ppr.getSort());
         }
         SearchParams useless = new SearchParams();//创建无用挂件，保证mapper解析不失败
-        useless.setSearchMap(new HashMap<>());
+        useless.setSearchMap(new HashMap<String,Object>());
         if (  ppr.getGroupStatements()==null ||ppr.getGroupStatements().size()==0  ){//兼容传空条件，解释为全文检索
             Set allFields = new HashSet();
             List groupFields = new ArrayList();
@@ -101,7 +101,7 @@ public class StatCommonService {
             pageRequest = new PageRequest(pageRequest.getPageNumber(), pageRequest.getPageSize(), ppr.getSort());
         }
         SearchParams useless = new SearchParams();//创建无用挂件，保证mapper解析不失败
-        useless.setSearchMap(new HashMap<>());
+        useless.setSearchMap(new HashMap<String,Object>());
         if (  ppr.getGroupStatements()==null ||ppr.getGroupStatements().size()==0  ){//兼容传空条件，解释为全文检索
             Set allFields = new HashSet();
             List groupFields = new ArrayList();

@@ -9,7 +9,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>1.8</java.version>
+        <java.version>1.7</java.version>
         <iuap-sign.version>3.1.0-RC003</iuap-sign.version>
         <iuap.module.version>3.1.0-RELEASE</iuap.module.version>
         <eiap.module.version>3.5.6-RELEASE</eiap.module.version>
@@ -313,9 +313,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.1</version>
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                 </configuration>
             </plugin>
             <!-- buildnumber插件,用于简化小版本发布过程 -->
