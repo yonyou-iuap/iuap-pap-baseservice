@@ -15,6 +15,12 @@
         <dependency>
             <groupId>com.yonyou.iuap.pap.base</groupId>
             <artifactId>pap_base_i18n</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-lang</groupId>
+                    <artifactId>commons-lang</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>

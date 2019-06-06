@@ -7,8 +7,9 @@ import com.yonyou.iuap.mvc.type.JsonResponse;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 工具化基类
@@ -27,9 +28,9 @@ public class BaseController {
         } else {
             errorResponse.setSuccess(status.getStatus());
             if (RequestStatusEnum.FAIL_GLOBAL.equals(status)) {
-                errorResponse.setMessage(StringEscapeUtils.escapeHtml(msg));
+                errorResponse.setMessage(StringEscapeUtils.escapeHtml4(msg));
             } else {
-                errorResponse.getDetailMsg().put(StringEscapeUtils.escapeHtml(field), StringEscapeUtils.escapeHtml(msg));
+                errorResponse.getDetailMsg().put(StringEscapeUtils.escapeHtml4(field), StringEscapeUtils.escapeHtml4(msg));
             }
 
             return errorResponse;
@@ -38,7 +39,7 @@ public class BaseController {
 
     public JsonResponse buildGlobalError(String msg) {
         JsonErrorResponse errorResponse = new JsonErrorResponse();
-        errorResponse.setMessage(StringEscapeUtils.escapeHtml(msg));
+        errorResponse.setMessage(StringEscapeUtils.escapeHtml4(msg));
         return errorResponse;
     }
 
@@ -59,7 +60,7 @@ public class BaseController {
 
             while(var4.hasNext()) {
                 Entry<String, String> entry = (Entry)var4.next();
-                errorResponse.getDetailMsg().put(StringEscapeUtils.escapeHtml((String)entry.getKey()), StringEscapeUtils.escapeHtml((String)entry.getValue()));
+                errorResponse.getDetailMsg().put(StringEscapeUtils.escapeHtml4((String)entry.getKey()), StringEscapeUtils.escapeHtml4((String)entry.getValue()));
             }
 
             return errorResponse;
