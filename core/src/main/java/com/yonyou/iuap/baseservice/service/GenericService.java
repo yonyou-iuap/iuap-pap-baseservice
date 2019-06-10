@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.dao.DuplicateKeyException;
 
 import java.io.Serializable;
 import java.util.*;
@@ -29,6 +30,7 @@ import java.util.*;
 public abstract class GenericService<T extends Model>{
 
     private Logger log = LoggerFactory.getLogger(GenericService.class);
+    private static String msg0005=MessageSourceUtil.getMessage("ja.int.ser2.0005", "违反唯一性约束，无法保存");
 
     /**
      * 分页查询
@@ -148,7 +150,15 @@ public abstract class GenericService<T extends Model>{
      * @return
      */
     public int insertBatch(List<T> listEntity){
-        return genericMapper.insertBatch(listEntity);
+        try {
+            return   this.genericMapper.insertBatch(listEntity);
+        } catch (Exception e) {
+            if (e instanceof DuplicateKeyException){
+                throw new RuntimeException(msg0005);
+            }else{
+                throw e;
+            }
+        }
     }
 
     /**
