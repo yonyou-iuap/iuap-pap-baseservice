@@ -1,4 +1,4 @@
-package com.yonyou.iuap.baseservice.persistence.mybatis.ext.support;
+package com.yonyou.iuap.baseservice.support.condition;
 
 /**
  * move from ucf ,needed for adapt iuap356-web

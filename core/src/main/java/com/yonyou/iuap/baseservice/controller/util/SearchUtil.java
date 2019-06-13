@@ -2,6 +2,7 @@ package com.yonyou.iuap.baseservice.controller.util;
 
 import cn.hutool.core.util.ReflectUtil;
 import com.yonyou.iuap.baseservice.support.condition.Condition;
+import com.yonyou.iuap.baseservice.support.condition.Match;
 import com.yonyou.iuap.ucf.common.entity.Identifier;
 import com.yonyou.iuap.ucf.common.rest.SearchParams;
 import com.yonyou.iuap.ucf.dao.support.UcfSearchParams;
@@ -45,16 +46,16 @@ public class SearchUtil {
                 if (keyField !=null){
                     Condition cond = keyField.getAnnotation(Condition.class);
                     String keyCol =FieldUtil.getColumnName(keyField);
-                    if (cond==null || cond.match()== UcfSearchParams.Match.EQ){
+                    if (cond==null || cond.match()== Match.EQ){
                         result.addEqualCondition(keyCol,String.valueOf(params.getSearchMap().get(key) ));
-                    }else if(cond.match()== UcfSearchParams.Match.IN){
+                    }else if(cond.match()== Match.IN){
                         try {
                             List<Object> ls = (List<Object>) params.getSearchMap().get(key);
                             result.addInCondition(keyCol,ls);
                         } catch (Exception e) {
                             logger.error("error happened while reading IN param from search params:"+keyField.getName(),e);
                         }
-                    }else if(cond.match()== UcfSearchParams.Match.BETWEEN){
+                    }else if(cond.match()== Match.BETWEEN){
                         try {
                             Object[] values = (Object[]) params.getSearchMap().get(key);
                             result.addBetweenCondition(keyCol,values[0],values[1] );
@@ -63,7 +64,8 @@ public class SearchUtil {
                         }
                     }
                     else{
-                        result.addCondition(keyCol,cond.match(),String.valueOf(params.getSearchMap().get(key) ));
+
+                        result.addCondition(keyCol,UcfSearchParams.Match.valueOf(cond.match().name()),String.valueOf(params.getSearchMap().get(key) ));
                     }
 
                 }
