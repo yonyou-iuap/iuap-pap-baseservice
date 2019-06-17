@@ -5,6 +5,7 @@ import cn.hutool.core.util.ReflectUtil;
 import com.yonyou.iuap.baseservice.entity.LogicDel;
 import com.yonyou.iuap.baseservice.entity.MultiTenant;
 import com.yonyou.iuap.baseservice.entity.annotation.Reference;
+import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.EntityUtil;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.FieldUtil;
 import com.yonyou.iuap.baseservice.ref.dao.mapper.RefCommonMapper;
 import com.yonyou.iuap.baseservice.statistics.support.ParamProcessResult;
@@ -33,6 +34,14 @@ public class SearchParamUtil {
     public static boolean hasRefrence(Class clz) {
         for (Field field : ReflectUtil.getFields(clz)) {
             if (field.getAnnotation(Reference.class) != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+    public static boolean hasBoolean(Class clz) {
+        for (Field field : ReflectUtil.getFields(clz)) {
+            if (field.getType().isAssignableFrom(Boolean.class)) {
                 return true;
             }
         }
@@ -227,6 +236,28 @@ public class SearchParamUtil {
             logger.trace("model " + pr.getStateModel().getCode() + " has no query result");
             return;
         }
+        if (hasBoolean(pr.getStateModel().getmClass())) {
+            logger.trace("model " + pr.getStateModel().getCode() + " start convert boolean to true false");
+            List<Field> boolFields= new ArrayList<>();
+            for (Field field : EntityUtil.getEntityFields(pr.getStateModel().getmClass())){
+                if (field.getType().isAssignableFrom(Boolean.class)){
+                    boolFields.add(field);
+                }
+            }
+            for (Map map :selectList){
+                for (Field f:boolFields){
+                    if ("1".equalsIgnoreCase(String.valueOf(map.get(f.getName())))
+                            ||"Y".equalsIgnoreCase(String.valueOf(map.get(f.getName())))
+                            ||"true".equalsIgnoreCase(String.valueOf(map.get(f.getName())))
+                    ){
+                        map.put(f.getName(),Boolean.TRUE);
+                    }else{
+                        map.put(f.getName(),Boolean.FALSE);
+                    }
+                }
+            }
+        }
+
         if (!hasRefrence(pr.getStateModel().getmClass())) {
             logger.trace("model " + pr.getStateModel().getCode() + " has no reference escaping processSelectList");
             return;
