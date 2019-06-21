@@ -1,6 +1,8 @@
 package com.yonyou.iuap.baseservice.multitenant.service;
 
+import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.entity.MultiTenant;
+import com.yonyou.iuap.baseservice.entity.TenantId;
 import com.yonyou.iuap.baseservice.persistence.support.DeleteFeatureExtension;
 import com.yonyou.iuap.baseservice.persistence.support.QueryFeatureExtension;
 import com.yonyou.iuap.baseservice.persistence.support.SaveFeatureExtension;
@@ -12,8 +14,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 增加兼容能力,新版TenantId和老版MultiTenant都要hold住
+ * @author  leon
+ * @param <T>
+ */
 @Service
-public class MultenCommonService<T extends MultiTenant> implements QueryFeatureExtension<T>,SaveFeatureExtension<T> ,DeleteFeatureExtension<T> {
+public class MultenCommonService<T extends Model> implements QueryFeatureExtension<T>,SaveFeatureExtension<T> ,DeleteFeatureExtension<T> {
 
     @Override
     public SearchParams prepareQueryParam(SearchParams searchParams,Class modelClass) {
@@ -33,7 +40,13 @@ public class MultenCommonService<T extends MultiTenant> implements QueryFeatureE
 
     @Override
     public T prepareEntityBeforeSave(T entity) {
-        entity.setTenantid(InvocationInfoProxy.getTenantid());
+        if (entity instanceof MultiTenant){
+            ((MultiTenant)entity).setTenantid(InvocationInfoProxy.getTenantid());
+        }
+        if (entity instanceof TenantId){
+            ((TenantId)entity).setTenantId(InvocationInfoProxy.getTenantid());
+        }
+
         return entity;
     }
 
@@ -44,7 +57,13 @@ public class MultenCommonService<T extends MultiTenant> implements QueryFeatureE
 
     @Override
     public T prepareDeleteParams(T entity,Map params) {
-        entity.setTenantid(InvocationInfoProxy.getTenantid());
+        if (entity instanceof MultiTenant){
+            ((MultiTenant)entity).setTenantid(InvocationInfoProxy.getTenantid());
+        }
+        if (entity instanceof TenantId){
+            ((TenantId)entity).setTenantId(InvocationInfoProxy.getTenantid());
+        }
+
         params.put("tenantid", InvocationInfoProxy.getTenantid());
         return entity;
     }
