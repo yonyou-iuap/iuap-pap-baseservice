@@ -12,6 +12,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+/**
+ * 只为兼容iuap3.5.6而存在不推荐使用
+ */
 public class BaseController {
     private final static String SUC = "success";
     public BaseController() {

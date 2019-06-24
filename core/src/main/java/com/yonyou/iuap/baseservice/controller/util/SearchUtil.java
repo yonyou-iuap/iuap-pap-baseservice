@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * TODO description
+ * 兼容iuap3.5.6的查询条件构造器
  *
  * @author leon
  * @date 2019/4/8
