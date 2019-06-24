@@ -266,30 +266,43 @@ public class SearchParamUtil {
          * @Step 1
          * 一次遍历,获取参照字段id集合,用于@Step 2
          */
-        Map<String, Map<Field, Set<String>>> refFieldIds = new HashMap<>();//key为refcode,value为idCache
-        Map<Field, Set<String>> idCache = new HashMap<>(); //缓存list中的所有entity属性参照内的id
-        Map<Field, Reference> refCache = new HashMap<>();//缓存entity中的所有@Reference定义
-        Map<String, List<String>> utilParam = new HashMap<>(); //调util时的入参
+        //key为refcode,value为idCache
+        Map<String, Map<Field, Set<String>>> refFieldIds = new HashMap<>();
+        //缓存list中的所有entity属性参照内的id
+        Map<Field, Set<String>> idCache = new HashMap<>();
+        //缓存entity中的所有@Reference定义
+        Map<Field, Reference> refCache = new HashMap<>();
+        //调util时的入参
+        Map<String, List<String>> utilParam = new HashMap<>();
         for (Map row : selectList) {
             for (String fieldName : pr.getGroupFields()) {
                 Field field = ReflectUtil.getField(pr.getStateModel().getmClass(), fieldName);
                 Reference ref = field.getAnnotation(Reference.class);
                 if (ref != null) {
-                    if (idCache.get(field)==null) { //  提高缓存装载效率,仅加载一次
+                    //  提高缓存装载效率,仅加载一次
+                    if (idCache.get(field)==null) {
                         idCache.put(field, new HashSet<String>());
                     }
-                    refCache.put(field, ref); //将所有参照和field的关系缓存起来后续使用
+                    //将所有参照和field的关系缓存起来后续使用
+                    refCache.put(field, ref);
                     if (null != row.get(fieldName)) {
-                        String[] fieldIds = row.get(fieldName).toString().split(",");//兼容参照多选
+                        //兼容参照多选
+                        String[] fieldIds = row.get(fieldName).toString().split(",");
                         idCache.get(field).addAll(Arrays.asList(fieldIds));
 
                     }
                     if (refFieldIds.get(ref.code())==null){
                         refFieldIds.put(ref.code(),idCache);
                     }
-                    List ids = new ArrayList();
-                    ids.addAll(idCache.get(field));
-                    utilParam.put(ref.code(),ids);
+
+                    if (utilParam.containsKey(ref.code())){
+                        utilParam.get(ref.code()).addAll(idCache.get(field));
+                    }else{
+                        List ids = new ArrayList();
+                        ids.addAll(idCache.get(field));
+                        utilParam.put(ref.code(),ids);
+                    }
+
                 }
             }
         }
