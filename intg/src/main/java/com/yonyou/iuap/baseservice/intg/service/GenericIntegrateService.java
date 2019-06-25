@@ -304,6 +304,7 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
         try {
             entity=super.executeInsert(entity,isSelective);
         } catch (Exception e) {
+            log.error(e.getMessage(),e);
             if (e instanceof  DuplicateKeyException){
                 throw new RuntimeException(msg0005);
 
@@ -330,6 +331,7 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
         try {
             entity=super.executeUpdate(entity,isSelective);
         } catch (Exception e) {
+            log.error(e.getMessage(),e);
             if (e instanceof DuplicateKeyException){
                 throw new RuntimeException(msg0005);
             }else{
@@ -449,7 +451,7 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
 
     private boolean isLogicalDel(){
         for (String feat:feats){
-            if (LOGICAL_DEL.name().equalsIgnoreCase(feat )) return true;
+            if (LOGICAL_DEL.name().equalsIgnoreCase(feat )) {return true;}
         }
         return false;
     }
@@ -497,6 +499,7 @@ public  abstract class GenericIntegrateService<T extends Model> extends GenericS
 
     protected abstract ServiceFeature[] getFeats();
 
+    @Override
     public void setGenericMapper(GenericMapper<T> mapper ) {
         setGenericMapper(mapper,new String[0]);
     }
