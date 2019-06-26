@@ -1,8 +1,10 @@
 package com.yonyou.iuap.baseservice.statistics.util;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
 import com.yonyou.iuap.baseservice.entity.LogicDel;
+import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.entity.MultiTenant;
 import com.yonyou.iuap.baseservice.entity.annotation.Reference;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.EntityUtil;
@@ -22,6 +24,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.yonyou.iuap.baseservice.statistics.support.StatParam.*;
@@ -29,7 +33,7 @@ import static com.yonyou.iuap.baseservice.statistics.support.StatParam.*;
 @SuppressWarnings("ALL")
 public class SearchParamUtil {
     private static Logger logger = LoggerFactory.getLogger(SearchParamUtil.class);
-
+    private static final String DEFALT_DF="yyyy-MM-dd HH:mm:ss SSS";
 
     public static boolean hasRefrence(Class clz) {
         for (Field field : ReflectUtil.getFields(clz)) {
@@ -46,6 +50,52 @@ public class SearchParamUtil {
             }
         }
         return false;
+    }
+
+
+    /**
+     * 随着数据库字段类型的放开,需要做转换支持的范围会逐渐扩大
+     */
+    public static void dataTypeVerify(List<Map> selectList,Class entityClass){
+        if (selectList == null || selectList.size() == 0) {
+            logger.trace("model " + entityClass+ " has no query result");
+            return;
+        }
+        //bool 类型处理
+        List<Field> boolFields= new ArrayList<>();
+        for (Field field : EntityUtil.getEntityFields(entityClass)){
+            if (field.getType().isAssignableFrom(Boolean.class)){
+                boolFields.add(field);
+                logger.trace("model " + entityClass + " start convert boolean to true false");
+            }
+        }
+        //timestamp 类型处理
+        List<Field> tsFields= new ArrayList<>();
+        for (Object key:selectList.get(0).keySet()){
+            String fieldName = key.toString();
+            if (selectList.get(0).get(key).getClass().isAssignableFrom(Timestamp.class)){
+                Field field = ReflectUtil.getField(entityClass, fieldName);
+                if (field.getType().isAssignableFrom(String.class)){
+                    tsFields.add(field );
+                }
+            }
+        }
+        for (Map map :selectList){
+            for (Field f:boolFields){
+                if ("1".equalsIgnoreCase(String.valueOf(map.get(f.getName())))
+                        ||"Y".equalsIgnoreCase(String.valueOf(map.get(f.getName())))
+                        ||"true".equalsIgnoreCase(String.valueOf(map.get(f.getName())))
+                ){
+                    map.put(f.getName(),Boolean.TRUE);
+                }else{
+                    map.put(f.getName(),Boolean.FALSE);
+                }
+            }
+            for (Field f:tsFields){
+                map.put(f.getName(), DateUtil.format((Date)map.get(f.getName()), DEFALT_DF) );
+            }
+        }
+
     }
 
     /**
@@ -235,29 +285,9 @@ public class SearchParamUtil {
         if (selectList == null || selectList.size() == 0) {
             logger.trace("model " + pr.getStateModel().getCode() + " has no query result");
             return;
+        }else{
+            dataTypeVerify(selectList,pr.getStateModel().getmClass());
         }
-        if (hasBoolean(pr.getStateModel().getmClass())) {
-            logger.trace("model " + pr.getStateModel().getCode() + " start convert boolean to true false");
-            List<Field> boolFields= new ArrayList<>();
-            for (Field field : EntityUtil.getEntityFields(pr.getStateModel().getmClass())){
-                if (field.getType().isAssignableFrom(Boolean.class)){
-                    boolFields.add(field);
-                }
-            }
-            for (Map map :selectList){
-                for (Field f:boolFields){
-                    if ("1".equalsIgnoreCase(String.valueOf(map.get(f.getName())))
-                            ||"Y".equalsIgnoreCase(String.valueOf(map.get(f.getName())))
-                            ||"true".equalsIgnoreCase(String.valueOf(map.get(f.getName())))
-                    ){
-                        map.put(f.getName(),Boolean.TRUE);
-                    }else{
-                        map.put(f.getName(),Boolean.FALSE);
-                    }
-                }
-            }
-        }
-
         if (!hasRefrence(pr.getStateModel().getmClass())) {
             logger.trace("model " + pr.getStateModel().getCode() + " has no reference escaping processSelectList");
             return;

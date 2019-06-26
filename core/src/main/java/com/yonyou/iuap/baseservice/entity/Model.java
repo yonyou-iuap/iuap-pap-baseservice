@@ -8,6 +8,7 @@ import java.io.Serializable;
  * 2018年6月12日
  */
 public interface Model {
+    String DEFALT_DF="yyyy-MM-dd HH:mm:ss SSS";
 
 	public Serializable getId();
 	
