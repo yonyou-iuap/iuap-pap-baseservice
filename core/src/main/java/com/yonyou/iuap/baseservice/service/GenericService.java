@@ -226,7 +226,7 @@ public abstract class GenericService<T extends Model>{
         if (entity.getId() == null || StrUtil.isBlankIfStr(entity.getId())) {
             this.genAndSetEntityId(entity);
         }
-        String now = DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss SSS");
+        String now = DateUtil.format(new Date(), Model.DEFAULT_DF);
         entity.setCreateTime(now);
         entity.setCreateUser(InvocationInfoProxy.getUserid());
         entity.setLastModified(now);
@@ -261,7 +261,7 @@ public abstract class GenericService<T extends Model>{
     protected T executeUpdate(T entity,boolean isSelective) {
         int count ;
         if(entity!=null) {
-            String now = DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss SSS");
+            String now = DateUtil.format(new Date(), Model.DEFAULT_DF);
             entity.setLastModified(now);
             entity.setLastModifyUser(InvocationInfoProxy.getUserid());
             if (isSelective){

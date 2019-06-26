@@ -94,7 +94,7 @@ public abstract class AbsModel implements Model, VerLock{
 	}
 	
 	public String getNewTs() {
-		return this.newTs!=null ? this.newTs:DateUtil.format(new Date(), DEFALT_DF);
+		return this.newTs!=null ? this.newTs:DateUtil.format(new Date(), DEFAULT_DF);
 	}
 	public void setNewTs(String newTs) {
 		this.newTs = newTs;
