@@ -4,7 +4,6 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
 import com.yonyou.iuap.baseservice.entity.LogicDel;
-import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.entity.MultiTenant;
 import com.yonyou.iuap.baseservice.entity.annotation.Reference;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.EntityUtil;
@@ -25,7 +24,6 @@ import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.yonyou.iuap.baseservice.statistics.support.StatParam.*;
@@ -33,7 +31,7 @@ import static com.yonyou.iuap.baseservice.statistics.support.StatParam.*;
 @SuppressWarnings("ALL")
 public class SearchParamUtil {
     private static Logger logger = LoggerFactory.getLogger(SearchParamUtil.class);
-    private static final String DEFALT_DF="yyyy-MM-dd HH:mm:ss SSS";
+    private static final String DEFALT_FE_DATEFORMAT ="yyyy-MM-dd HH:mm:ss";
 
     public static boolean hasRefrence(Class clz) {
         for (Field field : ReflectUtil.getFields(clz)) {
@@ -69,16 +67,18 @@ public class SearchParamUtil {
                 logger.trace("model " + entityClass + " start convert boolean to true false");
             }
         }
-        //timestamp 类型处理
+        //日期 类型处理
         List<Field> tsFields= new ArrayList<>();
         for (Object key:selectList.get(0).keySet()){
             String fieldName = key.toString();
-            if (selectList.get(0).get(key).getClass().isAssignableFrom(Timestamp.class)){
+            if (selectList.get(0).get(key).getClass().isAssignableFrom(Timestamp.class)
+                    || selectList.get(0).get(key).getClass().isAssignableFrom(java.sql.Date.class)) {
                 Field field = ReflectUtil.getField(entityClass, fieldName);
-                if (field.getType().isAssignableFrom(String.class)){
-                    tsFields.add(field );
+                if (field.getType().isAssignableFrom(String.class)) {
+                    tsFields.add(field);
                 }
             }
+
         }
         for (Map map :selectList){
             for (Field f:boolFields){
@@ -92,7 +92,7 @@ public class SearchParamUtil {
                 }
             }
             for (Field f:tsFields){
-                map.put(f.getName(), DateUtil.format((Date)map.get(f.getName()), DEFALT_DF) );
+                map.put(f.getName(), DateUtil.format((Date)map.get(f.getName()), DEFALT_FE_DATEFORMAT) );
             }
         }
 
