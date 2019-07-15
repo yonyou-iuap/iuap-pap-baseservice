@@ -386,9 +386,9 @@ public class SearchParamUtil {
                 }
                 String[] ids = row.get(refField.getName()).toString().split(",");     //参照字段值转数组
                 Reference reference = refCache.get(refField);
-                List<String> reflectValues = new ArrayList<>();  //装载待反写field的值
                 int loopSize = Math.min(reference.srcProperties().length, reference.desProperties().length);//参照配置多字段参照时需结构匹配
                 for (int i = 0; i < loopSize; i++) {                //遍历参照中配置的多个srcPro和desPro 进行值替换
+                    List<String> reflectValues = new ArrayList<>();  //装载待反写field的值
                     String srcCol = reference.srcProperties()[i].toLowerCase();  //参照表name字段统一按小写处理
                     String desField = reference.desProperties()[i]; //entity对应参照value的字段
                     for (int j = 0; j < ids.length; j++) {//多值参照时,循环匹配拿到结果进行反写
