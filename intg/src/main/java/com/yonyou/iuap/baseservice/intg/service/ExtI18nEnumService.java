@@ -2,6 +2,7 @@ package com.yonyou.iuap.baseservice.intg.service;
 
 
 import cn.hutool.core.exceptions.UtilException;
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
 import com.yonyou.iuap.baseservice.entity.Model;
 import com.yonyou.iuap.baseservice.intg.ext.EnumValueUtils;
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,8 +52,21 @@ public class ExtI18nEnumService<T extends Model>  implements QueryFeatureExtensi
         }
         for (T entity:list){
             for (Field  enumField:annoFields.keySet()){
+                Map enumContent = EnumValueUtils.loadEnumInfo( annoFields.get(enumField).clazz());
                 String enumCode = String.valueOf(ReflectUtil.getFieldValue(entity,enumField)) ;
-                Object enumValue = EnumValueUtils.loadEnumInfo( annoFields.get(enumField).clazz()).get(enumField.getName().toUpperCase()+"_"+enumCode);
+                Object enumValue ;
+                //增加多选enumCode的支持
+                String[] enumCodes = enumCode.split(",");
+                if (enumCodes.length>1){
+                    List enumValues = new ArrayList<>();
+                    for (String code :enumCodes){
+                        enumValues.add(enumContent.get(enumField.getName().toUpperCase()+"_"+code) );
+                    }
+                    enumValue = ArrayUtil.join(enumValues.toArray(), ",");
+                }else{
+                    enumValue = enumContent.get(enumField.getName().toUpperCase()+"_"+enumCode);
+                }
+
                 if (enumValue!= null){
                     try {
                         ReflectUtil.setFieldValue(entity,annoFields.get(enumField).target(),enumValue);

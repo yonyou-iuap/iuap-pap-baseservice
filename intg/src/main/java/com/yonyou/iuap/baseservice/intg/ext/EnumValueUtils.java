@@ -1,12 +1,15 @@
 package com.yonyou.iuap.baseservice.intg.ext;
 
+import cn.hutool.core.util.ArrayUtil;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.EntityUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,8 +61,21 @@ public class EnumValueUtils {
         }
         for (Map entity:list){
             for (Field  enumField:annoFields.keySet()){
+                Map enumContent = loadEnumInfo( annoFields.get(enumField).clazz());
                 String enumCode = String.valueOf(entity.get(enumField.getName()));
-                Object enumValue = loadEnumInfo( annoFields.get(enumField).clazz()).get(enumField.getName().toUpperCase()+"_"+enumCode);
+                Object enumValue ;
+                //增加多选enumCode的支持
+                String[] enumCodes = enumCode.split(",");
+                if (enumCodes.length>1){
+                    List enumValues = new ArrayList<>();
+                    for (String code :enumCodes){
+                        enumValues.add(enumContent.get(enumField.getName().toUpperCase()+"_"+code) );
+                    }
+                    enumValue = ArrayUtil.join(enumValues.toArray(), ",");
+                }else{
+                    enumValue = enumContent.get(enumField.getName().toUpperCase()+"_"+enumCode);
+                }
+
                 if (enumValue!= null){
                     entity.put(annoFields.get(enumField).target(),enumValue);
                 }
