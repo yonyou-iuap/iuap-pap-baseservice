@@ -24,11 +24,11 @@ import java.util.*;
 @Service
 public class RefUnionService<T extends Model> implements QueryFeatureExtension<T> {
     private static Logger logger = LoggerFactory.getLogger(RefUnionService.class);
-    private Class modelClass;
+    private ThreadLocal<Class> modelClass = new ThreadLocal<>();
 
     @Override
     public SearchParams prepareQueryParam(SearchParams searchParams, Class modelClass) {
-        this.modelClass = modelClass;
+        this.modelClass.set(modelClass);
         return searchParams;
     }
 
@@ -66,7 +66,7 @@ public class RefUnionService<T extends Model> implements QueryFeatureExtension<T
          * 解析参照配置(仅处理远程参照服务),获取参照字段id集合,用于后续参照远程调用
          */
         //记录所有@Reference注解
-        Field[] fields = ReflectUtil.getFields(modelClass);
+        Field[] fields = ReflectUtil.getFields(modelClass.get());
         for (Field field : fields) {
             Reference ref = field.getAnnotation(Reference.class);
             if (null != ref && !allCache.containsKey(ref)) {

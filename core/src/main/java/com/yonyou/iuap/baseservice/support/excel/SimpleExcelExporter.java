@@ -26,7 +26,7 @@ public class SimpleExcelExporter {
 	public void export(String[] listHeader, List listData, String output) {
 		ExcelWriter writer = new ExcelWriter(output);
 		//创建sheet
-		writer.setOrCreateSheet("sheet1");
+        writer.setSheet("sheet1");
 		//写入Header
 		List<String> listKey = this.writeHeader(writer, listHeader);
 		//写入Body数据
@@ -45,7 +45,7 @@ public class SimpleExcelExporter {
 	public void export(String[] listHeader, List listData, OutputStream os) {
 		ExcelWriter writer = new ExcelWriter(false);
 		//创建sheet
-		writer.setOrCreateSheet("sheet1");
+		writer.setSheet("sheet1");
 		//写入Header
 		List<String> listKey = this.writeHeader(writer, listHeader);
 		//写入Body数据

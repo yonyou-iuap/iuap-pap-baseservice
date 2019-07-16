@@ -30,19 +30,19 @@ import java.util.Map;
 @Service
 public class ExtI18nEnumService<T extends Model>  implements QueryFeatureExtension<T> {
     private static Logger logger = LoggerFactory.getLogger(ExtI18nEnumService.class);
-    private Class modelClass ;
+    private ThreadLocal<Class>  modelClass =new ThreadLocal<>() ;
 
 
     @Override
     public SearchParams prepareQueryParam(SearchParams searchParams, Class modelClass) {
-        this.modelClass=modelClass;
+        this.modelClass.set(modelClass);
         return searchParams;
     }
 
     @Override
     public List<T> afterListQuery(List<T> list) {
         Map<Field,I18nEnumCode> annoFields = new HashMap<>();
-        for (Field field: EntityUtil.getEntityFields(modelClass) ){
+        for (Field field: EntityUtil.getEntityFields(modelClass.get()) ){
             if (field.getAnnotation(I18nEnumCode.class)!=null){
                 annoFields.put(field,field.getAnnotation(I18nEnumCode.class));
             }
