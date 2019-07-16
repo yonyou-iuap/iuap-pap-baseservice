@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.yonyou.iuap</groupId>
     <artifactId>iuap-pap-baseservice</artifactId>
-    <version>3.5.6-RELEASE</version>
+    <version>3.5.6-RC2</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -278,12 +278,12 @@
         <snapshotRepository>
             <id>iUAP-Snapshots</id>
             <name>iUAP-Snapshots</name>
-            <url>http://maven.yonyou.com/nexus/content/repositories/iUAP-Snapshots/</url>
+            <url>http://maven.yonyoucloud.com/nexus/content/repositories/iUAP-Snapshots/</url>
         </snapshotRepository>
         <repository>
             <id>iUAP-Stagings</id>
             <name>iUAP-Stagings</name>
-            <url>http://maven.yonyou.com/nexus/content/repositories/iUAP-Stagings/</url>
+            <url>http://maven.yonyoucloud.com/nexus/content/repositories/iUAP-Stagings/</url>
         </repository>
     </distributionManagement>
 
@@ -312,22 +312,6 @@
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
-                </configuration>
-            </plugin>
-            <!-- buildnumber插件,用于简化小版本发布过程 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.1</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                        </manifest>
-                        <manifestEntries>
-                            <Implementation-Build>$\{buildNumber}</Implementation-Build>
-                        </manifestEntries>
-                    </archive>
                 </configuration>
             </plugin>
         </plugins>
