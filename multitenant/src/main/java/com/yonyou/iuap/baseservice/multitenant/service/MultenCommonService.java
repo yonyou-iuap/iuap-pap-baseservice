@@ -25,9 +25,18 @@ public class MultenCommonService<T extends Model> implements QueryFeatureExtensi
     @Override
     public SearchParams prepareQueryParam(SearchParams searchParams,Class modelClass) {
         Map<String,Object> searchMap=searchParams.getSearchMap();
-        String tenantidInMap=String.valueOf(searchMap.get("tenantid"));
-        if(StringUtils.isEmpty(tenantidInMap)|| "null".equals(tenantidInMap)){
-            searchMap.put("tenantid",InvocationInfoProxy.getTenantid());
+        if (modelClass.isAssignableFrom(MultiTenant.class)){
+            String tenantid=String.valueOf(searchMap.get("tenantid"));
+            if(StringUtils.isEmpty(tenantid)|| "null".equals(tenantid)){
+                searchMap.put("tenantid",InvocationInfoProxy.getTenantid());
+            }
+
+        }
+        else if(modelClass.isAssignableFrom(TenantId.class)){
+            String tenantid=String.valueOf(searchMap.get("tenantId"));
+            if(StringUtils.isEmpty(tenantid)|| "null".equals(tenantid)){
+                searchMap.put("tenantId",InvocationInfoProxy.getTenantid());
+            }
         }
 
         return searchParams;
