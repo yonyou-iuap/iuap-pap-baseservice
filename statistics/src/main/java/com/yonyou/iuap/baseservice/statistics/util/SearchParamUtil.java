@@ -5,6 +5,7 @@ import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
 import com.yonyou.iuap.baseservice.entity.LogicDel;
 import com.yonyou.iuap.baseservice.entity.MultiTenant;
+import com.yonyou.iuap.baseservice.entity.TenantId;
 import com.yonyou.iuap.baseservice.entity.annotation.Reference;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.EntityUtil;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.FieldUtil;
@@ -217,7 +218,7 @@ public class SearchParamUtil {
             whereList.add(whereStatement);
         }
         //加入特性集成 -多租户
-        if (MultiTenant.class.isAssignableFrom(m.getmClass())) {
+        if (MultiTenant.class.isAssignableFrom(m.getmClass()) || TenantId.class.isAssignableFrom(m.getmClass())) {
             Map<String, Object> whereStatement = new HashMap<>();
             whereStatement.put(key.name(), "TENANT_ID");
             whereStatement.put(value.name(), InvocationInfoProxy.getTenantid());
