@@ -32,7 +32,7 @@ public class MultenCommonService<T extends Model> implements QueryFeatureExtensi
             }
 
         }
-        else if(modelClass.isAssignableFrom(TenantId.class)){
+        if(modelClass.isAssignableFrom(TenantId.class)){
             String tenantid=String.valueOf(searchMap.get("tenantId"));
             if(StringUtils.isEmpty(tenantid)|| "null".equals(tenantid)){
                 searchMap.put("tenantId",InvocationInfoProxy.getTenantid());
