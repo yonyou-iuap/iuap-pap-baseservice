@@ -73,6 +73,7 @@ public class SearchParamUtil {
         for (Object key:selectList.get(0).keySet()){
             String fieldName = key.toString();
             if (selectList.get(0).get(key).getClass().isAssignableFrom(Timestamp.class)
+                    || selectList.get(0).get(key).getClass().getName().equalsIgnoreCase("oracle.sql.TIMESTAMP")
                     || selectList.get(0).get(key).getClass().isAssignableFrom(java.sql.Date.class)) {
                 Field field = ReflectUtil.getField(entityClass, fieldName);
                 if (field.getType().isAssignableFrom(String.class)) {
