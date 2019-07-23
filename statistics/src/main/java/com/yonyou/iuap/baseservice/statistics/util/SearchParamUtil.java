@@ -18,6 +18,7 @@ import com.yonyou.iuap.baseservice.support.condition.Match;
 import com.yonyou.iuap.context.InvocationInfoProxy;
 import com.yonyou.iuap.mvc.type.SearchParams;
 import com.yonyou.iuap.pap.base.ref.utils.RefIdToNameUtil;
+import oracle.sql.TIMESTAMP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
@@ -25,6 +26,7 @@ import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.yonyou.iuap.baseservice.statistics.support.StatParam.*;
@@ -33,6 +35,7 @@ import static com.yonyou.iuap.baseservice.statistics.support.StatParam.*;
 public class SearchParamUtil {
     private static Logger logger = LoggerFactory.getLogger(SearchParamUtil.class);
     private static final String DEFALT_FE_DATEFORMAT ="yyyy-MM-dd HH:mm:ss";
+    private static final String DEFALT_FE_TSFORMAT ="yyyy-MM-dd HH:mm:ss SSS";
 
     public static boolean hasRefrence(Class clz) {
         for (Field field : ReflectUtil.getFields(clz)) {
@@ -56,6 +59,7 @@ public class SearchParamUtil {
      * 随着数据库字段类型的放开,需要做转换支持的范围会逐渐扩大
      */
     public static void dataTypeVerify(List<Map> selectList,Class entityClass){
+        SimpleDateFormat sdf_ts = new SimpleDateFormat(DEFALT_FE_TSFORMAT);
         if (selectList == null || selectList.size() == 0) {
             logger.trace("model " + entityClass+ " has no query result");
             return;
@@ -69,12 +73,19 @@ public class SearchParamUtil {
             }
         }
         //日期 类型处理
+        List<Field> dateFields= new ArrayList<>();
+        //时间戳处理
         List<Field> tsFields= new ArrayList<>();
         for (Object key:selectList.get(0).keySet()){
             String fieldName = key.toString();
             if (selectList.get(0).get(key).getClass().isAssignableFrom(Timestamp.class)
-                    || selectList.get(0).get(key).getClass().getName().equalsIgnoreCase("oracle.sql.TIMESTAMP")
                     || selectList.get(0).get(key).getClass().isAssignableFrom(java.sql.Date.class)) {
+                Field field = ReflectUtil.getField(entityClass, fieldName);
+                if (field.getType().isAssignableFrom(String.class)) {
+                    dateFields.add(field);
+                }
+            }
+            if ( selectList.get(0).get(key).getClass().isAssignableFrom(oracle.sql.TIMESTAMP.class)){
                 Field field = ReflectUtil.getField(entityClass, fieldName);
                 if (field.getType().isAssignableFrom(String.class)) {
                     tsFields.add(field);
@@ -93,8 +104,18 @@ public class SearchParamUtil {
                     map.put(f.getName(),Boolean.FALSE);
                 }
             }
-            for (Field f:tsFields){
+            for (Field f:dateFields){
                 map.put(f.getName(), DateUtil.format((Date)map.get(f.getName()), DEFALT_FE_DATEFORMAT) );
+            }
+            for (Field f:tsFields){
+                if (StringUtils.isEmpty (map.get(f.getName() ))){
+                    continue;
+                }
+                try {
+                    map.put(f.getName(), sdf_ts.format(((TIMESTAMP)map.get(f.getName())).timestampValue()) );
+                } catch (Exception e) {
+                    logger.error("parse timestamp propertiy["+f.getName()+"] of entity["+entityClass+"] fail!");
+                }
             }
         }
 

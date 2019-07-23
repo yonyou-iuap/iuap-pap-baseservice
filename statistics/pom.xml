@@ -28,6 +28,12 @@
             <artifactId>spring-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc6</artifactId>
+            <version>11.2.0.2.0</version>
+            <scope>compile</scope>
+        </dependency>
 
 
     </dependencies>
