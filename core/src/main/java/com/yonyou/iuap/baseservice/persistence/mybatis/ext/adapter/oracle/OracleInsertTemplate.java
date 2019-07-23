@@ -1,21 +1,20 @@
 package com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.oracle;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
-import javax.persistence.Column;
-import org.apache.ibatis.mapping.SqlCommandType;
-
+import cn.hutool.core.util.StrUtil;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.SqlTemplate;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.exception.MapperException;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.support.Dialect;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.EntityUtil;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.FieldUtil;
+import org.apache.ibatis.mapping.SqlCommandType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
-import cn.hutool.core.util.StrUtil;
+import javax.persistence.Column;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Date;
 
 /**
  * 说明：
@@ -67,7 +66,26 @@ public class OracleInsertTemplate implements SqlTemplate{
             valuesSql.append(FieldUtil.build4Mybatis(field));
         }else {
             columnSql.append(column.name());
-            valuesSql.append(FieldUtil.build4Mybatis(field));
+            if (StringUtils.isEmpty(column.columnDefinition())){
+                valuesSql.append(FieldUtil.build4Mybatis(field));
+            }else{
+                if ("DATE".equalsIgnoreCase(column.columnDefinition())
+                        || "TIME".equalsIgnoreCase(column.columnDefinition())
+                        || "DATETIME".equalsIgnoreCase(column.columnDefinition())
+                ) {
+
+                    valuesSql.append("TO_DATE(").append(FieldUtil.build4Mybatis(field)).append(",'yyyy-MM-dd HH24:mi:ss')");
+                } else if ("TIMESTAMP".equalsIgnoreCase(column.columnDefinition())) {
+
+                    valuesSql.append("TO_TIMESTAMP(").append(FieldUtil.build4Mybatis(field)).append(",'yyyy-MM-dd HH24:mi:ss ff')");
+                } else if (field.getType().isAssignableFrom(Date.class) && ("VARCHAR".equalsIgnoreCase(column.columnDefinition())
+                        || "CHAR".equalsIgnoreCase(column.columnDefinition()))
+                ) {
+                    valuesSql.append("TO_CHAR(").append(FieldUtil.build4Mybatis(field)).append(",'yyyy-MM-dd HH24:mi:ss')");
+                } else {
+                    valuesSql.append(FieldUtil.build4Mybatis(field));
+                }
+            }
         }
 	}
 

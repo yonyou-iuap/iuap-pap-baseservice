@@ -2,6 +2,7 @@ package com.yonyou.iuap.baseservice.persistence.mybatis.ext.adapter.oracle;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -19,6 +20,7 @@ import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.EntityUtil;
 import com.yonyou.iuap.baseservice.persistence.mybatis.ext.utils.FieldUtil;
 
 import cn.hutool.core.util.StrUtil;
+import org.springframework.util.StringUtils;
 
 public class OracleUpdateTemplate implements SqlTemplate{
 	
@@ -67,10 +69,28 @@ public class OracleUpdateTemplate implements SqlTemplate{
             }
         }else {
             updateSql.append(column.name());
+            updateSql.append("=");
             if(field.getAnnotation(Version.class)==null) {				//非乐观锁字段
-                updateSql.append("=").append(FieldUtil.build4Mybatis(field));
+                if (StringUtils.isEmpty(column.columnDefinition())){
+                    updateSql.append(FieldUtil.build4Mybatis(field));
+                }else{
+                    if ("DATE".equalsIgnoreCase(column.columnDefinition())
+                            || "TIME".equalsIgnoreCase(column.columnDefinition())
+                            || "DATETIME".equalsIgnoreCase(column.columnDefinition())
+                    ) {
+                        updateSql.append("TO_DATE(").append(FieldUtil.build4Mybatis(field)).append(",'yyyy-MM-dd HH24:mi:ss')");
+                    } else if ("TIMESTAMP".equalsIgnoreCase(column.columnDefinition())) {
+                        updateSql.append("TO_TIMESTAMP(").append(FieldUtil.build4Mybatis(field)).append(",'yyyy-MM-dd HH24:mi:ss ff')");
+                    } else if (field.getType().isAssignableFrom(Date.class) && ("VARCHAR".equalsIgnoreCase(column.columnDefinition())
+                            || "CHAR".equalsIgnoreCase(column.columnDefinition()))
+                    ) {
+                        updateSql.append("TO_CHAR(").append(FieldUtil.build4Mybatis(field)).append(",'yyyy-MM-dd HH24:mi:ss')");
+                    } else {
+                        updateSql.append(FieldUtil.build4Mybatis(field));
+                    }
+                }
             }else {														//乐观锁字段
-                updateSql.append("=").append(FieldUtil.buildVersionField4Mybatis(field));
+                updateSql.append(FieldUtil.buildVersionField4Mybatis(field));
             }
         }
 	}
