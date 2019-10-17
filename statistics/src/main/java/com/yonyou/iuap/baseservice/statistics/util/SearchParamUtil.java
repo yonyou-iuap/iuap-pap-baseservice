@@ -256,11 +256,20 @@ public class SearchParamUtil {
                     if (refFieldIds.get(ref.code())==null){
                         refFieldIds.put(ref.code(),idCache);
                     }
-                    List ids = new ArrayList();
-                    ids.addAll(idCache.get(field));
-                    utilParam.put(ref.code(),ids);
+                    //兄弟utilParam的value里可以这样存么会指数级增加的，你用100条数据进行下测试会发现boom
+                    //List ids = new ArrayList();
+                    //ids.addAll(idCache.get(field));
+                    //utilParam.put(ref.code(),ids);
                 }
             }
+        }
+        
+        for(Map.Entry<Field,Set<String>> m:idCache.entrySet()){
+            Field field=m.getKey();
+            Reference ref = refCache.get(field);
+            List ids = new ArrayList();
+            ids.addAll(m.getValue());
+            utilParam.put(ref.code(),ids);
         }
         /**
          * @Step 2解析参照配置, 一次按需(idCache)加载参照数据(远程与本地统一处理)
