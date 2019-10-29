@@ -15,7 +15,7 @@
         <eiap.module.version>3.5.6-RELEASE</eiap.module.version>
         <pap.module.version>3.5.6-RELEASE</pap.module.version>
         <ubpm.rest.sdk.version>4.0.0-RELEASE</ubpm.rest.sdk.version>
-        <spring.verison>4.0.5.RELEASE</spring.verison>
+        <spring.verison>5.2.0.RELEASE</spring.verison>
     </properties>
 
     <dependencyManagement>
